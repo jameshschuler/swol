@@ -4,7 +4,9 @@ import { FormulaFunc, formulas } from './models/formula';
 interface StoreState {
     calculatedMaxes: Map<string, string>;
     calculateMaxes: ( weight: number, reps: number ) => void;
+    setUnitOfMeasure: ( unit: string ) => void;
     showResults: boolean;
+    unitOfMeasure?: string;
 }
 
 export const store = reactive<StoreState>( {
@@ -18,5 +20,8 @@ export const store = reactive<StoreState>( {
         } );
 
         this.showResults = true;
+    },
+    setUnitOfMeasure ( unit: string ) {
+        this.unitOfMeasure = unit;
     }
 } );

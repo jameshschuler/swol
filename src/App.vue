@@ -2,6 +2,7 @@
 import "@picocss/pico";
 import CalculateMaxForm from "./components/CalculateMaxForm.vue";
 import Results from "./components/Results.vue";
+import { store } from "./store";
 import "./styles/app.scss";
 </script>
 
@@ -10,7 +11,7 @@ import "./styles/app.scss";
     <h1>Estimated One Rep Max</h1>
     <CalculateMaxForm />
   </article>
-  <article>
+  <article v-if="store.showResults">
     <Results />
   </article>
 </template>
