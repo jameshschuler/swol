@@ -5,8 +5,8 @@
       <input type="text" placeholder="weight" v-model="formData.weight" :aria-invalid="errors.weight" />
 
       <select v-model="formData.unit" @change="store.setUnitOfMeasure(formData.unit)">
-        <option value="lbs.">lbs.</option>
-        <option value="kgs.">kgs.</option>
+        <option value="lbs">lbs.</option>
+        <option value="kgs">kgs.</option>
       </select>
     </div>
     <label for="range" class="mt-xs">
@@ -23,7 +23,7 @@ import { store } from "../store";
 
 const formData = ref<CalculateMaxForm>({
   reps: 5,
-  unit: "lbs.",
+  unit: "lbs",
 });
 
 const errors = ref<CalculateMaxFormErrors>({});

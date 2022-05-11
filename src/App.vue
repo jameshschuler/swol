@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import "@picocss/pico";
 import CalculateMaxForm from "./components/CalculateMaxForm.vue";
+import Navbar from "./components/Navbar.vue";
 import Results from "./components/Results.vue";
 import { store } from "./store";
 import "./styles/app.scss";
 </script>
 
 <template>
+  <Navbar />
   <article>
     <h1>Estimated One Rep Max</h1>
     <CalculateMaxForm />
