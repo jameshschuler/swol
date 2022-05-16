@@ -2,12 +2,14 @@
 import "@picocss/pico";
 import CalculateMaxForm from "./components/CalculateMaxForm.vue";
 import Navbar from "./components/Navbar.vue";
+import ReloadPWA from "./components/ReloadPWA.vue";
 import Results from "./components/Results.vue";
 import { store } from "./store";
 import "./styles/app.scss";
 </script>
 
 <template>
+  <ReloadPWA />
   <Navbar />
   <article>
     <h1>Estimated One Rep Max</h1>
