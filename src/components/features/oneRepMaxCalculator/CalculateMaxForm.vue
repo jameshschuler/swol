@@ -17,9 +17,9 @@
   </form>
 </template>
 <script setup lang="ts">
+import { CalculateMaxForm, CalculateMaxFormErrors } from "@/models/form";
+import { store } from "@/store";
 import { ref } from "vue";
-import { CalculateMaxForm, CalculateMaxFormErrors } from "../models/form";
-import { store } from "../store";
 
 const formData = ref<CalculateMaxForm>({
   reps: 5,

@@ -16,6 +16,6 @@
   </table>
 </template>
 <script setup lang="ts">
-import { store } from "../store";
+import { store } from "@/store";
 </script>
 <style lang="scss" scoped></style>
