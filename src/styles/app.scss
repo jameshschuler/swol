@@ -8,3 +8,9 @@
 .fa-heart {
     color: hsl(345, 67%, 55%);
 }
+
+.clickable {
+    &:hover {
+        cursor: pointer;
+    }
+}

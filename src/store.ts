@@ -24,5 +24,5 @@ export const store = reactive<StoreState>( {
     setUnitOfMeasure ( unit: string ) {
         this.unitOfMeasure = unit;
     },
-    unitOfMeasure: 'lbs'
+    unitOfMeasure: 'lbs',
 } );
