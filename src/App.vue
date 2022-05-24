@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Actionbar from "@/components/Actionbar.vue";
 import Navbar from "@/components/Navbar.vue";
 import ReloadPWA from "@/components/ReloadPWA.vue";
 import SidebarNav from "@/components/SidebarNav.vue";
@@ -12,6 +13,7 @@ import "@picocss/pico";
     <SidebarNav />
     <router-view></router-view>
   </div>
+  <Actionbar />
 </template>
 
 <style lang="scss">

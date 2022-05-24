@@ -7,11 +7,11 @@
     </ul>
     <ul>
       <li class="clickable" @click="open = true">
-        <i class="fas fa-rocket"></i>
+        <i class="fa-solid fa-circle-info fa-fw fa-lg"></i>
       </li>
     </ul>
   </nav>
-  <Modal title="About" :open="open" @close="open = false">
+  <Modal title="About Swol" :open="open" @close="open = false">
     <About />
   </Modal>
 </template>

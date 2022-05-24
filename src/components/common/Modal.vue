@@ -7,18 +7,24 @@
       </header>
       <slot></slot>
       <footer>
-        <a role="button" class="secondary clickable" data-target="modal" @click="close()">Cancel</a>
+        <a role="button" class="secondary clickable" data-target="modal" @click="close()">Close</a>
         <!-- <a href="#confirm" role="button" data-target="modal-example" onClick="toggleModal(event)"> Confirm </a> -->
       </footer>
     </article>
   </dialog>
 </template>
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { PropType, ref, watch } from "vue";
+
+interface ModalOptions {
+  // TODO: config for which buttons to show
+  size: string;
+}
 
 const props = defineProps({
   open: Boolean,
   title: String,
+  options: Object as PropType<ModalOptions>,
 });
 
 const emit = defineEmits(["close"]);
@@ -59,6 +65,13 @@ document.addEventListener("click", (event) => {
     }
   }
 });
+
+// Close with Esc key
+// document.addEventListener('keydown', event => {
+//   if (event.key === 'Escape' && visibleModal != null) {
+//     closeModal(visibleModal);
+//   }
+// });
 
 watch(
   () => props.open,

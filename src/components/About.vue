@@ -1,7 +1,11 @@
 <template>
-  <p>
-    Nunc nec ligula a tortor sollicitudin dictum in vel enim. Quisque facilisis turpis vel eros dictum aliquam et nec turpis. Sed eleifend a dui nec
-    ullamcorper. Praesent vehicula lacus ac justo accumsan ullamcorper
+  <p>About description goes here</p>
+  <p class="text-center">
+    Made with <i class="fas fa-fw fa-heart has-text-danger"></i> by <a href="https://jamesschuler.io" target="_blank">James Schuler</a>.
+  </p>
+  <p class="text-center">
+    Learn more here
+    <a href="https://github.com/jameshschuler/doug-score-viewer" target="_blank"><i class="fab fa-fw fa-lg fa-github-alt"></i></a>
   </p>
 </template>
 <script setup lang="ts"></script>
