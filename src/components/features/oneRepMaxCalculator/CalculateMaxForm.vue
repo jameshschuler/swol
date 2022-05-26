@@ -2,7 +2,7 @@
   <form @submit.prevent="calculateOneRepMax">
     <span>I lifted</span>
     <div class="grid">
-      <input type="text" placeholder="weight" v-model="formData.weight" :aria-invalid="errors.weight" />
+      <input type="text" placeholder="Weight" v-model="formData.weight" :aria-invalid="errors.weight" />
 
       <select v-model="formData.unit" @change="store.setUnitOfMeasure(formData.unit)">
         <option value="lbs">lbs.</option>

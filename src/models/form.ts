@@ -7,3 +7,12 @@ export interface CalculateMaxForm {
 export interface CalculateMaxFormErrors {
     weight?: boolean;
 }
+
+export interface CalculateBarloadForm {
+    unit: string;
+    weight?: number;
+}
+
+export interface CalculateBarloadFormErrors {
+    weight?: boolean;
+}
