@@ -9,7 +9,7 @@ import "@picocss/pico";
 <template>
   <ReloadPWA />
   <Navbar />
-  <div class="content">
+  <div class="content mb-sm">
     <SidebarNav />
     <router-view></router-view>
   </div>

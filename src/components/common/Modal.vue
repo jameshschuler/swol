@@ -1,25 +1,25 @@
 <template>
   <dialog :open="isOpen" id="modal">
-    <article ref="modalContent">
+    <article ref="modalContent" :class="props.options?.size ?? 'normal'">
       <header>
         <a aria-label="Close" class="close clickable" @click="close()"></a>
         {{ title }}
       </header>
       <slot></slot>
       <footer>
-        <a role="button" class="secondary clickable" data-target="modal" @click="close()">Close</a>
-        <!-- <a href="#confirm" role="button" data-target="modal-example" onClick="toggleModal(event)"> Confirm </a> -->
+        <a v-if="props.options?.buttons?.close" role="button" class="secondary clickable" data-target="modal" href="" @click.prevent="close()">
+          Close
+        </a>
+        <a v-if="props.options?.buttons?.cancel" role="button" class="secondary clickable" data-target="modal" href="" @click.prevent="close()">
+          Cancel
+        </a>
       </footer>
     </article>
   </dialog>
 </template>
 <script setup lang="ts">
+import { ModalOptions } from "@/models/props";
 import { PropType, ref, watch } from "vue";
-
-interface ModalOptions {
-  // TODO: config for which buttons to show
-  size: string;
-}
 
 const props = defineProps({
   open: Boolean,
@@ -66,12 +66,11 @@ document.addEventListener("click", (event) => {
   }
 });
 
-// Close with Esc key
-// document.addEventListener('keydown', event => {
-//   if (event.key === 'Escape' && visibleModal != null) {
-//     closeModal(visibleModal);
-//   }
-// });
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && isOpen.value) {
+    close();
+  }
+});
 
 watch(
   () => props.open,
@@ -82,4 +81,20 @@ watch(
   }
 );
 </script>
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+dialog article {
+  @include touch {
+    width: 95% !important;
+  }
+
+  .small {
+  }
+
+  &.normal {
+    width: 50%;
+  }
+
+  .large {
+  }
+}
+</style>

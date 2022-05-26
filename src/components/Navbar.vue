@@ -11,16 +11,23 @@
       </li>
     </ul>
   </nav>
-  <Modal title="About Swol" :open="open" @close="open = false">
+  <Modal title="About Swol" :open="open" @close="open = false" :options="modalConfig">
     <About />
   </Modal>
 </template>
 <script setup lang="ts">
+import { ModalOptions } from "@/models/props";
 import { ref } from "vue";
 import About from "./About.vue";
 import Modal from "./common/Modal.vue";
 
 const open = ref<boolean>(false);
+
+const modalConfig: ModalOptions = {
+  buttons: {
+    close: true,
+  },
+};
 </script>
 <style lang="scss" scoped>
 #brand {
