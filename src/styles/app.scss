@@ -14,3 +14,21 @@
         cursor: pointer;
     }
 }
+
+svg {
+    &:hover {
+        color:  hsl(204, 86%, 53%);
+    }
+}
+
+.d-flex {
+    display: flex;
+}
+
+.justify-space-between {
+    justify-content: space-between;
+}
+
+.align-items-center {
+    align-items: center;
+}

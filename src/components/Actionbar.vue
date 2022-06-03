@@ -40,6 +40,9 @@
 
       a {
         color: hsl(0, 0%, 80%);
+        width: 100%;
+        text-align: center;
+        // TODO: fix height
       }
 
       a.router-link-active {
