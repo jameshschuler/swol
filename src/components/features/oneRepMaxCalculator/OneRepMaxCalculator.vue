@@ -19,14 +19,14 @@
         <button class="mt-sm" type="submit">Calculate Max</button>
       </form>
     </article>
-    <Results v-if="showResults" :unit-of-measure="calculatedUnitOfMeasure" />
+    <OneRepMaxResults v-if="showResults" :unit-of-measure="calculatedUnitOfMeasure" />
   </div>
 </template>
 <script setup lang="ts">
 import { CalculateMaxForm, CalculateMaxFormErrors } from "@/models/form";
 import { store } from "@/store";
 import { ref } from "vue";
-import Results from "./Results.vue";
+import OneRepMaxResults from "./OneRepMaxResults.vue";
 
 const formData = ref<CalculateMaxForm>({
   reps: 5,

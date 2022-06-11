@@ -8,11 +8,11 @@ export interface CalculateMaxFormErrors {
     weight?: boolean;
 }
 
-export interface CalculateBarloadForm {
+export interface CalculateBarLoadForm {
     unit: string;
     weight?: number;
 }
 
-export interface CalculateBarloadFormErrors {
+export interface CalculateBarLoadFormErrors {
     weight?: boolean;
 }

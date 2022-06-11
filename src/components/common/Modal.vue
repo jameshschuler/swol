@@ -13,6 +13,16 @@
         <a v-if="props.options?.buttons?.cancel" role="button" class="secondary clickable" data-target="modal" href="" @click.prevent="close()">
           Cancel
         </a>
+        <a
+          v-if="props.options?.buttons?.save && props.options.onSave"
+          role="button"
+          class="clickable"
+          data-target="modal"
+          href=""
+          @click.prevent="handleOnSave()"
+        >
+          Save
+        </a>
       </footer>
     </article>
   </dialog>
@@ -37,6 +47,12 @@ const animationDuration = 200; // ms
 
 const isOpen = ref<boolean>(false);
 const modalContent = ref();
+
+function handleOnSave() {
+  // TODO: maybe onSave should return a promise
+  props.options?.onSave!();
+  close();
+}
 
 function open() {
   document.documentElement.classList.add(isOpenClass, openingClass);
