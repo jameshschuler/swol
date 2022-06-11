@@ -1,5 +1,5 @@
 import { reactive } from 'vue';
-import { defaultPoundPlateSet } from './models/constants';
+import { defaultKilogramPlateSet, defaultPoundPlateSet } from './models/constants';
 import { UnitOfMeasure } from './models/enums';
 import { FormulaFunc, formulas } from './models/formula';
 import { SelectableBarbell } from './models/selectableBarbell';
@@ -10,10 +10,9 @@ import { SelectablePlate } from './models/selectablePlate';
 interface StoreState {
     calculatedMaxes: Map<string, string>;
     calculateMaxes: ( weight: number, reps: number ) => void;
-    setUnitOfMeasure: ( unit: string ) => void;
     showResults: boolean;
-    unitOfMeasure?: string;
     selectablePoundPlates: SelectablePlate[];
+    selectableKilogramPlates: SelectablePlate[];
     selectedPlateUnitOfMeasure: UnitOfMeasure;
     selectedBarbell: SelectableBarbell;
 }
@@ -30,11 +29,8 @@ export const store = reactive<StoreState>( {
 
         this.showResults = true;
     },
-    setUnitOfMeasure ( unit: string ) {
-        this.unitOfMeasure = unit;
-    },
-    unitOfMeasure: 'lbs',
     selectablePoundPlates: defaultPoundPlateSet,
+    selectableKilogramPlates: defaultKilogramPlateSet,
     selectedPlateUnitOfMeasure: UnitOfMeasure.Pound,
     selectedBarbell: {
         weight: 45,
