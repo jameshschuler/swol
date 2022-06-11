@@ -26,13 +26,15 @@
         <button class="mt-sm" type="submit" :aria-busy="calculating">Calculate</button>
       </form>
     </article>
+    <BarLoadResults v-if="results.size !== 0" :results="results" :unit-of-measure="store.selectedPlateUnitOfMeasure" />
   </div>
 </template>
 <script setup lang="ts">
-import { poundPlatesSet } from "@/models/constants";
 import { UnitOfMeasure } from "@/models/enums";
 import { CalculateBarloadForm, CalculateBarloadFormErrors } from "@/models/form";
-import { ref } from "vue";
+import { store } from "@/store";
+import { reactive, ref } from "vue";
+import BarLoadResults from "./BarLoadResults.vue";
 
 const formData = ref<CalculateBarloadForm>({
   unit: UnitOfMeasure.Pound,
@@ -41,9 +43,7 @@ const formData = ref<CalculateBarloadForm>({
 const errors = ref<CalculateBarloadFormErrors>({});
 const calculating = ref<boolean>(false);
 
-// TODO: need to track which plates from set are selected
-const selectedBarWeight = ref<number>(45); // TODO: move to a getter
-const selectedPlateSet = ref<number[]>(poundPlatesSet); // TODO: move to a getter
+const results = reactive<Map<number, number>>(new Map<number, number>());
 
 function calculateBarload() {
   validateFormData(formData.value);
@@ -56,16 +56,16 @@ function calculateBarload() {
 
   // TODO: what about if the weight entered is a decimal?
   if (formData.value.unit === UnitOfMeasure.Pound) {
-    let remaining = formData.value.weight! - selectedBarWeight.value;
+    const selectedPlates = store.selectablePoundPlates.filter((p) => p.selected);
+    let remaining = formData.value.weight! - store.selectedBarbell.weight;
     let incrementor = 0;
 
-    const results = new Map<number, number>();
-    for (const plate of selectedPlateSet.value) {
-      results.set(plate, 0);
+    for (const plate of selectedPlates) {
+      results.set(plate.weight, 0);
     }
 
     while (remaining > 0) {
-      let currentPlate = selectedPlateSet.value[incrementor];
+      let currentPlate = selectedPlates[incrementor].weight;
       let totalPlateWeight = currentPlate * 2;
 
       if (remaining >= totalPlateWeight) {
@@ -76,15 +76,16 @@ function calculateBarload() {
         incrementor++;
       }
 
-      if (incrementor > selectedPlateSet.value.length) {
+      if (incrementor > selectedPlates.length) {
         // TODO: show error message...toast?
         console.error("Unable to calculate barload");
         break;
       }
     }
 
-    console.log(results);
     calculating.value = false;
+  } else if (formData.value.unit === UnitOfMeasure.Kilogram) {
+    console.log("TODO");
   }
 }
 
@@ -94,7 +95,7 @@ function validateFormData({ weight }: CalculateBarloadForm) {
   if (!weight || weight <= 0 || isNaN(weight)) {
     hasError = true;
   } else {
-    if (weight < selectedBarWeight.value) {
+    if (weight < store.selectedBarbell.weight) {
       // TODO: add error message
       hasError = true;
     }
