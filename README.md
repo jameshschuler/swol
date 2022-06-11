@@ -15,3 +15,4 @@
 - [ ] PWA icon and colors
 - [ ] About description
 - [ ] Readme
+- [ ] Testing!
