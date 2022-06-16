@@ -6,9 +6,9 @@ import { createRouter, createWebHistory } from 'vue-router';
 import App from './App.vue';
 
 const routes = [
+    { path: '/', redirect: '/orm-calculator' },
     { name: 'BarLoadCalculator', path: '/barload-calculator', component: BarLoadCalculator },
     { name: 'OneRepMaxCalculator', path: '/orm-calculator', component: OneRepMaxCalculator },
-    { path: '/', redirect: '/orm-calculator' },
     { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound },
 ];
 

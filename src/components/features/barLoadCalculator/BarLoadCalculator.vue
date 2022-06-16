@@ -101,9 +101,11 @@ function calculateBarLoad() {
       incrementor++;
     }
 
-    if (incrementor > selectedPlates.length) {
+    if (incrementor >= selectedPlates.length) {
       // TODO: show error message...toast?
       console.error("Unable to calculate barload");
+      calculating.value = false;
+      results.clear();
       break;
     }
   }
