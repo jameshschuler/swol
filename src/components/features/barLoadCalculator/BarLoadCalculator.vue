@@ -28,7 +28,7 @@
     </article>
     <BarLoadResults v-if="results.size !== 0" :results="results" :unit-of-measure="store.selectedPlateUnitOfMeasure" />
   </div>
-  <Modal title="BarLoad Calculator Config" :open="open" @close="open = false" :options="modalConfig">
+  <Modal title="Configure BarLoad Calculator" :open="open" @close="open = false" :options="modalConfig">
     <BarLoadCalculatorConfig />
   </Modal>
 </template>

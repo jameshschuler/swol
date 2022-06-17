@@ -6,6 +6,7 @@ export const defaultPoundPlateSet = new Array<SelectablePlate>(
     { weight: 45, selected: true, },
     { weight: 35, selected: true, },
     { weight: 25, selected: true, },
+    { weight: 15, selected: false, },
     { weight: 10, selected: true, },
     { weight: 5, selected: true, },
     { weight: 2.5, selected: true, },
