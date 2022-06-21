@@ -9,7 +9,6 @@ export interface CalculateMaxFormErrors {
 }
 
 export interface CalculateBarLoadForm {
-    unit: string;
     weight?: number;
 }
 

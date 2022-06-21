@@ -14,13 +14,9 @@
             Weight
             <input id="weight" name="weight" type="text" placeholder="Weight" v-model="formData.weight" :aria-invalid="errors.weight" />
           </label>
-
-          <label for="uom">
+          <label for="">
             Unit of Measure
-            <select id="uom" name="uom" v-model="formData.unit">
-              <option :value="UnitOfMeasure.Pound">lbs.</option>
-              <option :value="UnitOfMeasure.Kilogram">kgs.</option>
-            </select>
+            <input type="text" :value="store.selectedPlateUnitOfMeasure" readonly />
           </label>
         </div>
         <button class="mt-sm" type="submit" :aria-busy="calculating">Calculate</button>
@@ -28,7 +24,7 @@
     </article>
     <BarLoadResults v-if="results.size !== 0" :results="results" :unit-of-measure="store.selectedPlateUnitOfMeasure" />
   </div>
-  <Modal title="Configure BarLoad Calculator" :open="open" @close="open = false" :options="modalConfig">
+  <Modal title="Configure Bar Load Calculator" :open="open" @close="open = false" :options="modalConfig">
     <BarLoadCalculatorConfig />
   </Modal>
 </template>
@@ -55,9 +51,7 @@ const modalConfig: ModalOptions = {
   },
 };
 
-const formData = ref<CalculateBarLoadForm>({
-  unit: UnitOfMeasure.Pound,
-});
+const formData = ref<CalculateBarLoadForm>({});
 
 const errors = ref<CalculateBarLoadFormErrors>({});
 const calculating = ref<boolean>(false);
@@ -76,9 +70,9 @@ function calculateBarLoad() {
   let selectedPlates = new Array<SelectablePlate>();
 
   // TODO: what about if the weight entered is a decimal?
-  if (formData.value.unit === UnitOfMeasure.Pound) {
+  if (store.selectedPlateUnitOfMeasure === UnitOfMeasure.Pound) {
     selectedPlates = store.selectablePoundPlates.filter((p) => p.selected);
-  } else if (formData.value.unit === UnitOfMeasure.Kilogram) {
+  } else if (store.selectedPlateUnitOfMeasure === UnitOfMeasure.Kilogram) {
     selectedPlates = store.selectableKilogramPlates.filter((p) => p.selected);
   }
 
