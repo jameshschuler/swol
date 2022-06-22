@@ -1,6 +1,6 @@
 <template>
   <fieldset>
-    <legend>Unit of Measure</legend>
+    <legend>Selected Plate Set</legend>
     <div class="mb-md uom-container">
       <label for="lbs">
         <input type="radio" id="lbs" name="uom" value="lbs" v-model="store.selectedPlateUnitOfMeasure" />
@@ -12,7 +12,14 @@
           :style="index >= store.selectablePoundPlates.length / 2 ? 'grid-column-start: 2;' : 'grid-column-start: 1;'"
           :for="'lb-' + plate.weight.toString()"
         >
-          <input type="checkbox" :id="'lb-' + plate.weight.toString()" :name="plate.weight.toString()" :checked="plate.selected" />
+          <input
+            type="checkbox"
+            :id="'lb-' + plate.weight.toString()"
+            :name="plate.weight.toString()"
+            :checked="plate.selected"
+            :disabled="store.selectedPlateUnitOfMeasure !== UnitOfMeasure.Pound"
+            v-model="store.selectablePoundPlates[index].selected"
+          />
           {{ plate.weight }}
         </label>
       </fieldset>
@@ -28,7 +35,14 @@
           :style="index >= store.selectableKilogramPlates.length / 2 ? 'grid-column-start: 2;' : 'grid-column-start: 1;'"
           :for="'kg-' + plate.weight.toString()"
         >
-          <input type="checkbox" :id="'kg-' + plate.weight.toString()" :name="plate.weight.toString()" :checked="plate.selected" />
+          <input
+            type="checkbox"
+            :id="'kg-' + plate.weight.toString()"
+            :name="plate.weight.toString()"
+            :checked="plate.selected"
+            :disabled="store.selectedPlateUnitOfMeasure !== UnitOfMeasure.Kilogram"
+            v-model="store.selectableKilogramPlates[index].selected"
+          />
           {{ plate.weight }}
         </label>
       </fieldset>
@@ -36,6 +50,7 @@
   </fieldset>
 </template>
 <script setup lang="ts">
+import { UnitOfMeasure } from "@/models/enums";
 import { store } from "@/store";
 </script>
 <style lang="scss" scoped>

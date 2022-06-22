@@ -5,13 +5,15 @@
       <thead>
         <tr>
           <th scope="col">Plate Weight</th>
-          <th scope="col">Count</th>
+          <th scope="col">Total Count</th>
+          <th scope="col">Per Side</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="[k, v] of props.results!.entries()">
           <td>{{ k }} {{ props.unitOfMeasure }}</td>
           <td>{{ v }}</td>
+          <td>{{ v / 2 }}</td>
         </tr>
       </tbody>
     </table>

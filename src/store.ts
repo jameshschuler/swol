@@ -4,6 +4,7 @@ import { UnitOfMeasure } from './models/enums';
 import { FormulaFunc, formulas } from './models/formula';
 import { SelectableBarbell } from './models/selectableBarbell';
 import { SelectablePlate } from './models/selectablePlate';
+import { Toast } from './models/toast';
 
 // TODO: replace with pinia
 
@@ -15,6 +16,7 @@ interface StoreState {
     selectableKilogramPlates: SelectablePlate[];
     selectedPlateUnitOfMeasure: UnitOfMeasure;
     selectedBarbell: SelectableBarbell;
+    toasts: Array<Toast>;
 }
 
 export const store = reactive<StoreState>( {
@@ -35,5 +37,6 @@ export const store = reactive<StoreState>( {
     selectedBarbell: {
         weight: 45,
         unitOfMeasure: UnitOfMeasure.Pound
-    } as SelectableBarbell
+    } as SelectableBarbell,
+    toasts: new Array<Toast>(),
 } );

@@ -24,7 +24,7 @@
     </article>
     <BarLoadResults v-if="results.size !== 0" :results="results" :unit-of-measure="store.selectedPlateUnitOfMeasure" />
   </div>
-  <Modal title="Configure Bar Load Calculator" :open="open" @close="open = false" :options="modalConfig">
+  <Modal title="Bar Load Calculator Settings" :open="open" @close="open = false" :options="modalConfig">
     <BarLoadCalculatorConfig />
   </Modal>
 </template>
@@ -39,15 +39,13 @@ import { reactive, ref } from "vue";
 import BarLoadCalculatorConfig from "./BarLoadCalculatorConfig.vue";
 import BarLoadResults from "./BarLoadResults.vue";
 
+//store.toasts.push({ type: ToastType.Error });
+
 const open = ref<boolean>(false);
 
 const modalConfig: ModalOptions = {
   buttons: {
-    cancel: true,
-    save: true,
-  },
-  onSave: function () {
-    console.log("onSave called");
+    close: true,
   },
 };
 
@@ -76,6 +74,16 @@ function calculateBarLoad() {
     selectedPlates = store.selectableKilogramPlates.filter((p) => p.selected);
   }
 
+  if (selectedPlates.length === 0) {
+    // TODO: show error message...toast?
+    console.error("Unable to calculate barload: no selected plates");
+    calculating.value = false;
+    results.clear();
+    return;
+  }
+
+  console.log(selectedPlates);
+
   let remaining = formData.value.weight! - store.selectedBarbell.weight;
   let incrementor = 0;
 
@@ -97,7 +105,7 @@ function calculateBarLoad() {
 
     if (incrementor >= selectedPlates.length) {
       // TODO: show error message...toast?
-      console.error("Unable to calculate barload");
+      console.error("Unable to calculate barload: not enough selected plates");
       calculating.value = false;
       results.clear();
       break;
