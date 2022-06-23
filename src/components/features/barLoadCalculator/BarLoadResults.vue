@@ -20,7 +20,7 @@
   </article>
 </template>
 <script setup lang="ts">
-import { PropType } from "vue";
+import { PropType } from 'vue';
 
 const props = defineProps({
   results: Object as PropType<Map<number, number>>,

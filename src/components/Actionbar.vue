@@ -42,7 +42,10 @@
         color: hsl(0, 0%, 80%);
         width: 100%;
         text-align: center;
-        // TODO: fix height
+
+        &:focus {
+          background-color: hsl(0, 0%, 100%);
+        }
       }
 
       a.router-link-active {

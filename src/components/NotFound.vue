@@ -1,5 +1,16 @@
 <template>
-  <h1>Not Found</h1>
+  <div class="view">
+    <article>
+      <h1 class="text-centered">Page Not Found</h1>
+      <figure>
+        <img src="../assets/not-found.png" alt="Page Not Found" />
+      </figure>
+    </article>
+  </div>
 </template>
 <script setup lang="ts"></script>
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+figure {
+  text-align: center;
+}
+</style>

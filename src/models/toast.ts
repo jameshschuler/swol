@@ -1,6 +1,8 @@
 import { ToastType } from './enums';
 
 export interface Toast {
-    type?: ToastType,
-    duration?: Number
+    type?: ToastType;
+    duration?: number;
+    delay?: number;
+    message: string;
 }

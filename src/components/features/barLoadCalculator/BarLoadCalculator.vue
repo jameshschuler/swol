@@ -12,7 +12,14 @@
         <div class="grid">
           <label for="weight">
             Weight
-            <input id="weight" name="weight" type="text" placeholder="Weight" v-model="formData.weight" :aria-invalid="errors.weight" />
+            <input
+              id="weight"
+              name="weight"
+              type="text"
+              placeholder="Weight"
+              v-model="formData.weight"
+              :aria-invalid="errors.weight"
+            />
           </label>
           <label for="">
             Unit of Measure
@@ -22,24 +29,31 @@
         <button class="mt-sm" type="submit" :aria-busy="calculating">Calculate</button>
       </form>
     </article>
-    <BarLoadResults v-if="results.size !== 0" :results="results" :unit-of-measure="store.selectedPlateUnitOfMeasure" />
+    <BarLoadResults
+      v-if="results.size !== 0"
+      :results="results"
+      :unit-of-measure="store.selectedPlateUnitOfMeasure"
+    />
   </div>
-  <Modal title="Bar Load Calculator Settings" :open="open" @close="open = false" :options="modalConfig">
+  <Modal
+    title="Bar Load Calculator Settings"
+    :open="open"
+    @close="open = false"
+    :options="modalConfig"
+  >
     <BarLoadCalculatorConfig />
   </Modal>
 </template>
 <script setup lang="ts">
-import Modal from "@/components/common/Modal.vue";
-import { UnitOfMeasure } from "@/models/enums";
-import { CalculateBarLoadForm, CalculateBarLoadFormErrors } from "@/models/form";
-import { ModalOptions } from "@/models/props";
-import { SelectablePlate } from "@/models/selectablePlate";
-import { store } from "@/store";
-import { reactive, ref } from "vue";
-import BarLoadCalculatorConfig from "./BarLoadCalculatorConfig.vue";
-import BarLoadResults from "./BarLoadResults.vue";
-
-//store.toasts.push({ type: ToastType.Error });
+import Modal from '@/components/common/Modal.vue';
+import { ToastType, UnitOfMeasure } from '@/models/enums';
+import { CalculateBarLoadForm, CalculateBarLoadFormErrors } from '@/models/form';
+import { ModalOptions } from '@/models/props';
+import { SelectablePlate } from '@/models/selectablePlate';
+import { store } from '@/store';
+import { reactive, ref } from 'vue';
+import BarLoadCalculatorConfig from './BarLoadCalculatorConfig.vue';
+import BarLoadResults from './BarLoadResults.vue';
 
 const open = ref<boolean>(false);
 
@@ -75,14 +89,14 @@ function calculateBarLoad() {
   }
 
   if (selectedPlates.length === 0) {
-    // TODO: show error message...toast?
-    console.error("Unable to calculate barload: no selected plates");
+    store.addToast({
+      type: ToastType.Error,
+      message: 'No plates were selected.',
+    });
     calculating.value = false;
     results.clear();
     return;
   }
-
-  console.log(selectedPlates);
 
   let remaining = formData.value.weight! - store.selectedBarbell.weight;
   let incrementor = 0;
@@ -104,8 +118,10 @@ function calculateBarLoad() {
     }
 
     if (incrementor >= selectedPlates.length) {
-      // TODO: show error message...toast?
-      console.error("Unable to calculate barload: not enough selected plates");
+      store.addToast({
+        type: ToastType.Error,
+        message: 'Unable to calculate bar load.',
+      });
       calculating.value = false;
       results.clear();
       break;
@@ -122,12 +138,19 @@ function validateFormData({ weight }: CalculateBarLoadForm) {
     hasError = true;
   } else {
     if (weight < store.selectedBarbell.weight) {
-      // TODO: add error message
+      store.addToast({
+        type: ToastType.Error,
+        message: `Weight (${weight}) must be greater than selected bar weight (${store.selectedBarbell.weight}).`,
+      });
+
       hasError = true;
     }
 
     if (weight - Math.floor(weight) !== 0) {
-      // TODO: add error message
+      store.addToast({
+        type: ToastType.Error,
+        message: 'Weight must be a whole number',
+      });
       hasError = true;
     }
   }

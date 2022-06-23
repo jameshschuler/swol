@@ -9,6 +9,8 @@ import { Toast } from './models/toast';
 // TODO: replace with pinia
 
 interface StoreState {
+    addToast: ( toast: Toast ) => void;
+    removeToast: () => void;
     calculatedMaxes: Map<string, string>;
     calculateMaxes: ( weight: number, reps: number ) => void;
     showResults: boolean;
@@ -20,6 +22,12 @@ interface StoreState {
 }
 
 export const store = reactive<StoreState>( {
+    addToast ( toast: Toast ) {
+        this.toasts.push( toast );
+    },
+    removeToast () {
+        this.toasts.shift();
+    },
     showResults: false,
     calculatedMaxes: new Map<string, string>(),
     calculateMaxes ( weight: number, reps: number ) {
