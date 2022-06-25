@@ -1,12 +1,12 @@
 <template>
   <div class="view">
     <article>
-      <h1 class="d-flex justify-space-between align-items-center">
+      <h2 class="d-flex justify-space-between align-items-center">
         Barbell Load Calculator
         <span class="clickable" @click="open = true">
           <i class="fa-solid fa-gear fa-fw fa-xs"></i>
         </span>
-      </h1>
+      </h2>
 
       <form @submit.prevent="calculateBarLoad">
         <div class="grid">

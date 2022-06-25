@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import Actionbar from "@/components/Actionbar.vue";
-import Navbar from "@/components/Navbar.vue";
-import ReloadPWA from "@/components/ReloadPWA.vue";
-import SidebarNav from "@/components/SidebarNav.vue";
-import ToastContainer from "@/components/common/ToastContainer.vue";
-import "@picocss/pico";
+import Actionbar from '@/components/Actionbar.vue';
+import ToastContainer from '@/components/common/ToastContainer.vue';
+import Navbar from '@/components/Navbar.vue';
+import ReloadPWA from '@/components/ReloadPWA.vue';
+import SidebarNav from '@/components/SidebarNav.vue';
+import '@picocss/pico';
+import 'v-calendar/dist/style.css';
 </script>
 
 <template>

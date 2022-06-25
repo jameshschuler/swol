@@ -1,6 +1,6 @@
 <template>
   <article>
-    <h1>Results</h1>
+    <h2>Results</h2>
     <table>
       <thead>
         <tr>

@@ -1,11 +1,16 @@
 <template>
   <div class="view">
     <article>
-      <h1>Estimated One-Rep Max</h1>
+      <h2>Estimated One-Rep Max</h2>
       <form @submit.prevent="calculateOneRepMax">
         <span>I lifted</span>
         <div class="grid">
-          <input type="text" placeholder="Weight" v-model="formData.weight" :aria-invalid="errors.weight" />
+          <input
+            type="text"
+            placeholder="Weight"
+            v-model="formData.weight"
+            :aria-invalid="errors.weight"
+          />
 
           <select v-model="formData.unit">
             <option value="lbs">lbs.</option>
@@ -23,14 +28,14 @@
   </div>
 </template>
 <script setup lang="ts">
-import { CalculateMaxForm, CalculateMaxFormErrors } from "@/models/form";
-import { store } from "@/store";
-import { ref } from "vue";
-import OneRepMaxResults from "./OneRepMaxResults.vue";
+import { CalculateMaxForm, CalculateMaxFormErrors } from '@/models/form';
+import { store } from '@/store';
+import { ref } from 'vue';
+import OneRepMaxResults from './OneRepMaxResults.vue';
 
 const formData = ref<CalculateMaxForm>({
   reps: 5,
-  unit: "lbs",
+  unit: 'lbs',
 });
 
 const calculatedUnitOfMeasure = ref<string>();

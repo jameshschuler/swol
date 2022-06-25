@@ -1,6 +1,6 @@
 <template>
   <article>
-    <h1>Results</h1>
+    <h2>Results</h2>
     <table>
       <thead>
         <tr>
@@ -18,7 +18,7 @@
   </article>
 </template>
 <script setup lang="ts">
-import { store } from "@/store";
+import { store } from '@/store';
 
 const props = defineProps({
   unitOfMeasure: String,

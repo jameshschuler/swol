@@ -4,6 +4,9 @@
       <nav>
         <ul>
           <li>
+            <router-link to="/gym-checkin">Daily Gym Check-In</router-link>
+          </li>
+          <li>
             <router-link to="/orm-calculator">One-Rep Max Calculator</router-link>
           </li>
           <li>
