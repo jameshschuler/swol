@@ -4,7 +4,13 @@
       <nav>
         <ul>
           <li>
+            <h6 class="mb-none">Features</h6>
+          </li>
+          <li>
             <router-link to="/gym-checkin">Daily Gym Check-In</router-link>
+          </li>
+          <li>
+            <h6 class="mb-none">Tools</h6>
           </li>
           <li>
             <router-link to="/orm-calculator">One-Rep Max Calculator</router-link>

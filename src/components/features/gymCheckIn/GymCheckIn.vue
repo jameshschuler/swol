@@ -2,13 +2,25 @@
   <div class="view">
     <article>
       <h2>Daily Gym Check-In</h2>
-      <Calendar is-expanded title-position="left" :attributes="attrs" />
-      <button class="mt-md">Check-In</button>
+      <Alert
+        v-if="!loggedIn"
+        class="info-light"
+        :alertType="AlertType.Info"
+        :message="dailyCheckInNotLoggedInMessage"
+      />
+      <Calendar is-expanded title-position="left" :attributes="attrs" v-if="loggedIn" />
+      <button class="mt-md" v-if="loggedIn">Check-In</button>
     </article>
   </div>
 </template>
 <script setup lang="ts">
+import Alert from '@/components/common/Alert.vue';
+import { dailyCheckInNotLoggedInMessage } from '@/models/constants';
+import { AlertType } from '@/models/enums';
 import { Calendar } from 'v-calendar';
+import { ref } from 'vue';
+
+const loggedIn = ref<boolean>(false);
 
 const attrs = [
   {

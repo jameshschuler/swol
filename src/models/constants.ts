@@ -24,3 +24,5 @@ export const defaultKilogramPlateSet = new Array<SelectablePlate>(
     { weight: 0.5, selected: true, },
     { weight: 0.25, selected: true, },
 );
+
+export const dailyCheckInNotLoggedInMessage = "Must be logged in to access Daily Gym Check-In.";
