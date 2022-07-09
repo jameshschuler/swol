@@ -6,6 +6,11 @@
       </li>
     </ul>
     <ul>
+      <li>
+        <router-link to="/login">
+          <i class="fa-solid fa-user fa-fw fa-lg"></i>
+        </router-link>
+      </li>
       <li class="clickable" @click="open = true">
         <i class="fa-solid fa-circle-info fa-fw fa-lg"></i>
       </li>
@@ -16,10 +21,10 @@
   </Modal>
 </template>
 <script setup lang="ts">
-import { ModalOptions } from "@/models/props";
-import { ref } from "vue";
-import About from "./About.vue";
-import Modal from "./common/Modal.vue";
+import { ModalOptions } from '@/models/props';
+import { ref } from 'vue';
+import About from './About.vue';
+import Modal from './common/Modal.vue';
 
 const open = ref<boolean>(false);
 

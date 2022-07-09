@@ -1,5 +1,9 @@
 <template>
-  <div class="reload-pwa d-flex align-items-center flex-column" v-if="true" role="alert">
+  <div
+    v-if="offlineReady || needRefresh"
+    class="reload-pwa d-flex align-items-center flex-column"
+    role="alert"
+  >
     <div>
       <span v-if="offlineReady"> App ready to work offline </span>
       <span v-else>New content available, click on reload button to update.</span>

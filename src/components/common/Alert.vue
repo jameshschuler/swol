@@ -10,6 +10,7 @@
       <p class="mb-none">
         {{ props.message }}
       </p>
+      <router-link class="mt-sm" to="/login" role="button">Login</router-link>
     </div>
   </div>
 </template>
@@ -39,6 +40,7 @@ const props = defineProps({
   position: relative;
   padding: 1.25rem 2.5rem 1.25rem 1.5rem;
   display: flex;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px 0px;
 
   .title {
     font-size: 1.25rem;
