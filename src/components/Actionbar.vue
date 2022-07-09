@@ -24,7 +24,7 @@
 #action-bar {
   display: none;
   position: fixed;
-  bottom: 0;
+  bottom: 10px;
   left: 0;
   right: 0;
   background-color: hsl(0, 0%, 100%);
