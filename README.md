@@ -7,6 +7,9 @@
 ### TODOs
 
 - [ ] Login functionality 
+- [ ] Fix "page not found" issue after reloading
+- [ ] Fix background corners on mobile icon
+- [ ] Add remaining pwa icons
 - [ ] Setup eslint
 - [ ] Add animations (route transitions)
 - [ ] Allow login with Google, Apple, and Github?
