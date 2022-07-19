@@ -3,13 +3,13 @@
     <article>
       <h2>Daily Gym Check-In</h2>
       <Alert
-        v-if="!loggedIn"
+        v-if="!store.user"
         class="info-light"
         :alertType="AlertType.Info"
         :message="dailyCheckInNotLoggedInMessage"
       />
       <!-- <Calendar :isExpanded="true" titlePosition="left" :attributes="attrs" v-if="loggedIn" /> -->
-      <button class="mt-md" v-if="loggedIn">Check-In</button>
+      <button class="mt-md" v-if="store.user">Check-In</button>
     </article>
   </div>
 </template>
@@ -17,10 +17,8 @@
 import Alert from '@/components/common/Alert.vue';
 import { dailyCheckInNotLoggedInMessage } from '@/models/constants';
 import { AlertType } from '@/models/enums';
-import { ref } from 'vue';
-
-const loggedIn = ref<boolean>(false);
-
+import { store } from '@/store';
+console.log(store.user);
 const attrs = [
   {
     key: 'today',

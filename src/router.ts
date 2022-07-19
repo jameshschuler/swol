@@ -14,9 +14,6 @@ const routes = [
         name: 'GymCheckIn',
         path: '/gym-checkin',
         component: GymCheckIn,
-        meta: {
-            requiresAuth: true
-        }
     },
     { name: 'Login', path: '/login', component: Login },
     { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound },

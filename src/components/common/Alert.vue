@@ -10,7 +10,7 @@
       <p class="mb-none">
         {{ props.message }}
       </p>
-      <router-link class="mt-sm" to="/login" role="button">Login</router-link>
+      <router-link class="mt-sm outline" to="/login" role="button">Login</router-link>
     </div>
   </div>
 </template>
