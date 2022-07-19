@@ -15,6 +15,7 @@
     "types": [
       "vite-plugin-pwa/client"
     ],
+    "noImplicitAny": false,
     "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
     "paths": {

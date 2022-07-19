@@ -24,7 +24,6 @@ const router = createRouter( {
     routes
 } );
 
-
 router.beforeEach( ( to, from, next ) => {
     const requiresAuth = to.matched.some( record => record.meta.requiresAuth );
     const user = supabase.auth.user();
@@ -33,7 +32,7 @@ router.beforeEach( ( to, from, next ) => {
         next( { name: 'Login' } );
     }
     else {
-        if ( user?.id && ( to.name === 'Login' ) ) {
+        if ( user?.id && to.name === 'Login' ) {
             next( { name: 'GymCheckIn' } ); // TODO: replace with homepage at some point?
         } else {
             next();
