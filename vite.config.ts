@@ -24,7 +24,7 @@ export default defineConfig( {
       base: "/",
       srcDir: "src",
       filename: "sw.ts",
-      includeAssets: [ "assets/swol180.png", "assets/swol192.png", "/favicon.png" ],
+      includeAssets: [ "assets/SWOLa180.png", "assets/SWOLa192.png", "/favicon.png" ],
       strategies: "injectManifest",
       manifest: {
         name: "Swol",
