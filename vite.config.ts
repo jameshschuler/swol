@@ -24,7 +24,17 @@ export default defineConfig( {
       base: "/",
       srcDir: "src",
       filename: "sw.ts",
-      includeAssets: [ "assets/SWOLa180.png", "assets/SWOLa192.png" ],
+      includeAssets: [
+        "assets/SWOLa36.png",
+        "assets/SWOLa48.png",
+        "assets/SWOLa72.png",
+        "assets/SWOLa96.png",
+        "assets/SWOLa120.png",
+        "assets/SWOLa152.png",
+        "assets/SWOLa167.png",
+        "assets/SWOLa180.png",
+        "assets/SWOLa192.png"
+      ],
       strategies: "injectManifest",
       manifest: {
         name: "Swol",
@@ -34,6 +44,41 @@ export default defineConfig( {
         display: "standalone",
         background_color: "#ffffff",
         icons: [
+          {
+            src: "/assets/SWOLa36.png",
+            sizes: "36x36",
+            type: "image/png",
+          },
+          {
+            src: "/assets/SWOLa48.png",
+            sizes: "48x48",
+            type: "image/png",
+          },
+          {
+            src: "/assets/SWOLa72.png",
+            sizes: "72x72",
+            type: "image/png",
+          },
+          {
+            src: "/assets/SWOLa96.png",
+            sizes: "96x96",
+            type: "image/png",
+          },
+          {
+            src: "/assets/SWOLa120.png",
+            sizes: "120x120",
+            type: "image/png",
+          },
+          {
+            src: "/assets/SWOLa152.png",
+            sizes: "152x152",
+            type: "image/png",
+          },
+          {
+            src: "/assets/SWOLa167.png",
+            sizes: "167x167",
+            type: "image/png",
+          },
           {
             src: "/assets/SWOLa180.png",
             sizes: "180x180",
