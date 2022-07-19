@@ -6,6 +6,13 @@ import ReloadPWA from '@/components/ReloadPWA.vue';
 import SidebarNav from '@/components/SidebarNav.vue';
 import '@picocss/pico';
 import 'v-calendar/dist/style.css';
+import { store } from './store';
+import { supabase } from './supabase';
+
+store.user = supabase.auth.user();
+supabase.auth.onAuthStateChange((_, session) => {
+  store.user = session?.user;
+});
 </script>
 
 <template>

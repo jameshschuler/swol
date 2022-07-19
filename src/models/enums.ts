@@ -17,3 +17,8 @@ export enum AlertType {
     Warning = 'warning',
     Info = 'info'
 }
+
+export enum LoginProvider {
+    Google = 'google',
+    GitHub = 'github'
+}

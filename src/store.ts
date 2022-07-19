@@ -1,3 +1,4 @@
+import { User } from '@supabase/supabase-js';
 import { reactive } from 'vue';
 import { defaultKilogramPlateSet, defaultPoundPlateSet } from './models/constants';
 import { UnitOfMeasure } from './models/enums';
@@ -19,6 +20,7 @@ interface StoreState {
     selectedPlateUnitOfMeasure: UnitOfMeasure;
     selectedBarbell: SelectableBarbell;
     toasts: Array<Toast>;
+    user: User | null | undefined;
 }
 
 export const store = reactive<StoreState>( {
@@ -47,4 +49,5 @@ export const store = reactive<StoreState>( {
         unitOfMeasure: UnitOfMeasure.Pound
     } as SelectableBarbell,
     toasts: new Array<Toast>(),
+    user: null,
 } );
