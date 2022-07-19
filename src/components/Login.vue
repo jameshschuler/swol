@@ -2,20 +2,24 @@
   <div class="view">
     <article>
       <form>
-        <button class="outline">
+        <button class="outline d-flex justify-center align-items-center">
           <img
-            class="mr-xs"
+            class="mr-sm"
             src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"
           />
-          Sign in with Google
+          Continue with Google
         </button>
-        <button class="outline">
+        <button class="github-button">
           <i class="fa-brands fa-github fa-fw fa-lg mr-xs"></i>
-          Sign in with GitHub
+          Continue with GitHub
         </button>
       </form>
     </article>
   </div>
 </template>
 <script setup lang="ts"></script>
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.github-button {
+  background-color: rgb(36, 41, 47);
+}
+</style>

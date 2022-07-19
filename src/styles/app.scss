@@ -29,6 +29,10 @@ svg {
     justify-content: space-between;
 }
 
+.justify-center {
+    justify-content: center;
+}
+
 .align-items-center {
     align-items: center;
 }
@@ -39,8 +43,4 @@ svg {
 
 .flex-column {
     flex-direction: column;
-}
-
-.text-centered {
-    text-align: center;
 }

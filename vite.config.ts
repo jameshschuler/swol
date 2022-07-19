@@ -35,12 +35,12 @@ export default defineConfig( {
         background_color: "#ffffff",
         icons: [
           {
-            src: "/assets/swol180.png",
+            src: "/assets/SWOLa180.png",
             sizes: "180x180",
             type: "image/png",
           },
           {
-            src: "/assets/swol192.png",
+            src: "/assets/SWOLa192.png",
             sizes: "192x192",
             type: "image/png",
           },

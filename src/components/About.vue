@@ -1,5 +1,5 @@
 <template>
-  <p class="text-centered">Swol is a collection of strength sports tools.</p>
+  <p class="text-center">Swol is a collection of strength sports tools.</p>
   <p class="text-center">
     Made with <i class="fas fa-fw fa-heart has-text-danger"></i> by
     <a href="https://jamesschuler.io" target="_blank">James Schuler</a>.

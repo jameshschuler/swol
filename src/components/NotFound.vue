@@ -1,7 +1,7 @@
 <template>
   <div class="view">
     <article>
-      <h1 class="text-centered">Page Not Found</h1>
+      <h1 class="text-center">Page Not Found</h1>
       <figure>
         <img src="../assets/not-found.png" alt="Page Not Found" />
       </figure>
