@@ -2,6 +2,7 @@
   <div class="view">
     <article>
       <form>
+        <h2 class="text-center">Log in</h2>
         <button class="outline d-flex justify-center align-items-center">
           <img
             class="mr-sm"
