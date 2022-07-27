@@ -3,6 +3,8 @@ import GymCheckIn from '@/components/features/gymCheckIn/GymCheckIn.vue';
 import OneRepMaxCalculator from "@/components/features/oneRepMaxCalculator/OneRepMaxCalculator.vue";
 import Login from "@/components/Login.vue";
 import NotFound from "@/components/NotFound.vue";
+import PrivacyPolicy from "@/components/PrivacyPolicy.vue";
+import TermsAndConditions from "@/components/TermsAndConditions.vue";
 import { createRouter, createWebHistory } from 'vue-router';
 import { supabase } from './supabase';
 
@@ -16,6 +18,8 @@ const routes = [
         component: GymCheckIn,
     },
     { name: 'Login', path: '/login', component: Login },
+    { name: 'Privacy', path: '/privacy', component: PrivacyPolicy },
+    { name: 'TermsConditions', path: '/terms-conditions', component: TermsAndConditions },
     { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound },
 ];
 

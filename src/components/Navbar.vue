@@ -30,9 +30,11 @@ import { ModalOptions } from '@/models/props';
 import { store } from '@/store';
 import { supabase } from '@/supabase';
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 import About from './About.vue';
 import Modal from './common/Modal.vue';
 
+const router = useRouter();
 const open = ref<boolean>(false);
 
 const modalConfig: ModalOptions = {
@@ -43,6 +45,7 @@ const modalConfig: ModalOptions = {
 
 async function handleSignOut() {
   await supabase.auth.signOut();
+  router.push('/');
 }
 </script>
 <style lang="scss" scoped>
