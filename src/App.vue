@@ -13,8 +13,7 @@ store.user = supabase.auth.user();
 supabase.auth.onAuthStateChange((_, session) => {
   store.user = session?.user;
   if (store.user) {
-    // TODO: update profile
-    // console.log(session?.user?.user_metadata);
+    // TODO: update profile with user metadata
   }
 });
 </script>

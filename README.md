@@ -6,10 +6,6 @@
 
 ### TODOs
 
-- [ ] Create table for gym check-in Feature
-- [ ] Allow user to check-in each day
-- [ ] Privacy policy page
-- [ ] Terms & Conditions page
 - [ ] Setup linting
 - [ ] Add animations (route transitions)
 - [ ] Readme

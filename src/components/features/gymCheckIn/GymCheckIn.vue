@@ -8,24 +8,107 @@
         :alertType="AlertType.Info"
         :message="dailyCheckInNotLoggedInMessage"
       />
-      <Calendar :isExpanded="true" titlePosition="left" :attributes="attrs" v-if="store.user" />
-      <button class="mt-md" v-if="store.user">Check-In</button>
+      <div v-if="loading" class="text-center d-flex justify-center flex-column align-items-center">
+        <span>
+          <i class="fa-solid fa-circle-notch fa-spin fa-3x"></i>
+        </span>
+        <span class="mt-sm">Loading gym check-ins</span>
+      </div>
+      <div v-if="store.user && !loading">
+        <Calendar :isExpanded="true" titlePosition="left" :attributes="attrs" />
+        <button
+          class="mt-md"
+          :aria-busy="fetching"
+          :disabled="checkedInToday"
+          @click="handleCheckIn()"
+        >
+          {{ checkedInToday ? "You've already checked in today!" : 'Check In' }}
+        </button>
+      </div>
     </article>
   </div>
 </template>
 <script setup lang="ts">
 import Alert from '@/components/common/Alert.vue';
+import { useGymCheckin } from '@/composables/useGymCheckin';
+import { Marker } from '@/models/calendar';
 import { dailyCheckInNotLoggedInMessage } from '@/models/constants';
+import { GymCheckIn } from '@/models/db';
 import { AlertType } from '@/models/enums';
 import { store } from '@/store';
+import { supabase } from '@/supabase';
+import dayjs from 'dayjs';
+import { ref } from 'vue';
 
-const attrs = [
-  {
-    key: 'today',
-    highlight: true,
-    dates: new Date(),
+const { error, fetching, addCheckin } = useGymCheckin();
+
+const today = {
+  key: 'today',
+  highlight: {
+    fillMode: 'outline',
   },
-];
+  dates: new Date(),
+};
+
+const attrs = ref<Array<Marker>>([]);
+const checkedInToday = ref<boolean>(false);
+const allCheckIns = ref<Array<GymCheckIn>>([]);
+const loading = ref<boolean>();
+
+async function handleCheckIn() {
+  const checkIn = await addCheckin();
+  if (checkIn && !error.value) {
+    checkedInToday.value = true;
+
+    attrs.value = [
+      ...attrs.value,
+      {
+        key: `checkin_new`,
+        highlight: {
+          fillMode: 'light',
+          color: 'green',
+        },
+        dates: dayjs(checkIn.checkin_date).local().toDate(),
+      },
+    ];
+  } else {
+    console.log('TODO: handle error case');
+  }
+}
+
+async function fetchCheckIns() {
+  loading.value = true;
+
+  // TODO: Move to reusable fetch composable
+  // TODO: Store in state after initial load
+  const { data, error } = await supabase.from<GymCheckIn>('gym_checkin');
+  if (error) {
+    console.log('TODO: handle error case');
+  }
+
+  allCheckIns.value = data || [];
+
+  const markers = allCheckIns.value.map((checkIn: GymCheckIn, index: number) => {
+    const checkInDate = dayjs(checkIn.checkin_date).local();
+    if (checkInDate.isToday()) {
+      checkedInToday.value = true;
+    }
+
+    return {
+      key: `checkIn_${index}`,
+      highlight: {
+        fillMode: 'light',
+        color: 'green',
+      },
+      dates: checkInDate.toDate(),
+    };
+  });
+
+  attrs.value = [today, ...markers];
+  loading.value = false;
+}
+
+fetchCheckIns();
 </script>
 <style lang="scss" scoped>
 :deep(.vc-header) {

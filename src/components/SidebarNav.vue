@@ -18,6 +18,15 @@
           <li>
             <router-link to="/barload-calculator">Bar Load Calculator</router-link>
           </li>
+          <li>
+            <h6 class="mb-none">Other</h6>
+          </li>
+          <li>
+            <router-link to="/privacy">Privacy Policy</router-link>
+          </li>
+          <li>
+            <router-link to="/terms-conditions">Terms & Conditions</router-link>
+          </li>
         </ul>
       </nav>
     </aside>
