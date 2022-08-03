@@ -22,3 +22,8 @@ export enum LoginProvider {
     Google = 'google',
     GitHub = 'github'
 }
+
+export enum Entities {
+    UserProfile = 'user_profile',
+    GymCheckIn = 'gym_checkin'
+}

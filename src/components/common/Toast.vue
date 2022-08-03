@@ -17,8 +17,10 @@
 </template>
 <script setup lang="ts">
 import { ToastType } from '@/models/enums';
-import { store } from '@/store';
+import { useToastStore } from '@/stores/toasts.js';
 import { computed, PropType, ref } from 'vue';
+
+const { removeToast } = useToastStore();
 
 const props = defineProps({
   duration: {
@@ -62,7 +64,7 @@ const typeIcon = computed(() => {
 
 setTimeout(() => {
   showing.value = false;
-  store.removeToast();
+  removeToast();
 }, props.delay + props.duration);
 </script>
 <style lang="scss" scoped>

@@ -1,17 +1,11 @@
-import { User } from '@supabase/supabase-js';
 import { reactive } from 'vue';
 import { defaultKilogramPlateSet, defaultPoundPlateSet } from './models/constants';
 import { UnitOfMeasure } from './models/enums';
 import { FormulaFunc, formulas } from './models/formula';
 import { SelectableBarbell } from './models/selectableBarbell';
 import { SelectablePlate } from './models/selectablePlate';
-import { Toast } from './models/toast';
-
-// TODO: replace with pinia
 
 interface StoreState {
-    addToast: ( toast: Toast ) => void;
-    removeToast: () => void;
     calculatedMaxes: Map<string, string>;
     calculateMaxes: ( weight: number, reps: number ) => void;
     showResults: boolean;
@@ -19,17 +13,10 @@ interface StoreState {
     selectableKilogramPlates: SelectablePlate[];
     selectedPlateUnitOfMeasure: UnitOfMeasure;
     selectedBarbell: SelectableBarbell;
-    toasts: Array<Toast>;
-    user: User | null | undefined;
 }
 
+// TODO: move to pinia stores
 export const store = reactive<StoreState>( {
-    addToast ( toast: Toast ) {
-        this.toasts.push( toast );
-    },
-    removeToast () {
-        this.toasts.shift();
-    },
     showResults: false,
     calculatedMaxes: new Map<string, string>(),
     calculateMaxes ( weight: number, reps: number ) {
@@ -48,6 +35,4 @@ export const store = reactive<StoreState>( {
         weight: 45,
         unitOfMeasure: UnitOfMeasure.Pound
     } as SelectableBarbell,
-    toasts: new Array<Toast>(),
-    user: null,
 } );

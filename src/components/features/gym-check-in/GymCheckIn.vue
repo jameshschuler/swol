@@ -2,19 +2,13 @@
   <div class="view">
     <article>
       <h2>Daily Gym Check-In</h2>
-      <Alert
-        v-if="!store.user"
-        class="info-light"
-        :alertType="AlertType.Info"
-        :message="dailyCheckInNotLoggedInMessage"
-      />
       <div v-if="loading" class="text-center d-flex justify-center flex-column align-items-center">
         <span>
           <i class="fa-solid fa-circle-notch fa-spin fa-3x"></i>
         </span>
         <span class="mt-sm">Loading gym check-ins</span>
       </div>
-      <div v-if="store.user && !loading">
+      <div v-if="!loading">
         <Calendar :isExpanded="true" titlePosition="left" :attributes="attrs" />
         <button
           class="mt-md"
@@ -29,18 +23,14 @@
   </div>
 </template>
 <script setup lang="ts">
-import Alert from '@/components/common/Alert.vue';
-import { useGymCheckin } from '@/composables/useGymCheckin';
+import { useGymCheckIn } from '@/composables/useGymCheckIn';
 import { Marker } from '@/models/calendar';
-import { dailyCheckInNotLoggedInMessage } from '@/models/constants';
 import { GymCheckIn } from '@/models/db';
-import { AlertType } from '@/models/enums';
-import { store } from '@/store';
 import { supabase } from '@/supabase';
 import dayjs from 'dayjs';
 import { ref } from 'vue';
 
-const { error, fetching, addCheckin } = useGymCheckin();
+const { error, fetching, addCheckin } = useGymCheckIn();
 
 const today = {
   key: 'today',

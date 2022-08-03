@@ -51,10 +51,12 @@ import { CalculateBarLoadForm, CalculateBarLoadFormErrors } from '@/models/form'
 import { ModalOptions } from '@/models/props';
 import { SelectablePlate } from '@/models/selectablePlate';
 import { store } from '@/store';
+import { useToastStore } from '@/stores/toasts';
 import { reactive, ref } from 'vue';
 import BarLoadCalculatorConfig from './BarLoadCalculatorConfig.vue';
 import BarLoadResults from './BarLoadResults.vue';
 
+const { addToast } = useToastStore();
 const open = ref<boolean>(false);
 
 const modalConfig: ModalOptions = {
@@ -89,7 +91,7 @@ function calculateBarLoad() {
   }
 
   if (selectedPlates.length === 0) {
-    store.addToast({
+    addToast({
       type: ToastType.Error,
       message: 'No plates were selected.',
     });
@@ -118,7 +120,7 @@ function calculateBarLoad() {
     }
 
     if (incrementor >= selectedPlates.length) {
-      store.addToast({
+      addToast({
         type: ToastType.Error,
         message: 'Unable to calculate bar load.',
       });
@@ -138,7 +140,7 @@ function validateFormData({ weight }: CalculateBarLoadForm) {
     hasError = true;
   } else {
     if (weight < store.selectedBarbell.weight) {
-      store.addToast({
+      addToast({
         type: ToastType.Error,
         message: `Weight (${weight}) must be greater than selected bar weight (${store.selectedBarbell.weight}).`,
       });
@@ -147,7 +149,7 @@ function validateFormData({ weight }: CalculateBarLoadForm) {
     }
 
     if (weight - Math.floor(weight) !== 0) {
-      store.addToast({
+      addToast({
         type: ToastType.Error,
         message: 'Weight must be a whole number',
       });

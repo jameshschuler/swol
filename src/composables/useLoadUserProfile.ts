@@ -1,30 +1,31 @@
-import { GymCheckIn } from '@/models/db';
+import { UserProfile } from '@/models/db';
+import { Entities } from '@/models/enums';
 import { useUserStore } from '@/stores/user';
 import { supabase } from '@/supabase';
 import { PostgrestError } from '@supabase/supabase-js';
-import dayjs from 'dayjs';
 import { ref } from 'vue';
 
-export function useGymCheckIn () {
+export function useLoadUserProfile () {
     const fetching = ref<boolean>();
     const apiError = ref<PostgrestError | null>();
-    const { user } = useUserStore();
 
-    async function addCheckin (): Promise<GymCheckIn | null> {
+    async function fetch (): Promise<UserProfile | null> {
+        const user = useUserStore();
+
         try {
             apiError.value = null;
             fetching.value = true;
 
-            const now = dayjs.utc().format();
-            const { data, error } = await supabase.from<GymCheckIn>( 'gym_checkin' ).insert( {
-                user_id: user?.id,
-                checkin_date: now,
-            } ).single();
+            const { data, error } = await supabase.from<UserProfile>( Entities.UserProfile )
+                .select()
+                .single();
 
             if ( error ) {
                 apiError.value = error;
                 return null;
             }
+
+            user.profile = data;
 
             return data;
         } catch ( err ) {
@@ -36,7 +37,7 @@ export function useGymCheckIn () {
     }
 
     return {
-        addCheckin,
+        fetch,
         error: apiError,
         fetching
     }
