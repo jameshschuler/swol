@@ -10,7 +10,8 @@
 
 ### TODOs
 
-- [ ] Page view loading indicator
+- [ ] Action bar position tweaks
+- [ ] Finish code TODOs 
 - [ ] Setup linting (eslint)
 - [ ] Add animations (route transitions)
 - [ ] Readme (about section, tech section)

@@ -34,8 +34,6 @@ import { ref } from 'vue';
 const loading = ref<boolean>(false);
 const clickedProvider = ref<LoginProvider | null>();
 
-// TODO: actionbar position messed up after auth for first time
-
 async function handleLogIn(provider: LoginProvider) {
   try {
     clickedProvider.value = provider;

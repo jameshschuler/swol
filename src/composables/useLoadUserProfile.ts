@@ -5,6 +5,7 @@ import { supabase } from '@/supabase';
 import { PostgrestError } from '@supabase/supabase-js';
 import { ref } from 'vue';
 
+// TODO: move to store
 export function useLoadUserProfile () {
     const fetching = ref<boolean>();
     const apiError = ref<PostgrestError | null>();

@@ -7,6 +7,7 @@ import dayjs from 'dayjs';
 import { storeToRefs } from 'pinia';
 import { ref } from 'vue';
 
+// TODO: move to store
 export function useUpdateUserProfile () {
     const fetching = ref<boolean>();
     const apiError = ref<PostgrestError | null>();

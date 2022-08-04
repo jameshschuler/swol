@@ -3,6 +3,7 @@
     <span>
       <i class="fa-solid fa-spin" :class="[icon, size]"></i>
     </span>
+    <span v-if="text !== ''" class="mt-sm">{{ text }}</span>
   </div>
 </template>
 <script setup lang="ts">
@@ -14,6 +15,10 @@ defineProps({
   size: {
     type: String,
     default: 'fa-lg',
+  },
+  text: {
+    type: String,
+    default: '',
   },
 });
 </script>

@@ -3,10 +3,10 @@
     <aside>
       <nav>
         <ul>
-          <li v-if="isAuthenticated">
+          <li v-if="userStore.isAuthenticated">
             <h6 class="mb-none">Features</h6>
           </li>
-          <li v-if="isAuthenticated">
+          <li v-if="userStore.isAuthenticated">
             <router-link to="/gym-checkin">Daily Gym Check-In</router-link>
           </li>
           <li>
@@ -37,7 +37,7 @@
 </template>
 <script setup lang="ts">
 import { useUserStore } from '@/stores/user.js';
-const { isAuthenticated } = useUserStore();
+const userStore = useUserStore();
 </script>
 <style lang="scss" scoped>
 #sidebar-nav {

@@ -1,22 +1,21 @@
 import { Toast } from '@/models/toast';
 import { defineStore } from 'pinia';
+import { ref } from 'vue';
 
-interface ToastStore {
-    toasts: Toast[]
-}
+export const useToastStore = defineStore( 'toasts', () => {
+    const toasts = ref<Array<Toast>>( [] );
 
-// TODO: convert to composition api
-export const useToastStore = defineStore( 'toasts', {
-    state: () => ( {
-        toasts: []
-    } ) as ToastStore,
-    getters: {},
-    actions: {
-        addToast ( toast: Toast ) {
-            this.toasts.push( toast );
-        },
-        removeToast () {
-            this.toasts.shift();
-        }
-    },
+    function addToast ( toast: Toast ) {
+        toasts.value.push( toast )
+    }
+
+    function removeToast () {
+        toasts.value.shift();
+    }
+
+    return {
+        toasts,
+        addToast,
+        removeToast
+    }
 } );
