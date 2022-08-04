@@ -1,7 +1,12 @@
 <template>
   <div id="action-bar">
     <div id="actions">
-      <div class="action clickable" v-if="isAuthenticated">
+      <div class="action clickable">
+        <router-link :to="user.isAuthenticated ? '/dashboard' : '/'">
+          <i class="fa-solid fa-house fa-fw fa-xl"></i>
+        </router-link>
+      </div>
+      <div class="action clickable" v-if="user.isAuthenticated">
         <router-link to="/gym-checkin">
           <i class="fa-solid fa-calendar-day fa-fw fa-xl"></i>
         </router-link>
@@ -21,7 +26,7 @@
 </template>
 <script setup lang="ts">
 import { useUserStore } from '@/stores/user.js';
-const { isAuthenticated } = useUserStore();
+const user = useUserStore();
 </script>
 <style lang="scss" scoped>
 #action-bar {

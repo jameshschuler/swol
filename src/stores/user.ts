@@ -7,7 +7,7 @@ export const useUserStore = defineStore( 'user', () => {
     const user = ref<User | null | undefined>( null );
     const profile = ref<UserProfile | null>( null );
 
-    const isAuthenticated = computed( () => !isNullOrUndefined( user ) );
+    const isAuthenticated = computed( () => !isNullOrUndefined( user.value ) );
 
     return {
         user,

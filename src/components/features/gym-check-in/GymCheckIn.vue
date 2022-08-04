@@ -16,7 +16,7 @@
           :disabled="checkedInToday"
           @click="handleCheckIn()"
         >
-          {{ checkedInToday ? "You've already checked in today!" : 'Check In' }}
+          {{ checkedInToday ? 'Checked In!' : 'Check In' }}
         </button>
       </div>
     </article>

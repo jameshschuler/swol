@@ -1,3 +1,4 @@
+import About from '@/components/About.vue';
 import Dashboard from "@/components/Dashboard.vue";
 import BarLoadCalculator from '@/components/features/bar-load-calculator/BarLoadCalculator.vue';
 import GymCheckIn from '@/components/features/gym-check-in/GymCheckIn.vue';
@@ -31,6 +32,7 @@ const routes = [
     { name: 'Login', path: '/login', component: Login },
     { name: 'Privacy', path: '/privacy', component: PrivacyPolicy },
     { name: 'TermsConditions', path: '/terms-conditions', component: TermsAndConditions },
+    { name: 'About', path: '/about', component: About },
     { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound },
 ];
 
