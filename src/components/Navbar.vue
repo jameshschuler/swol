@@ -13,7 +13,7 @@
       </li>
       <li v-if="displayAvatar">
         <figure class="avatar">
-          <img :src="user.profile?.avatar_url" alt="" />
+          <img :src="profileStore.profile?.avatar_url" alt="" />
         </figure>
       </li>
       <li>
@@ -30,16 +30,18 @@
   </nav>
 </template>
 <script setup lang="ts">
+import { useProfileStore } from '@/stores/profile.js';
 import { useUserStore } from '@/stores/user';
 import { supabase } from '@/supabase';
 import { computed } from 'vue';
 import { useRouter } from 'vue-router';
 
 const user = useUserStore();
+const profileStore = useProfileStore();
 
 const router = useRouter();
 
-const displayAvatar = computed(() => user.isAuthenticated && user.profile?.avatar_url);
+const displayAvatar = computed(() => user.isAuthenticated && profileStore.profile?.avatar_url);
 
 async function handleSignOut() {
   await supabase.auth.signOut();

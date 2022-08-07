@@ -1,13 +1,13 @@
 <template>
   <div class="view">
     <article>
-      <h2>Welcome back {{ user.profile?.username ?? user.profile?.full_name }}!</h2>
+      <h2>Welcome back {{ profileStore.profile?.username ?? profileStore.profile?.full_name }}!</h2>
     </article>
   </div>
 </template>
 <script setup lang="ts">
-import { useUserStore } from '@/stores/user.js';
+import { useProfileStore } from '@/stores/profile.js';
 
-const user = useUserStore();
+const profileStore = useProfileStore();
 </script>
 <style lang="scss" scoped></style>

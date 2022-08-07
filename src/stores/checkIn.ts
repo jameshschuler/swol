@@ -1,10 +1,12 @@
+import { checkInErrorMessage, checkInSuccessMessage, loadCheckInsErrorMessage } from '@/models/constants';
 import { GymCheckIn } from '@/models/db';
-import { Entities } from '@/models/enums';
+import { Entities, ToastType } from '@/models/enums';
 import { supabase } from '@/supabase';
 import { PostgrestError } from '@supabase/supabase-js';
 import dayjs from 'dayjs';
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
+import { useToastStore } from './toasts';
 import { useUserStore } from './user';
 
 export const useCheckInStore = defineStore( 'checkIn', () => {
@@ -18,7 +20,12 @@ export const useCheckInStore = defineStore( 'checkIn', () => {
         try {
             const { data, error } = await supabase.from<GymCheckIn>( Entities.GymCheckIn );
             if ( error ) {
+                const toast = useToastStore();
                 supabaseError.value = error;
+                toast.addToast( {
+                    type: ToastType.Error,
+                    message: loadCheckInsErrorMessage,
+                } );
             } else {
                 checkIns.value = data || [];
             }
@@ -35,15 +42,24 @@ export const useCheckInStore = defineStore( 'checkIn', () => {
             const user = useUserStore();
             const now = dayjs.utc().format();
 
-            const { data, error } = await supabase.from<GymCheckIn>( 'gym_checkin' ).insert( {
+            const { data, error } = await supabase.from<GymCheckIn>( Entities.GymCheckIn ).insert( {
                 user_id: user.user?.id,
                 checkin_date: now,
             } ).single();
 
+            const toast = useToastStore();
             if ( error ) {
+                toast.addToast( {
+                    type: ToastType.Error,
+                    message: checkInErrorMessage,
+                } );
                 supabaseError.value = error;
                 return null;
             } else {
+                toast.addToast( {
+                    type: ToastType.Success,
+                    message: checkInSuccessMessage,
+                } );
                 checkIns.value = [ ...checkIns.value, data ];
                 return data;
             }

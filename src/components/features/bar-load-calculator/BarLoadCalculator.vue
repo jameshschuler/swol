@@ -23,7 +23,7 @@
           </label>
           <label for="">
             Unit of Measure
-            <input type="text" :value="store.selectedPlateUnitOfMeasure" readonly />
+            <input type="text" :value="barLoad.selectedPlateSetUom" readonly />
           </label>
         </div>
         <button class="mt-sm" type="submit" :aria-busy="calculating">Calculate</button>
@@ -32,7 +32,7 @@
     <BarLoadResults
       v-if="results.size !== 0"
       :results="results"
-      :unit-of-measure="store.selectedPlateUnitOfMeasure"
+      :unit-of-measure="barLoad.selectedPlateSetUom"
     />
   </div>
   <Modal
@@ -41,7 +41,7 @@
     @close="open = false"
     :options="modalConfig"
   >
-    <BarLoadCalculatorConfig />
+    <BarLoadCalculatorConfig :selected-plate-uom="barLoad.selectedPlateSetUom" />
   </Modal>
 </template>
 <script setup lang="ts">
@@ -49,16 +49,19 @@ import Modal from '@/components/common/Modal.vue';
 import { ToastType, UnitOfMeasure } from '@/models/enums';
 import { CalculateBarLoadForm, CalculateBarLoadFormErrors } from '@/models/form';
 import { ModalOptions } from '@/models/props';
+import { SelectableBarbell } from '@/models/selectableBarbell';
 import { SelectablePlate } from '@/models/selectablePlate';
 import { store } from '@/store';
+import { useBarLoadStore } from '@/stores/barLoad';
 import { useToastStore } from '@/stores/toasts';
 import { reactive, ref } from 'vue';
 import BarLoadCalculatorConfig from './BarLoadCalculatorConfig.vue';
 import BarLoadResults from './BarLoadResults.vue';
 
 const { addToast } = useToastStore();
-const open = ref<boolean>(false);
+const barLoad = useBarLoadStore();
 
+const open = ref<boolean>(false);
 const modalConfig: ModalOptions = {
   buttons: {
     close: true,
@@ -72,6 +75,11 @@ const calculating = ref<boolean>(false);
 
 const results = reactive<Map<number, number>>(new Map<number, number>());
 
+const selectedBarbell: SelectableBarbell = {
+  weight: 45,
+  unitOfMeasure: UnitOfMeasure.Pound,
+};
+
 function calculateBarLoad() {
   validateFormData(formData.value);
 
@@ -84,9 +92,9 @@ function calculateBarLoad() {
   let selectedPlates = new Array<SelectablePlate>();
 
   // TODO: what about if the weight entered is a decimal?
-  if (store.selectedPlateUnitOfMeasure === UnitOfMeasure.Pound) {
+  if (barLoad.selectedPlateSetUom === UnitOfMeasure.Pound) {
     selectedPlates = store.selectablePoundPlates.filter((p) => p.selected);
-  } else if (store.selectedPlateUnitOfMeasure === UnitOfMeasure.Kilogram) {
+  } else if (barLoad.selectedPlateSetUom === UnitOfMeasure.Kilogram) {
     selectedPlates = store.selectableKilogramPlates.filter((p) => p.selected);
   }
 
@@ -100,7 +108,7 @@ function calculateBarLoad() {
     return;
   }
 
-  let remaining = formData.value.weight! - store.selectedBarbell.weight;
+  let remaining = formData.value.weight! - selectedBarbell.weight;
   let incrementor = 0;
 
   for (const plate of selectedPlates) {
@@ -139,10 +147,10 @@ function validateFormData({ weight }: CalculateBarLoadForm) {
   if (!weight || weight <= 0 || isNaN(weight)) {
     hasError = true;
   } else {
-    if (weight < store.selectedBarbell.weight) {
+    if (weight < selectedBarbell.weight) {
       addToast({
         type: ToastType.Error,
-        message: `Weight (${weight}) must be greater than selected bar weight (${store.selectedBarbell.weight}).`,
+        message: `Weight (${weight}) must be greater than selected bar weight (${selectedBarbell.weight}).`,
       });
 
       hasError = true;

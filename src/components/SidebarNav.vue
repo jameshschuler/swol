@@ -3,6 +3,11 @@
     <aside>
       <nav>
         <ul>
+          <li>
+            <router-link :to="userStore.isAuthenticated ? '/dashboard' : '/'">{{
+              userStore.isAuthenticated ? 'Dashboard' : 'Home'
+            }}</router-link>
+          </li>
           <li v-if="userStore.isAuthenticated">
             <h6 class="mb-none">Features</h6>
           </li>

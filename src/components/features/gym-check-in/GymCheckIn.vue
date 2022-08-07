@@ -27,10 +27,12 @@ import LoadingIndicator from '@/components/common/LoadingIndicator.vue';
 import { Marker } from '@/models/calendar';
 import { GymCheckIn } from '@/models/db';
 import { useCheckInStore } from '@/stores/checkIn.js';
+import { useToastStore } from '@/stores/toasts.js';
 import dayjs from 'dayjs';
 import { onMounted, ref } from 'vue';
 
 const checkInStore = useCheckInStore();
+const toast = useToastStore();
 
 const today = {
   key: 'today',
@@ -48,13 +50,13 @@ async function handleCheckIn() {
   const checkIn = await checkInStore.addCheckIn();
 
   if (checkInStore.error || !checkIn) {
-    // TODO: display error message
     loading.value = false;
     return;
   }
 
   checkedInToday.value = true;
 
+  // TODO: should be handled in action
   attrs.value = [
     ...attrs.value,
     {
@@ -73,14 +75,10 @@ async function loadCheckIns() {
 
   if (checkInStore.checkIns.length === 0) {
     await checkInStore.getCheckIns();
-
-    if (checkInStore.error) {
-      loading.value = false;
-      // TODO: display error message
-      return;
-    }
+    loading.value = false;
   }
 
+  // TODO: should be handled in action
   const markers = checkInStore.checkIns.map((checkIn: GymCheckIn, index: number) => {
     const checkInDate = dayjs(checkIn.checkin_date).local();
     if (checkInDate.isToday()) {

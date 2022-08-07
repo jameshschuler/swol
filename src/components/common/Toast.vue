@@ -10,7 +10,7 @@
       </span>
     </div>
     <div class="toast-content">
-      <h5 class="title mb-none">Error</h5>
+      <h5 class="title mb-none">{{ title }}</h5>
       <p class="message">{{ props.message }}</p>
     </div>
   </div>
@@ -59,6 +59,19 @@ const typeIcon = computed(() => {
       return 'fa-circle-check';
     default:
       return 'fa-circle-info';
+  }
+});
+
+const title = computed(() => {
+  switch (props.type) {
+    case ToastType.Error:
+      return 'Error';
+    case ToastType.Warning:
+      return 'Warning';
+    case ToastType.Success:
+      return 'Success';
+    default:
+      return 'Hey there';
   }
 });
 

@@ -10,14 +10,14 @@ import 'v-calendar/dist/style.css';
 import { ref } from 'vue';
 import BackgroundLoadingIndicator from './components/common/BackgroundLoadingIndicator.vue';
 import PageLoadingIndicator from './components/common/PageLoadingIndicator.vue';
-import { useLoadUserProfile } from './composables/useLoadUserProfile';
-import { useUpdateUserProfile } from './composables/useUpdateUserProfile';
 import { useCommonStore } from './stores/common';
+import { useProfileStore } from './stores/profile';
 import { supabase } from './supabase';
 
 const loading = ref<boolean>(false);
 const userStore = useUserStore();
 const common = useCommonStore();
+const profileStore = useProfileStore();
 
 userStore.user = supabase.auth.user();
 supabase.auth.onAuthStateChange(async (_, session) => {
@@ -25,12 +25,10 @@ supabase.auth.onAuthStateChange(async (_, session) => {
 
   if (userStore.isAuthenticated) {
     loading.value = true;
-    const { fetch, error } = useLoadUserProfile();
-    const profile = await fetch();
+    await profileStore.getProfile();
 
-    if (!error.value && !profile?.synced_profile) {
-      const { updateUserProfile } = useUpdateUserProfile();
-      await updateUserProfile();
+    if (profileStore.error === null && !profileStore.profile?.synced_profile) {
+      await profileStore.updateProfile();
       loading.value = false;
     } else {
       loading.value = false;

@@ -9,19 +9,23 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="[k, v] of store.calculatedMaxes.entries()">
+        <tr v-for="[k, v] of calculatedMaxes.entries()">
           <td>{{ k }}</td>
-          <td>{{ v }} {{ props.unitOfMeasure }}</td>
+          <td>{{ v }} {{ unitOfMeasure }}</td>
         </tr>
       </tbody>
     </table>
   </article>
 </template>
 <script setup lang="ts">
-import { store } from '@/store';
+import { PropType } from 'vue';
 
-const props = defineProps({
+defineProps({
   unitOfMeasure: String,
+  calculatedMaxes: {
+    type: Object as PropType<Map<string, string>>,
+    required: true,
+  },
 });
 </script>
 <style lang="scss" scoped></style>

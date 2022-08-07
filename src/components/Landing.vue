@@ -2,6 +2,7 @@
   <div class="view">
     <article>
       <h2>Welcome to Swol!</h2>
+      <!-- include features -->
     </article>
   </div>
 </template>

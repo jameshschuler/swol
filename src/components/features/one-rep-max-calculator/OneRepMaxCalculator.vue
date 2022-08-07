@@ -24,12 +24,16 @@
         <button class="mt-sm" type="submit">Calculate Max</button>
       </form>
     </article>
-    <OneRepMaxResults v-if="showResults" :unit-of-measure="calculatedUnitOfMeasure" />
+    <OneRepMaxResults
+      v-if="showResults"
+      :unit-of-measure="calculatedUnitOfMeasure"
+      :calculated-maxes="calculatedMaxes"
+    />
   </div>
 </template>
 <script setup lang="ts">
 import { CalculateMaxForm, CalculateMaxFormErrors } from '@/models/form';
-import { store } from '@/store';
+import { FormulaFunc, formulas } from '@/models/formula';
 import { ref } from 'vue';
 import OneRepMaxResults from './OneRepMaxResults.vue';
 
@@ -40,6 +44,7 @@ const formData = ref<CalculateMaxForm>({
 
 const calculatedUnitOfMeasure = ref<string>();
 const showResults = ref<boolean>(false);
+const calculatedMaxes = ref<Map<string, string>>(new Map<string, string>());
 
 const errors = ref<CalculateMaxFormErrors>({});
 
@@ -51,9 +56,14 @@ function calculateOneRepMax() {
   }
 
   calculatedUnitOfMeasure.value = formData.value.unit;
+  calculateMaxes(formData.value.weight!, formData.value.reps);
+}
 
-  // TODO: move this logic to component
-  store.calculateMaxes(formData.value.weight!, formData.value.reps);
+function calculateMaxes(weight: number, reps: number) {
+  calculatedMaxes.value.clear();
+  formulas.forEach((func: FormulaFunc, k: string) => {
+    calculatedMaxes.value.set(k, func(weight, reps).toFixed(2));
+  });
 
   showResults.value = true;
 }
