@@ -8,9 +8,9 @@
       </label>
       <fieldset class="ml-lg mt-sm grid">
         <label
-          v-for="(plate, index) of store.selectablePoundPlates"
+          v-for="(plate, index) of barLoad.selectablePoundPlates"
           :style="
-            index >= store.selectablePoundPlates.length / 2
+            index >= barLoad.selectablePoundPlates.length / 2
               ? 'grid-column-start: 2;'
               : 'grid-column-start: 1;'
           "
@@ -22,7 +22,7 @@
             :name="plate.weight.toString()"
             :checked="plate.selected"
             :disabled="barLoad.selectedPlateSetUom !== UnitOfMeasure.Pound"
-            v-model="store.selectablePoundPlates[index].selected"
+            v-model="barLoad.selectablePoundPlates[index].selected"
           />
           {{ plate.weight }}
         </label>
@@ -35,9 +35,9 @@
       </label>
       <fieldset class="ml-lg mt-sm grid">
         <label
-          v-for="(plate, index) of store.selectableKilogramPlates"
+          v-for="(plate, index) of barLoad.selectableKilogramPlates"
           :style="
-            index >= store.selectableKilogramPlates.length / 2
+            index >= barLoad.selectableKilogramPlates.length / 2
               ? 'grid-column-start: 2;'
               : 'grid-column-start: 1;'
           "
@@ -49,7 +49,7 @@
             :name="plate.weight.toString()"
             :checked="plate.selected"
             :disabled="barLoad.selectedPlateSetUom !== UnitOfMeasure.Kilogram"
-            v-model="store.selectableKilogramPlates[index].selected"
+            v-model="barLoad.selectableKilogramPlates[index].selected"
           />
           {{ plate.weight }}
         </label>
@@ -59,7 +59,6 @@
 </template>
 <script setup lang="ts">
 import { UnitOfMeasure } from '@/models/enums';
-import { store } from '@/store';
 import { useBarLoadStore } from '@/stores/barLoad.js';
 
 const barLoad = useBarLoadStore();

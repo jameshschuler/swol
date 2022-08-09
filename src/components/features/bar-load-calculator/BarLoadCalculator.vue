@@ -51,7 +51,6 @@ import { CalculateBarLoadForm, CalculateBarLoadFormErrors } from '@/models/form'
 import { ModalOptions } from '@/models/props';
 import { SelectableBarbell } from '@/models/selectableBarbell';
 import { SelectablePlate } from '@/models/selectablePlate';
-import { store } from '@/store';
 import { useBarLoadStore } from '@/stores/barLoad';
 import { useToastStore } from '@/stores/toasts';
 import { reactive, ref } from 'vue';
@@ -91,11 +90,10 @@ function calculateBarLoad() {
 
   let selectedPlates = new Array<SelectablePlate>();
 
-  // TODO: what about if the weight entered is a decimal?
   if (barLoad.selectedPlateSetUom === UnitOfMeasure.Pound) {
-    selectedPlates = store.selectablePoundPlates.filter((p) => p.selected);
+    selectedPlates = barLoad.selectablePoundPlates.filter((p) => p.selected);
   } else if (barLoad.selectedPlateSetUom === UnitOfMeasure.Kilogram) {
-    selectedPlates = store.selectableKilogramPlates.filter((p) => p.selected);
+    selectedPlates = barLoad.selectableKilogramPlates.filter((p) => p.selected);
   }
 
   if (selectedPlates.length === 0) {
@@ -156,6 +154,7 @@ function validateFormData({ weight }: CalculateBarLoadForm) {
       hasError = true;
     }
 
+    // TODO: Need to support decimal weights
     if (weight - Math.floor(weight) !== 0) {
       addToast({
         type: ToastType.Error,

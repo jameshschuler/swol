@@ -45,7 +45,7 @@ const displayAvatar = computed(() => user.isAuthenticated && profileStore.profil
 
 async function handleSignOut() {
   await supabase.auth.signOut();
-  router.push('/');
+  router.push('/login');
 }
 </script>
 <style lang="scss" scoped>
