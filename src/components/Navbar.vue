@@ -2,25 +2,41 @@
   <nav>
     <ul>
       <li id="brand">
-        <strong>Swol</strong>
+        <router-link
+          :to="user.isAuthenticated ? '/dashboard' : '/'"
+          class="d-flex align-items-center"
+        >
+          <figure id="logo">
+            <img src="../assets/SWOLa192.png" alt="" />
+          </figure>
+          <strong class="ml-sm">Swol</strong>
+        </router-link>
       </li>
     </ul>
     <ul>
       <li v-if="!user.isAuthenticated">
-        <router-link to="/login">
-          <i class="fa-solid fa-user fa-fw fa-lg"></i>
+        <router-link to="/login" role="button" class="outline">
+          <!-- <i class="fa-solid fa-user fa-fw fa-lg"></i> -->
+          Log in
         </router-link>
       </li>
-      <li v-if="displayAvatar">
-        <figure class="avatar">
-          <img :src="profileStore.profile?.avatar_url" alt="" />
+      <li v-if="user.isAuthenticated">
+        <figure
+          class="avatar clickable"
+          @click="common.toggleDrawer()"
+          v-if="displayCustomAvatar && profileStore.profile?.avatar_url"
+        >
+          <img id="open-drawer-btn" :src="profileStore.profile?.avatar_url" alt="" />
         </figure>
+        <span class="clickable" @click="common.toggleDrawer()" v-else>
+          <i id="open-drawer-btn" class="fa-solid fa-user fa-fw fa-lg"></i>
+        </span>
       </li>
-      <li>
+      <!-- <li>
         <router-link to="/about">
           <i class="fa-solid fa-circle-info fa-fw fa-lg"></i>
         </router-link>
-      </li>
+      </li> -->
       <li v-if="user.isAuthenticated">
         <a class="outline" href="#" @click="handleSignOut()">
           <i class="fa-solid fa-right-from-bracket fa-fw fa-lg"></i>
@@ -30,18 +46,21 @@
   </nav>
 </template>
 <script setup lang="ts">
-import { useProfileStore } from '@/stores/profile.js';
+import { useCommonStore } from '@/stores/common.js';
+import { useProfileStore } from '@/stores/profile';
 import { useUserStore } from '@/stores/user';
 import { supabase } from '@/supabase';
-import { computed } from 'vue';
+import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 const user = useUserStore();
 const profileStore = useProfileStore();
+const common = useCommonStore();
 
 const router = useRouter();
 
-const displayAvatar = computed(() => user.isAuthenticated && profileStore.profile?.avatar_url);
+// TODO: pull this from user preferences
+const displayCustomAvatar = ref<boolean>(false);
 
 async function handleSignOut() {
   await supabase.auth.signOut();
@@ -50,13 +69,21 @@ async function handleSignOut() {
 </script>
 <style lang="scss" scoped>
 #brand {
-  strong {
-    font-size: 1.5rem;
+  a {
+    strong {
+      font-size: 1.5rem;
+      color: rgb(65, 84, 98);
+    }
   }
 }
 
+#logo {
+  width: 36px;
+  margin: 0;
+}
+
 .avatar {
-  width: 32px;
+  width: 36px;
   //height: 24px;
   margin-bottom: 0;
 }

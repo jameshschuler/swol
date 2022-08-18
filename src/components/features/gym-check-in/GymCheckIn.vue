@@ -26,8 +26,8 @@
 import LoadingIndicator from '@/components/common/LoadingIndicator.vue';
 import { Marker } from '@/models/calendar';
 import { GymCheckIn } from '@/models/db';
-import { useCheckInStore } from '@/stores/checkIn.js';
-import { useToastStore } from '@/stores/toasts.js';
+import { useCheckInStore } from '@/stores/checkIn';
+import { useToastStore } from '@/stores/toasts';
 import dayjs from 'dayjs';
 import { onMounted, ref } from 'vue';
 

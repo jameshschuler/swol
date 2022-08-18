@@ -19,6 +19,8 @@ Swol is a collection of strength sports tools.
 - Vue Router
 - Pico.css
 - PWA
+- Supabase
+- PostgreSQL / SQL
 
 ### TODOs
 

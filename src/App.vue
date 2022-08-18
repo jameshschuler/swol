@@ -7,14 +7,13 @@ import SidebarNav from '@/components/SidebarNav.vue';
 import { useUserStore } from '@/stores/user';
 import '@picocss/pico';
 import 'v-calendar/dist/style.css';
-import { ref } from 'vue';
 import BackgroundLoadingIndicator from './components/common/BackgroundLoadingIndicator.vue';
+import Drawer from './components/common/Drawer.vue';
 import PageLoadingIndicator from './components/common/PageLoadingIndicator.vue';
 import { useCommonStore } from './stores/common';
 import { useProfileStore } from './stores/profile';
 import { supabase } from './supabase';
 
-const loading = ref<boolean>(false);
 const userStore = useUserStore();
 const common = useCommonStore();
 const profileStore = useProfileStore();
@@ -23,16 +22,27 @@ userStore.user = supabase.auth.user();
 supabase.auth.onAuthStateChange(async (_, session) => {
   userStore.user = session?.user;
 
-  if (userStore.isAuthenticated) {
-    loading.value = true;
+  if (userStore.isAuthenticated && profileStore.profile === null) {
+    common.isAppLoading = true;
     await profileStore.getProfile();
 
-    if (profileStore.error === null && !profileStore.profile?.synced_profile) {
+    if (profileStore.error === null && !profileStore.profile!.synced_profile) {
       await profileStore.updateProfile();
-      loading.value = false;
+      common.isAppLoading = false;
     } else {
-      loading.value = false;
+      common.isAppLoading = false;
     }
+  }
+});
+
+document.addEventListener('click', (e: any) => {
+  if (
+    common.isDrawerOpen &&
+    e.target.id !== 'drawer' &&
+    e.target.id !== 'open-drawer-btn' &&
+    e.target.parentNode.id !== 'open-drawer-btn'
+  ) {
+    common.toggleDrawer();
   }
 });
 </script>
@@ -41,14 +51,15 @@ supabase.auth.onAuthStateChange(async (_, session) => {
   <ReloadPWA />
   <BackgroundLoadingIndicator v-if="common.isBackgroundLoading" />
   <Navbar />
-  <div class="content mb-sm" v-if="!loading">
+  <div class="content mb-sm" v-if="!common.isAppLoading">
     <SidebarNav />
     <router-view></router-view>
   </div>
 
-  <PageLoadingIndicator v-if="loading" size="fa-3x" />
+  <PageLoadingIndicator v-if="common.isAppLoading" size="fa-3x" />
   <Actionbar />
   <ToastContainer />
+  <Drawer />
 </template>
 
 <style lang="scss">

@@ -59,7 +59,7 @@
 </template>
 <script setup lang="ts">
 import { UnitOfMeasure } from '@/models/enums';
-import { useBarLoadStore } from '@/stores/barLoad.js';
+import { useBarLoadStore } from '@/stores/barLoad';
 
 const barLoad = useBarLoadStore();
 </script>

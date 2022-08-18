@@ -3,11 +3,6 @@
     <aside>
       <nav>
         <ul>
-          <li>
-            <router-link :to="userStore.isAuthenticated ? '/dashboard' : '/'">{{
-              userStore.isAuthenticated ? 'Dashboard' : 'Home'
-            }}</router-link>
-          </li>
           <li v-if="userStore.isAuthenticated">
             <h6 class="mb-none">Features</h6>
           </li>
@@ -41,7 +36,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { useUserStore } from '@/stores/user.js';
+import { useUserStore } from '@/stores/user';
 const userStore = useUserStore();
 </script>
 <style lang="scss" scoped>

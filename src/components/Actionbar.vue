@@ -25,7 +25,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { useUserStore } from '@/stores/user.js';
+import { useUserStore } from '@/stores/user';
 const user = useUserStore();
 </script>
 <style lang="scss" scoped>

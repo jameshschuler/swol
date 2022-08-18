@@ -17,7 +17,7 @@
 </template>
 <script setup lang="ts">
 import { ToastType } from '@/models/enums';
-import { useToastStore } from '@/stores/toasts.js';
+import { useToastStore } from '@/stores/toasts';
 import { computed, PropType, ref } from 'vue';
 
 const { removeToast } = useToastStore();

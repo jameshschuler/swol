@@ -9,9 +9,8 @@ import { useCommonStore } from './common';
 import { useUserStore } from './user';
 
 export const useProfileStore = defineStore( 'profile', () => {
-    const profile = ref<UserProfile | null>();
+    const profile = ref<UserProfile | null>( null );
     const supabaseError = ref<PostgrestError | null>( null );
-
 
     async function getProfile () {
         supabaseError.value = null;
