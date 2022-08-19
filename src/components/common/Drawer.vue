@@ -1,13 +1,42 @@
 <template>
   <div id="drawer" :class="{ hidden: !common.isDrawerOpen }">
-    <div>Display avatar here</div>
-    <div>Display name / username</div>
-    <div>show sign out icon in top right corner</div>
+    <div class="d-flex justify-space-between">
+      <div>
+        <figure class="mb-none avatar" v-if="profile.profile?.avatar_url">
+          <img id="open-drawer-btn" :src="profile.profile?.avatar_url" alt="" />
+        </figure>
+        <h4 class="mt-sm mb-none">{{ profile.profile?.full_name }}</h4>
+        <h5 class="mt-none">{{ profile.profile?.username }}</h5>
+      </div>
+      <a class="outline" href="#" @click="handleSignOut()">
+        <i class="fa-solid fa-right-from-bracket fa-fw fa-lg"></i>
+      </a>
+    </div>
     <aside>
       <nav>
         <ul>
           <li>Profile</li>
           <li>Preferences</li>
+          <hr />
+          <li>
+            <!-- TODO: make this a component -->
+            <router-link to="/privacy" class="d-flex align-items-center">
+              <span class="icon"><i class="fa-solid fa-user-lock fa-fw"></i></span>
+              <span class="ml-sm">Privacy Policy</span>
+            </router-link>
+          </li>
+          <li>
+            <router-link to="/terms-conditions" class="d-flex align-items-center">
+              <span class="icon"><i class="fa-solid fa-file-lines fa-fw"></i></span>
+              <span class="ml-sm">Terms & Conditions</span>
+            </router-link>
+          </li>
+          <li>
+            <router-link to="/about" class="d-flex align-items-center">
+              <span class="icon"><i class="fa-solid fa-circle-info fa-fw"></i></span>
+              <span class="ml-sm">About</span>
+            </router-link>
+          </li>
         </ul>
       </nav>
     </aside>
@@ -16,9 +45,20 @@
 </template>
 <script setup lang="ts">
 import Overlay from '@/components/common/Overlay.vue';
-import { useCommonStore } from '@/stores/common.js';
+import { useCommonStore } from '@/stores/common';
+import { useProfileStore } from '@/stores/profile';
+import { supabase } from '@/supabase';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const common = useCommonStore();
+const profile = useProfileStore();
+
+async function handleSignOut() {
+  await supabase.auth.signOut();
+  router.push('/login');
+}
 </script>
 <style lang="scss" scoped>
 #drawer {
@@ -26,22 +66,33 @@ const common = useCommonStore();
   top: 0;
   left: 0;
   height: 100vh;
-  background-color: lightcoral;
+  background-color: #fff;
   width: 30%;
   box-shadow: 25px 0px 20px -20px rgba(27, 40, 50, 0.45);
-  padding: 1rem;
+  padding: 1.25rem;
   z-index: 3;
   transition: all 300ms ease-in-out;
+
+  .icon {
+    width: 24px;
+  }
 
   &.hidden {
     left: -32%;
   }
 
   @include touch {
-    width: 77%;
+    width: 75%;
 
     &.hidden {
-      left: -75%;
+      left: -80%;
+    }
+  }
+
+  .avatar {
+    width: 72px;
+    img {
+      border-radius: 50%;
     }
   }
 }

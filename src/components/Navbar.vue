@@ -37,11 +37,6 @@
           <i class="fa-solid fa-circle-info fa-fw fa-lg"></i>
         </router-link>
       </li> -->
-      <li v-if="user.isAuthenticated">
-        <a class="outline" href="#" @click="handleSignOut()">
-          <i class="fa-solid fa-right-from-bracket fa-fw fa-lg"></i>
-        </a>
-      </li>
     </ul>
   </nav>
 </template>
@@ -49,23 +44,14 @@
 import { useCommonStore } from '@/stores/common.js';
 import { useProfileStore } from '@/stores/profile';
 import { useUserStore } from '@/stores/user';
-import { supabase } from '@/supabase';
 import { ref } from 'vue';
-import { useRouter } from 'vue-router';
 
 const user = useUserStore();
 const profileStore = useProfileStore();
 const common = useCommonStore();
 
-const router = useRouter();
-
 // TODO: pull this from user preferences
 const displayCustomAvatar = ref<boolean>(false);
-
-async function handleSignOut() {
-  await supabase.auth.signOut();
-  router.push('/login');
-}
 </script>
 <style lang="scss" scoped>
 #brand {
