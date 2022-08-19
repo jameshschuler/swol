@@ -22,7 +22,7 @@ const common = useCommonStore();
 </script>
 <style lang="scss" scoped>
 #drawer {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   height: 100vh;
@@ -31,13 +31,18 @@ const common = useCommonStore();
   box-shadow: 25px 0px 20px -20px rgba(27, 40, 50, 0.45);
   padding: 1rem;
   z-index: 3;
-
-  @include touch {
-    width: 75%;
-  }
+  transition: all 300ms ease-in-out;
 
   &.hidden {
-    display: none;
+    left: -32%;
+  }
+
+  @include touch {
+    width: 77%;
+
+    &.hidden {
+      left: -75%;
+    }
   }
 }
 </style>

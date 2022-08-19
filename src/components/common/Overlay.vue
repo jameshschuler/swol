@@ -6,11 +6,11 @@ import { useCommonStore } from '@/stores/common.js';
 import { computed } from 'vue';
 
 const common = useCommonStore();
-const overlayDisplay = computed(() => (common.isDrawerOpen ? 'block' : 'none'));
+const overlayVisibility = computed(() => (common.isDrawerOpen ? 'visible' : 'hidden'));
 </script>
 <style lang="scss" scoped>
 #overlay {
-  display: v-bind(overlayDisplay);
+  visibility: v-bind(overlayVisibility);
   width: 100%;
   height: 100%;
   top: 0;
@@ -21,5 +21,6 @@ const overlayDisplay = computed(() => (common.isDrawerOpen ? 'block' : 'none'));
   z-index: 2;
   cursor: pointer;
   position: fixed;
+  transition: all 200ms ease-in-out;
 }
 </style>
