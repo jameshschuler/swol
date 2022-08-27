@@ -8,6 +8,7 @@ import Login from "@/components/Login.vue";
 import NotFound from "@/components/NotFound.vue";
 import PrivacyPolicy from "@/components/PrivacyPolicy.vue";
 import TermsAndConditions from "@/components/TermsAndConditions.vue";
+import Profile from '@/views/Profile.vue';
 
 import { createRouter, createWebHistory } from 'vue-router';
 import { supabase } from './supabase';
@@ -25,6 +26,14 @@ const routes = [
         name: 'GymCheckIn',
         path: '/gym-checkin',
         component: GymCheckIn,
+        meta: {
+            requiresAuth: true
+        }
+    },
+    {
+        name: 'Profile',
+        path: '/profile',
+        component: Profile,
         meta: {
             requiresAuth: true
         }

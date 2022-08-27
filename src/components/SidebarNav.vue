@@ -7,6 +7,9 @@
             <h6 class="mb-none">Features</h6>
           </li>
           <li v-if="userStore.isAuthenticated">
+            <router-link to="/dashboard">Dashboard</router-link>
+          </li>
+          <li v-if="userStore.isAuthenticated">
             <router-link to="/gym-checkin">Daily Gym Check-In</router-link>
           </li>
           <li>

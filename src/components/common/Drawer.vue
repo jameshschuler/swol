@@ -15,26 +15,30 @@
     <aside>
       <nav>
         <ul>
-          <li>Profile</li>
-          <li>Preferences</li>
+          <li>
+            <router-link to="/profile" class="d-flex align-items-center">
+              <span class="icon"><i class="fa-solid fa-address-card fa-fw"></i></span>
+              <span class="ml-md">Profile</span>
+            </router-link>
+          </li>
           <hr />
           <li>
             <!-- TODO: make this a component -->
             <router-link to="/privacy" class="d-flex align-items-center">
               <span class="icon"><i class="fa-solid fa-user-lock fa-fw"></i></span>
-              <span class="ml-sm">Privacy Policy</span>
+              <span class="ml-md">Privacy Policy</span>
             </router-link>
           </li>
           <li>
             <router-link to="/terms-conditions" class="d-flex align-items-center">
               <span class="icon"><i class="fa-solid fa-file-lines fa-fw"></i></span>
-              <span class="ml-sm">Terms & Conditions</span>
+              <span class="ml-md">Terms & Conditions</span>
             </router-link>
           </li>
           <li>
             <router-link to="/about" class="d-flex align-items-center">
               <span class="icon"><i class="fa-solid fa-circle-info fa-fw"></i></span>
-              <span class="ml-sm">About</span>
+              <span class="ml-md">About</span>
             </router-link>
           </li>
         </ul>
