@@ -35,7 +35,7 @@ supabase.auth.onAuthStateChange(async (_, session) => {
   }
 });
 
-document.addEventListener('click', (e: any) => {
+function closeModal(e: any) {
   if (
     common.isDrawerOpen &&
     e.target.id !== 'drawer' &&
@@ -44,7 +44,10 @@ document.addEventListener('click', (e: any) => {
   ) {
     common.toggleDrawer();
   }
-});
+}
+
+document.addEventListener('click', (e: any) => closeModal(e));
+document.addEventListener('touchend', (e: any) => closeModal(e));
 </script>
 
 <template>

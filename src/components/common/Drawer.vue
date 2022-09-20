@@ -8,8 +8,8 @@
         <h4 class="mt-sm mb-none">{{ profile.profile?.full_name }}</h4>
         <h5 class="mt-none">{{ profile.profile?.username }}</h5>
       </div>
-      <a class="outline" href="#" @click="handleSignOut()">
-        <i class="fa-solid fa-right-from-bracket fa-fw fa-lg"></i>
+      <a class="outline" href="#" @click="common.isDrawerOpen = false">
+        <i class="fa-solid fa-times fa-fw fa-lg"></i>
       </a>
     </div>
     <aside>
@@ -40,6 +40,15 @@
               <span class="icon"><i class="fa-solid fa-circle-info fa-fw"></i></span>
               <span class="ml-md">About</span>
             </router-link>
+          </li>
+          <hr />
+          <li>
+            <a class="d-flex align-items-center" href="#" @click="handleSignOut()">
+              <span class="icon">
+                <i class="fa-solid fa-right-from-bracket fa-fw"></i>
+              </span>
+              <span class="ml-md">Sign out</span>
+            </a>
           </li>
         </ul>
       </nav>
