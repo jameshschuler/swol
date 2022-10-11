@@ -1,4 +1,4 @@
-import { checkInErrorMessage, checkInSuccessMessage, loadCheckInsErrorMessage } from '@/models/constants';
+import { checkInErrorMessage, checkInSuccessMessage, loadCheckInsErrorMessage, removeCheckInErrorMessage, removeCheckInSuccessMessage } from '@/models/constants';
 import { GymCheckIn } from '@/models/db';
 import { Entities, ToastType } from '@/models/enums';
 import { supabase } from '@/supabase';
@@ -71,11 +71,52 @@ export const useCheckInStore = defineStore( 'checkIn', () => {
         }
     }
 
+    async function removeCheckIn ( checkInId: number ): Promise<boolean | null> {
+        supabaseError.value = null;
+        processing.value = true;
+
+        try {
+            const user = useUserStore();
+
+            const { data, error } = await supabase.from<GymCheckIn>( Entities.GymCheckIn )
+                .delete()
+                .match( {
+                    id: checkInId,
+                    user_id: user.user?.id,
+                } )
+                .single();
+
+            const toast = useToastStore();
+            if ( error ) {
+                toast.addToast( {
+                    type: ToastType.Error,
+                    message: removeCheckInErrorMessage,
+                } );
+                supabaseError.value = error;
+                return null;
+            } else {
+                toast.addToast( {
+                    type: ToastType.Success,
+                    message: removeCheckInSuccessMessage,
+                } );
+
+                checkIns.value = checkIns.value.filter( c => c.id === data.id );
+                return true;
+            }
+        } catch ( err ) {
+            console.error( err );
+            return null;
+        } finally {
+            processing.value = false;
+        }
+    }
+
     return {
         addCheckIn,
         getCheckIns,
         checkIns,
         error: supabaseError,
-        processing
+        processing,
+        removeCheckIn
     }
 } );

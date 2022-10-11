@@ -27,5 +27,7 @@ export const defaultKilogramPlateSet = new Array<SelectablePlate>(
 
 export const dailyCheckInNotLoggedInMessage = "Must be logged in to access Daily Gym Check-In.";
 export const checkInErrorMessage = "Something went wrong while checking in. Please try again later!";
+export const removeCheckInErrorMessage = 'Something went wrong while removing checking in. Please try again later!';
 export const checkInSuccessMessage = "Successfully checked in!";
+export const removeCheckInSuccessMessage = "Successfully removed checked in!";
 export const loadCheckInsErrorMessage = "Something went wrong while loading your check-ins. Please try again later!";

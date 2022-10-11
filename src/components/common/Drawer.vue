@@ -15,32 +15,11 @@
     <aside>
       <nav>
         <ul>
-          <li>
-            <router-link to="/profile" class="d-flex align-items-center">
-              <span class="icon"><i class="fa-solid fa-address-card fa-fw"></i></span>
-              <span class="ml-md">Profile</span>
-            </router-link>
-          </li>
+          <DrawerListItem to="/profile" text="Profile" icon="fa-address-card" />
           <hr />
-          <li>
-            <!-- TODO: make this a component -->
-            <router-link to="/privacy" class="d-flex align-items-center">
-              <span class="icon"><i class="fa-solid fa-user-lock fa-fw"></i></span>
-              <span class="ml-md">Privacy Policy</span>
-            </router-link>
-          </li>
-          <li>
-            <router-link to="/terms-conditions" class="d-flex align-items-center">
-              <span class="icon"><i class="fa-solid fa-file-lines fa-fw"></i></span>
-              <span class="ml-md">Terms & Conditions</span>
-            </router-link>
-          </li>
-          <li>
-            <router-link to="/about" class="d-flex align-items-center">
-              <span class="icon"><i class="fa-solid fa-circle-info fa-fw"></i></span>
-              <span class="ml-md">About</span>
-            </router-link>
-          </li>
+          <DrawerListItem to="/privacy" text="Privacy Policy" icon="fa-user-lock" />
+          <DrawerListItem to="/terms-conditions" text="Terms & Conditions" icon="fa-file-lines" />
+          <DrawerListItem to="/about" text="About" icon="fa-circle-info" />
           <hr />
           <li>
             <a class="d-flex align-items-center" href="#" @click="handleSignOut()">
@@ -57,6 +36,7 @@
   <Overlay />
 </template>
 <script setup lang="ts">
+import DrawerListItem from '@/components/common/DrawerListItem.vue';
 import Overlay from '@/components/common/Overlay.vue';
 import { useCommonStore } from '@/stores/common';
 import { useProfileStore } from '@/stores/profile';

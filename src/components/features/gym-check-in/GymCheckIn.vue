@@ -9,14 +9,20 @@
         text="Loading gym check-ins"
       />
       <div v-if="!loading">
-        <Calendar :isExpanded="true" titlePosition="left" :attributes="attrs" />
+        <Calendar
+          :isExpanded="true"
+          titlePosition="left"
+          :attributes="attrs"
+          @dayclick="onDayClick"
+        />
+
+        <!-- TODO: make undo button warning color -->
         <button
           class="mt-md"
           :aria-busy="checkInStore.processing"
-          :disabled="checkedInToday"
-          @click="handleCheckIn()"
+          @click="checkedInToday ? handleRemoveCheckIn() : handleCheckIn()"
         >
-          {{ checkedInToday ? 'Checked In!' : 'Check In' }}
+          {{ checkedInToday ? 'Undo Check-In' : 'Check In' }}
         </button>
       </div>
     </article>
@@ -40,11 +46,14 @@ const today = {
     fillMode: 'outline',
   },
   dates: new Date(),
+  customData: {},
 };
 
 const attrs = ref<Array<Marker>>([]);
 const checkedInToday = ref<boolean>(false);
 const loading = ref<boolean>();
+const isValidMarker = ref<boolean>(false);
+const todayCheckInId = ref<number | null>(null);
 
 async function handleCheckIn() {
   const checkIn = await checkInStore.addCheckIn();
@@ -55,6 +64,7 @@ async function handleCheckIn() {
   }
 
   checkedInToday.value = true;
+  todayCheckInId.value = checkIn.id;
 
   // TODO: should be handled in action
   attrs.value = [
@@ -66,8 +76,19 @@ async function handleCheckIn() {
         color: 'green',
       },
       dates: dayjs(checkIn.checkin_date).local().toDate(),
+      customData: { checkInId: checkIn.id },
     },
   ];
+}
+
+async function handleRemoveCheckIn() {
+  if (todayCheckInId) {
+    const removed = await checkInStore.removeCheckIn(todayCheckInId.value!);
+    if (removed) {
+      checkedInToday.value = false;
+      todayCheckInId.value = null;
+    }
+  }
 }
 
 async function loadCheckIns() {
@@ -83,6 +104,7 @@ async function loadCheckIns() {
     const checkInDate = dayjs(checkIn.checkin_date).local();
     if (checkInDate.isToday()) {
       checkedInToday.value = true;
+      todayCheckInId.value = checkIn.id;
     }
 
     return {
@@ -92,11 +114,21 @@ async function loadCheckIns() {
         color: 'green',
       },
       dates: checkInDate.toDate(),
+      customData: { checkInId: checkIn.id },
     };
   });
 
   attrs.value = [today, ...markers];
   loading.value = false;
+}
+
+function onDayClick(day) {
+  const id = day.attributes[1]?.customData?.checkInId;
+  if (id) {
+    isValidMarker.value = true;
+  } else {
+    isValidMarker.value = false;
+  }
 }
 
 onMounted(() => {
