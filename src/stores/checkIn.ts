@@ -34,17 +34,16 @@ export const useCheckInStore = defineStore( 'checkIn', () => {
         }
     }
 
-    async function addCheckIn (): Promise<GymCheckIn | null> {
+    async function addCheckIn ( selectedDate?: string ): Promise<GymCheckIn | null> {
         supabaseError.value = null;
         processing.value = true;
 
         try {
             const user = useUserStore();
-            const now = dayjs.utc().format();
 
             const { data, error } = await supabase.from<GymCheckIn>( Entities.GymCheckIn ).insert( {
                 user_id: user.user?.id,
-                checkin_date: now,
+                checkin_date: selectedDate ? dayjs( selectedDate ).utc().format() : dayjs.utc().format(),
             } ).single();
 
             const toast = useToastStore();

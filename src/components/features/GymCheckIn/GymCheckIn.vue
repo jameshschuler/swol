@@ -16,13 +16,13 @@
           @dayclick="onDayClick"
         />
 
-        <!-- TODO: make undo button warning color -->
         <button
           class="mt-md"
+          :class="{ 'warning-btn': hasCheckIn && currentlySelectedCheckInId !== null }"
           :aria-busy="checkInStore.processing"
-          @click="checkedInToday ? handleRemoveCheckIn() : handleCheckIn()"
+          @click="handleCheckInAction()"
         >
-          {{ checkedInToday ? 'Undo' : 'Check In' }}
+          {{ checkInButtonText }}
         </button>
       </div>
     </article>
@@ -35,7 +35,7 @@ import { GymCheckIn } from '@/models/db';
 import { useCheckInStore } from '@/stores/checkIn';
 import { useToastStore } from '@/stores/toasts';
 import dayjs from 'dayjs';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 
 const checkInStore = useCheckInStore();
 const toast = useToastStore();
@@ -50,23 +50,39 @@ const today = {
 };
 
 const attrs = ref<Array<Marker>>([]);
-const checkedInToday = ref<boolean>(false);
 const loading = ref<boolean>();
-const isValidMarker = ref<boolean>(false);
-const todayCheckInId = ref<number | null>(null);
+
+const hasCheckIn = ref<boolean>(false);
+const currentlySelectedCheckInId = ref<number | null>(null);
+const currentlySelectedDate = ref<string | null>(dayjs.utc().format());
+
+const checkInButtonText = computed(() => {
+  if (hasCheckIn.value && currentlySelectedCheckInId.value !== null) {
+    return 'Undo';
+  }
+  return 'Check In';
+});
+
+async function handleCheckInAction() {
+  if (hasCheckIn.value && currentlySelectedCheckInId.value !== null) {
+    // TODO: prompt user with are you sure? Modal
+    await handleRemoveCheckIn();
+  } else {
+    await handleCheckIn();
+  }
+}
 
 async function handleCheckIn() {
-  const checkIn = await checkInStore.addCheckIn();
+  const checkIn = await checkInStore.addCheckIn(currentlySelectedDate.value);
 
   if (checkInStore.error || !checkIn) {
     loading.value = false;
     return;
   }
 
-  checkedInToday.value = true;
-  todayCheckInId.value = checkIn.id;
+  hasCheckIn.value = true;
+  currentlySelectedCheckInId.value = checkIn.id;
 
-  // TODO: should be handled in action
   attrs.value = [
     ...attrs.value,
     {
@@ -82,24 +98,18 @@ async function handleCheckIn() {
 }
 
 async function handleRemoveCheckIn() {
-  if (todayCheckInId) {
-    const removed = await checkInStore.removeCheckIn(todayCheckInId.value!);
-    if (removed) {
-      checkedInToday.value = false;
-      todayCheckInId.value = null;
+  const removed = await checkInStore.removeCheckIn(currentlySelectedCheckInId.value!);
+  if (removed) {
+    hasCheckIn.value = false;
+    currentlySelectedCheckInId.value = null;
 
-      updateMarkers();
-    }
+    updateMarkers();
   }
 }
 
 function updateMarkers() {
   const markers = checkInStore.checkIns.map((checkIn: GymCheckIn, index: number) => {
     const checkInDate = dayjs(checkIn.checkin_date).local();
-    if (checkInDate.isToday()) {
-      checkedInToday.value = true;
-      todayCheckInId.value = checkIn.id;
-    }
 
     return {
       key: `checkIn_${index}`,
@@ -128,12 +138,30 @@ async function loadCheckIns() {
 }
 
 function onDayClick(day) {
-  const id = day.attributes[1]?.customData?.checkInId;
+  currentlySelectedDate.value = dayjs(day.id).utc().format();
+
+  const id = day.attributes[0]?.customData?.checkInId;
   if (id) {
-    isValidMarker.value = true;
+    hasCheckIn.value = true;
+    currentlySelectedCheckInId.value = id;
   } else {
-    isValidMarker.value = false;
+    hasCheckIn.value = false;
+    currentlySelectedCheckInId.value = null;
   }
+
+  const currentlySelectedAttr = attrs.value.findIndex((a) => a.key === 'currently_selected');
+  if (currentlySelectedAttr !== -1) {
+    attrs.value.splice(currentlySelectedAttr, 1);
+  }
+
+  attrs.value.push({
+    key: `currently_selected`,
+    highlight: {
+      fillMode: 'light',
+      color: 'blue',
+    },
+    dates: dayjs(day.id).local().toDate(),
+  });
 }
 
 onMounted(() => {
