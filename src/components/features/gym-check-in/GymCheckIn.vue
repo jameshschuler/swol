@@ -22,7 +22,7 @@
           :aria-busy="checkInStore.processing"
           @click="checkedInToday ? handleRemoveCheckIn() : handleCheckIn()"
         >
-          {{ checkedInToday ? 'Undo Check-In' : 'Check In' }}
+          {{ checkedInToday ? 'Undo' : 'Check In' }}
         </button>
       </div>
     </article>
@@ -87,19 +87,13 @@ async function handleRemoveCheckIn() {
     if (removed) {
       checkedInToday.value = false;
       todayCheckInId.value = null;
+
+      updateMarkers();
     }
   }
 }
 
-async function loadCheckIns() {
-  loading.value = true;
-
-  if (checkInStore.checkIns.length === 0) {
-    await checkInStore.getCheckIns();
-    loading.value = false;
-  }
-
-  // TODO: should be handled in action
+function updateMarkers() {
   const markers = checkInStore.checkIns.map((checkIn: GymCheckIn, index: number) => {
     const checkInDate = dayjs(checkIn.checkin_date).local();
     if (checkInDate.isToday()) {
@@ -119,6 +113,17 @@ async function loadCheckIns() {
   });
 
   attrs.value = [today, ...markers];
+}
+
+async function loadCheckIns() {
+  loading.value = true;
+
+  if (checkInStore.checkIns.length === 0) {
+    await checkInStore.getCheckIns();
+    loading.value = false;
+  }
+
+  updateMarkers();
   loading.value = false;
 }
 

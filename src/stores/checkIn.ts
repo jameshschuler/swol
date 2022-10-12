@@ -100,7 +100,7 @@ export const useCheckInStore = defineStore( 'checkIn', () => {
                     message: removeCheckInSuccessMessage,
                 } );
 
-                checkIns.value = checkIns.value.filter( c => c.id === data.id );
+                checkIns.value = checkIns.value.filter( c => c.id !== data.id );
                 return true;
             }
         } catch ( err ) {
