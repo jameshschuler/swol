@@ -11,6 +11,11 @@
           <i class="fa-solid fa-calendar-day fa-fw fa-xl"></i>
         </router-link>
       </div>
+      <div class="action clickable" v-if="user.isAuthenticated">
+        <router-link to="/pr-tracker">
+          <i class="fa-solid fa-trophy fa-fw fa-xl"></i>
+        </router-link>
+      </div>
       <div class="action clickable">
         <router-link to="/orm-calculator">
           <i class="fa-solid fa-calculator fa-fw fa-xl"></i>

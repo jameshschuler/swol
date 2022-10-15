@@ -9,6 +9,8 @@ import NotFound from "@/components/NotFound.vue";
 import PrivacyPolicy from "@/components/PrivacyPolicy.vue";
 import TermsAndConditions from "@/components/TermsAndConditions.vue";
 import Profile from '@/views/Profile.vue';
+import CreatePr from '@/views/PrTracker/CreatePr.vue';
+import PrTrackerDashboard from '@/views/PrTracker/PrTrackerDashboard.vue';
 
 import { createRouter, createWebHistory } from 'vue-router';
 import { supabase } from './supabase';
@@ -16,7 +18,20 @@ import { supabase } from './supabase';
 const routes = [
     { name: 'Landing', path: '/', component: Landing },
     {
-        name: 'Dashboard', path: '/dashboard', component: Dashboard, meta: {
+        name: 'Dashboard', path: '/dashboard', component: Dashboard,
+        meta: {
+            requiresAuth: true
+        }
+    },
+    {
+        name: 'PrTracker', path: '/pr-tracker', component: PrTrackerDashboard,
+        meta: {
+            requiresAuth: true
+        }
+    },
+    {
+        name: 'CreatePr', path: '/pr-tracker/create', component: CreatePr,
+        meta: {
             requiresAuth: true
         }
     },

@@ -16,6 +16,7 @@
       <nav>
         <ul>
           <DrawerListItem to="/profile" text="Profile" icon="fa-address-card" />
+          <DrawerListItem to="/pr-tracker" text="PR Tracker" icon="fa-trophy" />
           <hr />
           <DrawerListItem to="/privacy" text="Privacy Policy" icon="fa-user-lock" />
           <DrawerListItem to="/terms-conditions" text="Terms & Conditions" icon="fa-file-lines" />
