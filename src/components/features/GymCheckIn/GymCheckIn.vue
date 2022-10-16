@@ -35,7 +35,7 @@ import { GymCheckIn } from '@/models/db';
 import { useCheckInStore } from '@/stores/checkIn';
 import { useToastStore } from '@/stores/toasts';
 import dayjs from 'dayjs';
-import { onMounted, ref, computed } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 
 const checkInStore = useCheckInStore();
 const toast = useToastStore();
@@ -73,7 +73,7 @@ async function handleCheckInAction() {
 }
 
 async function handleCheckIn() {
-  const checkIn = await checkInStore.addCheckIn(currentlySelectedDate.value);
+  const checkIn = await checkInStore.addCheckIn(currentlySelectedDate.value || '');
 
   if (checkInStore.error || !checkIn) {
     loading.value = false;
@@ -161,6 +161,7 @@ function onDayClick(day) {
       color: 'blue',
     },
     dates: dayjs(day.id).local().toDate(),
+    customData: {},
   });
 }
 
