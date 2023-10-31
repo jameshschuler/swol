@@ -1,23 +1,17 @@
-import { StyleSheet, Text, View } from "react-native";
+import { GlobalNavigation } from "@/shared";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { SupabaseProvider } from "./src/context/SupabaseProvider";
+
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: 2 } },
+});
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <View>
-        <Text>Top - Swol</Text>
-      </View>
-      <View>
-        <Text>bottom</Text>
-      </View>
-    </View>
+    <QueryClientProvider client={queryClient}>
+      <SupabaseProvider>
+        <GlobalNavigation></GlobalNavigation>
+      </SupabaseProvider>
+    </QueryClientProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-});
