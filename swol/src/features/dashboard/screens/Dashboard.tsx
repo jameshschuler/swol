@@ -1,5 +1,11 @@
-import { dayjs } from "@/lib";
-import { ErrorMessage, LoadingIndicator, useRefreshOnFocus } from "@/shared";
+import { dayjs, supabaseClient } from "@/lib";
+import { Entities } from "@/lib/entities";
+import {
+  ErrorMessage,
+  LoadingIndicator,
+  useRefreshOnFocus,
+  useSupabase,
+} from "@/shared";
 import { GymCheckIn } from "@/shared/types";
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -11,8 +17,12 @@ type MarkedDates = { [key: string]: MarkingProps };
 
 export function Dashboard() {
   const { isPending, error, data, refetch } = useCheckIns();
+  const { userId } = useSupabase();
 
   const [markedDates, setMarkedDates] = useState<MarkedDates>();
+  const [selected, setSelected] = useState(
+    dayjs().local().format("YYYY-MM-DD")
+  );
 
   useEffect(() => {
     const markedDates: MarkedDates = {};
@@ -21,7 +31,7 @@ export function Dashboard() {
         const convertedDate = dayjs(checkIn.checkin_date)
           .local()
           .format("YYYY-MM-DD");
-        markedDates[convertedDate] = { selected: true };
+        markedDates[convertedDate] = { selected: true, selectedColor: "red" };
       });
 
       setMarkedDates(markedDates);
@@ -32,14 +42,14 @@ export function Dashboard() {
   useRefreshOnFocus(refetch);
 
   async function handleCheckIn() {
-    console.log("hello");
-    // const { data, error } = await supabaseClient
-    //   .from(gymCheckIn)
-    //   .insert({
-    //     user_id: userId,
-    //     checkin_date: dayjs.utc().format(),
-    //   })
-    //   .single();
+    const { data, error } = await supabaseClient
+      .from(Entities.gymCheckIn)
+      .insert({
+        user_id: userId,
+        checkin_date: selected,
+      })
+      .select();
+    console.log(data, error);
   }
 
   if (isPending) {
@@ -55,7 +65,7 @@ export function Dashboard() {
       <Calendar
         style={styles.calendar}
         onDayPress={(day: DateData) => {
-          console.log("selected day", day);
+          setSelected(day.dateString);
         }}
         theme={{
           backgroundColor: "#ffffff",
@@ -67,7 +77,13 @@ export function Dashboard() {
           dayTextColor: "#2d4150",
           textDisabledColor: "#d9e",
         }}
-        markedDates={markedDates}
+        markedDates={{
+          ...markedDates,
+          [selected]: {
+            selected: true,
+            disableTouchEvent: true,
+          },
+        }}
       />
       <TouchableOpacity style={styles.checkInBtn} onPress={handleCheckIn}>
         <Text style={styles.btnText}>Check In</Text>
