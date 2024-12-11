@@ -5,24 +5,56 @@ import { supabase } from "./lib";
 
 import { Box, Button, Indicator, MantineProvider } from "@mantine/core";
 import { Calendar, DatePickerInput } from "@mantine/dates";
-import dayjs, { Dayjs } from "dayjs";
+import { PostgrestError } from "@supabase/supabase-js";
+import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 dayjs.extend(utc);
 
-async function getCheckIns(userId: string) {
-  const { data, error } = await supabase
-    .from("gym_checkin")
-    .select("id, checkin_date")
-    .eq("user_id", userId);
+function useGetCheckIns(userId?: string) {
+  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState<
+    { id: number; checkin_date: string }[] | null
+  >([]);
+  const [error, setError] = useState<PostgrestError | null>(null);
 
-  if (error) {
-    console.error("Error getting check-ins:", error.message);
-    return;
-  }
+  const fetchData = useCallback(async () => {
+    if (!userId) {
+      return;
+    }
 
-  return data;
+    setLoading(true);
+    setError(null);
+
+    try {
+      const { data, error } = await supabase
+        .from("gym_checkin")
+        .select("id, checkin_date")
+        .eq("user_id", userId ?? "");
+
+      if (error) {
+        throw error;
+      }
+
+      setData(data);
+    } catch (err) {
+      setError(err as PostgrestError);
+    } finally {
+      setLoading(false);
+    }
+  }, [userId]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  return { data, error, loading, refetch: fetchData };
+}
+
+interface CheckIn {
+  id: number;
+  checkin_date: string;
 }
 
 async function saveCheckIn(userId: string, date: Date | null) {
@@ -43,34 +75,33 @@ async function saveCheckIn(userId: string, date: Date | null) {
   console.log("Check-in saved:", data);
 }
 
+function transformCheckIns(checkIns: CheckIn[]) {
+  return checkIns.reduce((map, d) => {
+    map.set(dayjs(d.checkin_date).format("MM-DD-YYYY"), d);
+    return map;
+  }, new Map<string, CheckIn>());
+}
+
 function App() {
   const { auth, signIn, signOut, user } = useAuth();
 
   const [value, setValue] = useState<Date | null>(null);
-  const [checkIns, setCheckIns] = useState<Dayjs[]>([]);
 
-  useEffect(() => {
-    if (user?.id) {
-      getCheckIns(user.id).then((data) => {
-        if (data && data.length > 0) {
-          const t = data.map((d) => dayjs(d.checkin_date));
-          setCheckIns(t);
-        }
-      });
-    }
-  }, [user]);
+  const { data, error, loading, refetch } = useGetCheckIns(user?.id);
 
+  // TODO: memo
+  const test = transformCheckIns(data ?? []);
+
+  // TODO: memo
   function isMarked(date: Date) {
-    return checkIns.some(
-      (markedDate) =>
-        date.getDate() === markedDate.date() &&
-        date.getMonth() === markedDate.month() &&
-        date.getFullYear() === markedDate.year()
-    );
+    const key = dayjs(date).format("MM-DD-YYYY");
+    return test.has(key);
   }
 
   return (
     <MantineProvider>
+      {error && <div>Error: {error.message}</div>}
+      {loading && <div>Loading...</div>}
       <div>You are logged in and your email address is {user?.email}</div>
 
       {!auth && (
@@ -112,6 +143,8 @@ function App() {
             disabled={!value}
             onClick={async () => {
               await saveCheckIn(user!.id, value);
+              await refetch();
+              setValue(null);
             }}
           >
             Save
