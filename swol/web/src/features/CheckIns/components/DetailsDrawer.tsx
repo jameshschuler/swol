@@ -6,7 +6,7 @@ import { DatePickerInput } from '@mantine/dates'
 import { useForm } from '@mantine/form'
 import dayjs from 'dayjs'
 import { useEffect } from 'react'
-import { useIsPhablet } from '@/hooks'
+import { useIsPhablet, useNotifications } from '@/hooks'
 import { activityTypeOptions } from '@/lib/constants'
 import { SWOL_GREEN } from '@/theme'
 import { useEditCheckIn } from '../hooks/useEditCheckIn'
@@ -30,6 +30,7 @@ interface DetailsDrawerProps {
 
 export function DetailsDrawer({ opened, close, checkInIds }: DetailsDrawerProps) {
   const isPhablet = useIsPhablet()
+  const { success } = useNotifications()
 
   const { mutate: editCheckIn, isPending } = useEditCheckIn()
   const { data, isLoading } = useGetAllCheckInsByIds({
@@ -82,6 +83,10 @@ export function DetailsDrawer({ opened, close, checkInIds }: DetailsDrawerProps)
 
     if (editCheckInRequests.length !== 0) {
       await Promise.all(editCheckInRequests.map(request => editCheckIn(request)))
+
+      success({
+        message: `Updated check in${editCheckInRequests.length > 1 ? 's' : ''} successfully.`,
+      })
     }
   
     form.reset()

@@ -34,15 +34,9 @@ export async function editCheckIn(payload: EditCheckInRequest, accessToken?: str
 export function useEditCheckIn() {
   const { session } = useAuth()
   const queryClient = useQueryClient()
-
-  const { success, error } = useNotifications()
-
+  
   return useMutation({
     onSuccess: ({ id }) => {
-      success({
-        message: `Updated check in successfully.`,
-      })
-
       queryClient.invalidateQueries({
         queryKey: [CHECKINS_QUERY_KEY],
       })
