@@ -4,12 +4,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Box, Button, Divider, Drawer, Flex, Group, Input, Select, Text, Textarea } from '@mantine/core'
 import { DatePickerInput } from '@mantine/dates'
 import { useForm } from '@mantine/form'
+import dayjs from 'dayjs'
 import { useEffect } from 'react'
 import { useIsPhablet } from '@/hooks'
 import { activityTypeOptions } from '@/lib/constants'
 import { SWOL_GREEN } from '@/theme'
 import { useEditCheckIn } from '../hooks/useEditCheckIn'
 import { useGetAllCheckInsByIds } from '../hooks/useGetCheckInsByIds'
+import { CheckInSkeleton } from './CheckInSkeleton'
 import { ProgramsSelect } from './ProgramsSelect'
 
 interface FormValues {
@@ -29,7 +31,7 @@ interface DetailsDrawerProps {
 export function DetailsDrawer({ opened, close, checkInIds }: DetailsDrawerProps) {
   const isPhablet = useIsPhablet()
 
-  const { mutate: editCheckIn } = useEditCheckIn()
+  const { mutate: editCheckIn, isPending } = useEditCheckIn()
   const { data, isLoading } = useGetAllCheckInsByIds({
     ids: checkInIds,
   })
@@ -69,7 +71,7 @@ export function DetailsDrawer({ opened, close, checkInIds }: DetailsDrawerProps)
           requests.push({
             id: checkIn.id,
             activityId: Number(checkIn.activityId),
-            checkinDate: checkIn.checkinDate,
+            checkinDate: dayjs(checkIn.checkinDate).utc().format(),
             notes: checkIn.notes,
             programId: Number(checkIn.programId),
           })
@@ -79,7 +81,7 @@ export function DetailsDrawer({ opened, close, checkInIds }: DetailsDrawerProps)
     }, new Array<EditCheckInRequest>())
 
     if (editCheckInRequests.length !== 0) {
-      // TODO: send patch requests
+      await Promise.all(editCheckInRequests.map(request => editCheckIn(request)))
     }
   
     form.reset()
@@ -113,9 +115,7 @@ export function DetailsDrawer({ opened, close, checkInIds }: DetailsDrawerProps)
         <Divider mb="md" mx="md" />
         <Drawer.Body px={24} pb={16}>
           {isLoading && (
-            <>
-              <p>TODO: Loading</p>
-            </>
+            <CheckInSkeleton />
           )}
           {/* TODO: should create a Form component or move styles to a nested Flex component */}
           <form
@@ -127,9 +127,8 @@ export function DetailsDrawer({ opened, close, checkInIds }: DetailsDrawerProps)
                 type="submit"
                 color={SWOL_GREEN}
                 radius="md"
-                disabled={!form.isTouched()}
-                // disabled={isPending}
-                // loading={isPending}
+                disabled={!form.isTouched() || isPending}
+                loading={isPending}
               >
                 Save
               </Button>

@@ -17,7 +17,10 @@ export function CheckIns() {
 
   const [allCheckIns, setAllCheckIns] = useState<CheckIn[]>([])
 
-  const { isLoading, data, error, refetch } = useGetAllCheckIns(year, month)
+  const { isLoading, data, error, refetch } = useGetAllCheckIns({
+    year,
+    month,
+  })
   const { checkIns } = useTransformCheckIns(allCheckIns)
   const [opened, { open, close }] = useDisclosure(false)
 

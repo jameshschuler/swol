@@ -29,6 +29,7 @@ export function CheckInsList({ checkIns, loadMore, loading, hasMore }: CheckInsL
                     {month}
                   </Title>
                   <Flex gap={16} wrap="wrap">
+                    {/* TODO: issue with activity doubling after saving check in changes */}
                     {[...data].map(([checkInDate, details]) => (
                       <CheckInCard
                         key={checkInDate}
