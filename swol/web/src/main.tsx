@@ -32,7 +32,6 @@ const router = createRouter({
     </div>
   ),
   defaultNotFoundComponent: NotFound,
-  // TODO:
   defaultErrorComponent: ({ error }) => <ErrorComponent error={error} />,
   defaultPreload: 'intent',
   scrollRestoration: true,

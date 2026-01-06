@@ -28,6 +28,7 @@ interface DetailsDrawerProps {
   checkInIds: number[]
 }
 
+// TODO: not displaying recently created check in details
 export function DetailsDrawer({ opened, close, checkInIds }: DetailsDrawerProps) {
   const isPhablet = useIsPhablet()
   const { success } = useNotifications()
@@ -58,12 +59,12 @@ export function DetailsDrawer({ opened, close, checkInIds }: DetailsDrawerProps)
     }
   }, [data?.checkIns, isLoading])
 
-  const handleOnSubmit = async (values: { checkIns: FormValues[] }) => {    
+  const handleOnSubmit = async (values: { checkIns: FormValues[] }) => {
     const editCheckInRequests = values.checkIns.reduce((requests, checkIn) => {
       const originalCheckIn = checkIns.find(c => c.id === checkIn.id)
       if (originalCheckIn) {
-        const hasChanges 
-        = checkIn.checkinDate !== originalCheckIn.checkinDate
+        const hasChanges
+          = checkIn.checkinDate !== originalCheckIn.checkinDate
           || (checkIn.activityId && Number(checkIn.activityId) !== originalCheckIn.activity?.id)
           || (checkIn.programId && Number(checkIn.programId) !== originalCheckIn.program?.id)
           || checkIn.notes !== originalCheckIn.notes
@@ -88,7 +89,7 @@ export function DetailsDrawer({ opened, close, checkInIds }: DetailsDrawerProps)
         message: `Updated check in${editCheckInRequests.length > 1 ? 's' : ''} successfully.`,
       })
     }
-  
+
     form.reset()
     close()
   }
@@ -104,9 +105,9 @@ export function DetailsDrawer({ opened, close, checkInIds }: DetailsDrawerProps)
       <Drawer.Overlay />
       <Drawer.Content style={isPhablet
         ? {
-            borderTopRightRadius: '16px',
-            borderTopLeftRadius: '16px',
-          }
+          borderTopRightRadius: '16px',
+          borderTopLeftRadius: '16px',
+        }
         : {}}
       >
         <Drawer.Header p={24}>
@@ -144,7 +145,7 @@ export function DetailsDrawer({ opened, close, checkInIds }: DetailsDrawerProps)
                   {index !== 0 && <Divider mb="lg" />}
                   <Input
                     style={{ display: 'none' }}
-                    key={form.key(`checkIns.${index}.id`)} 
+                    key={form.key(`checkIns.${index}.id`)}
                     {...form.getInputProps(`checkIns.${index}.id`)}
                   />
                   <Flex direction="column" gap={24}>
@@ -165,8 +166,8 @@ export function DetailsDrawer({ opened, close, checkInIds }: DetailsDrawerProps)
                       {...form.getInputProps(`checkIns.${index}.activityId`)}
                     />
 
-                    <ProgramsSelect 
-                      formKey={form.key(`checkIns.${index}.programId`)} 
+                    <ProgramsSelect
+                      formKey={form.key(`checkIns.${index}.programId`)}
                       inputProps={form.getInputProps(`checkIns.${index}.programId`)}
                     />
 

@@ -105,11 +105,14 @@ export function AddCheckInForm({ close }: AddCheckInFormProps) {
         label="Program"
         placeholder="Select program"
         disabled={isLoading}
-        data={programsData?.programs.map(program => ({
-          label: program.name,
-          value: program.id.toString(),
-          isCurrent: programsData.currentPrograms?.[program.programType]?.id === program.id,
-        }))}
+        data={[
+          { label: 'No Program', value: '' },
+          ...(programsData?.programs.map(program => ({
+            label: program.name,
+            value: program.id.toString(),
+            isCurrent: programsData.currentPrograms?.[program.programType]?.id === program.id,
+          })) || []),
+        ]}
         renderOption={renderSelectOption}
         nothingFoundMessage="No programs created yet"
         key={form.key('programId')}

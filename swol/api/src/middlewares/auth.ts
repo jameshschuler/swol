@@ -11,9 +11,9 @@ function getSupabaseClient() {
     return supabaseClient
   }
 
-  const { SUPABASE_URL, SUPABASE_ANON_KEY } = env
+  const { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } = env
 
-  supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+  supabaseClient = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY)
   return supabaseClient
 }
 

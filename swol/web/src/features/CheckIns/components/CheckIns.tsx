@@ -12,8 +12,9 @@ import { ListSkeleton } from './ListSkeleton'
 import { NoData } from './NoData'
 
 export function CheckIns() {
-  const [year, setYear] = useState<string>('2025')
-  const [month, setMonth] = useState<string>('7-12')
+  const currentYear = new Date().getFullYear().toString()
+  const [year, setYear] = useState<string>(currentYear)
+  const [month, setMonth] = useState<string>('1-6')
 
   const [allCheckIns, setAllCheckIns] = useState<CheckIn[]>([])
 

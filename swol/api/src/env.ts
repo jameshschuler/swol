@@ -6,7 +6,7 @@ export const EnvSchema = z.object({
   NODE_ENV: z.string().default('development'),
   DATABASE_URL: z.string().url(),
   SUPABASE_URL: z.string().url(),
-  SUPABASE_ANON_KEY: z.string(),
+  SUPABASE_PUBLISHABLE_KEY: z.string(),
   CLIENT_ORIGIN: z.string().url().default('http://localhost:5173'),
 })
 

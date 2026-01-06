@@ -2,7 +2,7 @@ import { defineConfig } from 'drizzle-kit'
 import env from '@/env'
 
 export default defineConfig({
-  schemaFilter: ['public'],
+  schemaFilter: ['swol'],
   schema: './src/db/schema.ts',
   out: './supabase/migrations',
   dialect: 'postgresql',

@@ -2,12 +2,13 @@ import { sql } from 'drizzle-orm'
 import { bigint, boolean, foreignKey, pgPolicy, pgSchema, pgTable, text, timestamp, unique, uuid, varchar } from 'drizzle-orm/pg-core'
 
 const authSchema = pgSchema('auth')
+const swolSchema = pgSchema('swol')
 
 export const users = authSchema.table('users', {
   id: uuid('id').primaryKey(),
 })
 
-export const activity = pgTable('activity', {
+export const activity = swolSchema.table('activity', {
   // You can use { mode: "bigint" } if numbers are exceeding js number limitations
   id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity({ name: 'activity_id_seq', startWith: 1, increment: 1, minValue: 1, maxValue: 9223372036854775807, cache: 1 }),
   createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
@@ -19,7 +20,7 @@ export const activity = pgTable('activity', {
 	pgPolicy("Enable select for authenticated users only", { as: "permissive", for: "select", to: ["authenticated"] }),
 ])
 
-export const gymCheckin = pgTable('gym_checkin', {
+export const gymCheckin = swolSchema.table('gym_checkin', {
   // You can use { mode: "bigint" } if numbers are exceeding js number limitations
   id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity({ name: 'gym_checkin_id_seq', startWith: 1, increment: 1, minValue: 1, maxValue: '9223372036854775807', cache: 1 }),
   createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
@@ -52,7 +53,7 @@ export const gymCheckin = pgTable('gym_checkin', {
   pgPolicy("Deny all access to anon", { as: "restrictive", for: "all", to: ["anon"] }),
 ])
 
-export const userProfile = pgTable('user_profile', {
+export const userProfile = swolSchema.table('user_profile', {
   // You can use { mode: "bigint" } if numbers are exceeding js number limitations
   id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity({ name: 'user_profile_id_seq', startWith: 1, increment: 1, minValue: 1, maxValue: '9223372036854775807', cache: 1 }),
   createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
@@ -77,7 +78,7 @@ export const userProfile = pgTable('user_profile', {
   pgPolicy('Disable delete', { as: 'permissive', for: 'delete', to: ['public'] }),
 ])
 
-export const programs = pgTable('programs', {
+export const programs = swolSchema.table('programs', {
   // You can use { mode: "bigint" } if numbers are exceeding js number limitations
   id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity({ name: 'programs_id_seq', startWith: 1, increment: 1, minValue: 1, maxValue: 9223372036854775807, cache: 1 }),
   name: text().notNull(),
