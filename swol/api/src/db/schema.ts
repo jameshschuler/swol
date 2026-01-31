@@ -89,6 +89,8 @@ export const programs = swolSchema.table('programs', {
   programType: text('program_type').notNull(),
   active: boolean().notNull(),
   author: text().notNull(),
+  weeks: bigint({ mode: 'number' }),
+  daysPerWeek: bigint('days_per_week', { mode: 'number' }),
 }, table => [
   foreignKey({
     columns: [table.userId],

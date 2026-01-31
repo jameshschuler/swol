@@ -83,6 +83,8 @@ export const create: AppRouteHandler<CreateRoute> = async (c) => {
     author: program.author,
     active: program.active || false,
     programType: program.programType,
+    weeks: program.weeks,
+    daysPerWeek: program.daysPerWeek,
   }
 
   const [createdProgram] = await db.insert(programs).values(values).returning()

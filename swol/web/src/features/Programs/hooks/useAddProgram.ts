@@ -9,6 +9,8 @@ export interface AddProgramRequest {
   active: boolean
   author: string
   description?: string
+  weeks?: number
+  daysPerWeek?: number
 }
 
 export async function addProgram(payload: AddProgramRequest, accessToken?: string) {
@@ -22,7 +24,7 @@ export async function addProgram(payload: AddProgramRequest, accessToken?: strin
   })
 
   if (!response.ok) {
-    throw new Error('Unable to add check in. Please try again in a moment.')
+    throw new Error('Unable to add program. Please try again in a moment.')
   }
 
   return response.json()

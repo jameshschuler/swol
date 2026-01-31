@@ -15,6 +15,8 @@ interface FormValues {
   setAsCurrent: string
   author?: string
   description?: string
+  weeks?: number
+  daysPerWeek?: number
 }
 
 interface CreateEditProgramDrawerProps {
@@ -41,6 +43,8 @@ export function CreateEditProgramsDrawer({ opened, close, selectedProgramId, onS
       description: '',
       programType: '',
       setAsCurrent: 'No',
+      weeks: undefined,
+      daysPerWeek: undefined,
     },
     validate: {
       name: value => (!value ? 'Name is required' : null),
@@ -58,6 +62,8 @@ export function CreateEditProgramsDrawer({ opened, close, selectedProgramId, onS
         active: values.setAsCurrent === 'Yes',
         author: values.author || '',
         description: values.description || '',
+        weeks: values.weeks ? Number(values.weeks) : undefined,
+        daysPerWeek: values.daysPerWeek ? Number(values.daysPerWeek) : undefined,
       })
     } else {
       await addProgram({
@@ -66,6 +72,8 @@ export function CreateEditProgramsDrawer({ opened, close, selectedProgramId, onS
         active: values.setAsCurrent === 'Yes',
         author: values.author || '',
         description: values.description || '',
+        weeks: values.weeks ? Number(values.weeks) : undefined,
+        daysPerWeek: values.daysPerWeek ? Number(values.daysPerWeek) : undefined,
       })
     }
 
@@ -82,6 +90,8 @@ export function CreateEditProgramsDrawer({ opened, close, selectedProgramId, onS
         description: program.description || '',
         programType: program.programType,
         setAsCurrent: program.active ? 'Yes' : 'No',
+        weeks: program.weeks,
+        daysPerWeek: program.daysPerWeek,
       })
     }
   }, [program, opened])
@@ -145,6 +155,24 @@ export function CreateEditProgramsDrawer({ opened, close, selectedProgramId, onS
               key={form.key('programType')}
               {...form.getInputProps('programType')}
             />
+            <Input.Wrapper label="Weeks" size="md">
+              <Input 
+                size="md"
+                placeholder="Enter number of weeks..." 
+                type='number'
+                key={form.key('weeks')}
+                {...form.getInputProps('weeks')}
+              />
+            </Input.Wrapper>
+            <Input.Wrapper label="Days Per Week" size="md">
+              <Input 
+                size="md"
+                placeholder="Enter number of days per week..." 
+                type='number'
+                key={form.key('daysPerWeek')}
+                {...form.getInputProps('daysPerWeek')}
+              />
+            </Input.Wrapper>
             <Select
               size="md"
               defaultValue="No"

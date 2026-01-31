@@ -5,12 +5,12 @@ import { Button, Divider, Flex, Group, Select, Text, Textarea } from '@mantine/c
 import { DatePicker } from '@mantine/dates'
 import { useForm } from '@mantine/form'
 import dayjs from 'dayjs'
-import { useEffect, useState } from 'react'
 import { useGetPrograms } from '@/features/Programs/hooks/useGetPrograms'
 import { useIsMobile } from '@/hooks/useIsMobile'
 import { activityTypeOptions } from '@/lib/constants'
 import { SWOL_GREEN } from '@/theme'
 import { useAddCheckIn } from '../hooks/useAddCheckIn'
+import { useState } from 'react'
 
 interface ExtendedComboboxItem extends ComboboxItem {
   isCurrent?: boolean
@@ -32,9 +32,8 @@ export function AddCheckInForm({ close }: AddCheckInFormProps) {
   const isMobile = useIsMobile()
 
   const { data: programsData, isLoading } = useGetPrograms()
-
   const { mutateAsync: addCheckIn, isPending } = useAddCheckIn()
-
+  
   const [selectedDate, setSelectedDate] = useState<Date>(dayjs().toDate())
 
   const form = useForm({
@@ -42,6 +41,7 @@ export function AddCheckInForm({ close }: AddCheckInFormProps) {
       date: dayjs().toDate(),
       activityId: '1',
       notes: '',
+      programId: localStorage.getItem('lastUsedProgramId') || '',
     },
     validate: {
       date: value => (!value ? 'Date is required' : null),
@@ -56,16 +56,11 @@ export function AddCheckInForm({ close }: AddCheckInFormProps) {
       programId: values.programId ? Number(values.programId) : undefined,
     })
 
+    localStorage.setItem('lastUsedProgramId', values.programId || '')
+
     form.reset()
     close()
   }
-
-  useEffect(() => {
-    const activityName = form.values.activityId === '1' ? 'Strength Training' : 'Running'
-    if (programsData?.currentPrograms && programsData.currentPrograms[activityName]) {
-      form.setFieldValue('programId', programsData.currentPrograms[activityName].id.toString())
-    }
-  }, [form.values.activityId, programsData?.currentPrograms])
 
   return (
     <form

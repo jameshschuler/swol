@@ -11,6 +11,8 @@ export interface EditProgramRequest {
   active?: boolean
   author?: string
   description?: string
+  weeks?: number
+  daysPerWeek?: number
 }
 
 export async function editProgram(payload: EditProgramRequest, accessToken?: string) {

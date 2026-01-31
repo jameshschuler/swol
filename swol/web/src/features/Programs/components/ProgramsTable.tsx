@@ -22,6 +22,8 @@ interface Program {
   programType: string
   active: boolean
   author: string
+  weeks?: number | null
+  daysPerWeek?: number | null
 }
 
 function renderTableRows(isLoading: boolean, programs: Program[], setSelectedRow: React.Dispatch<React.SetStateAction<number | undefined>>, searchQuery?: string, selectedRow?: number) {
@@ -57,6 +59,8 @@ function renderTableRows(isLoading: boolean, programs: Program[], setSelectedRow
           </Table.Td>
           <Table.Td>{program.name}</Table.Td>
           <Table.Td>{program.programType}</Table.Td>
+          <Table.Td>{program.weeks}</Table.Td>
+          <Table.Td>{program.daysPerWeek}</Table.Td>
           <Table.Td>{program.author}</Table.Td>
           <Table.Td maw={200}>
             <Tooltip multiline w={200} label={program.description} withArrow>
@@ -132,6 +136,8 @@ export function ProgramsTable() {
               <Table.Th />
               <Table.Th>Name</Table.Th>
               <Table.Th>Type</Table.Th>
+              <Table.Th>Weeks</Table.Th>
+              <Table.Th>Days/Week</Table.Th>
               <Table.Th>Author</Table.Th>
               <Table.Th>Description</Table.Th>
               <Table.Th>Current</Table.Th>
