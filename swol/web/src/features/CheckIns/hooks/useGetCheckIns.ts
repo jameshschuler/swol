@@ -5,18 +5,18 @@ import { client } from '@/lib/honoClient'
 export const CHECKINS_QUERY_KEY = 'check-ins'
 
 export interface CheckInQueryParams {
-  year?: string
-  month?: string
+  from?: string
+  to?: string
 }
 
 export function getAllCheckInsQueryOptions(accessToken?: string, params?: CheckInQueryParams) {
   return queryOptions({
-    queryKey: [CHECKINS_QUERY_KEY, params?.year, params?.month, params?.ids],
+    queryKey: [CHECKINS_QUERY_KEY, params?.from, params?.to],
     queryFn: async () => {
       const res = await client['check-ins'].$get({
         query: {
-          year: params?.year,
-          month: params?.month,
+          from: params?.from,
+          to: params?.to,
         },
       }, {
         headers: {
@@ -25,7 +25,7 @@ export function getAllCheckInsQueryOptions(accessToken?: string, params?: CheckI
         },
       })
       const data = await res.json()
-      
+
       return data
     },
   })

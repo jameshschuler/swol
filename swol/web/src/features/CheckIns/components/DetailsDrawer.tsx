@@ -10,9 +10,9 @@ import { useIsPhablet, useNotifications } from '@/hooks'
 import { activityTypeOptions } from '@/lib/constants'
 import { SWOL_GREEN } from '@/theme'
 import { useEditCheckIn } from '../hooks/useEditCheckIn'
-import { useGetAllCheckInsByIds } from '../hooks/useGetCheckInsByIds'
 import { CheckInSkeleton } from './CheckInSkeleton'
 import { ProgramsSelect } from './ProgramsSelect'
+import { useGetAllCheckIns } from '../hooks/useGetCheckIns'
 
 interface FormValues {
   id: number
@@ -25,17 +25,17 @@ interface FormValues {
 interface DetailsDrawerProps {
   opened: boolean
   close: () => void
-  checkInIds: number[]
+  checkInDate: string
 }
 
-// TODO: not displaying recently created check in details
-export function DetailsDrawer({ opened, close, checkInIds }: DetailsDrawerProps) {
+export function DetailsDrawer({ opened, close, checkInDate }: DetailsDrawerProps) {
   const isPhablet = useIsPhablet()
   const { success } = useNotifications()
 
   const { mutate: editCheckIn, isPending } = useEditCheckIn()
-  const { data, isLoading } = useGetAllCheckInsByIds({
-    ids: checkInIds,
+  const { data, isLoading } = useGetAllCheckIns({
+    from: checkInDate,
+    to: checkInDate,
   })
   const checkIns = data?.checkIns ?? []
 

@@ -28,7 +28,7 @@ export function useTransformCheckIns(
 
     const groupedCheckInsByYear = new Map<
       string,
-      Map<string, Map<string, { id: number, activity: Activity }[]>>
+      Map<string, Map<string, { id: number, activity: Activity, originalDate: string }[]>>
     >()
 
     if (!data) {
@@ -40,6 +40,8 @@ export function useTransformCheckIns(
       const year = date.format('YYYY')
       const month = date.format('MMMM')
 
+      const originalDate = d.checkinDate
+
       if (!groupedCheckInsByYear.has(year)) {
         groupedCheckInsByYear.set(year, new Map())
       }
@@ -48,14 +50,14 @@ export function useTransformCheckIns(
       const monthCheckIns = yearMap?.get(month)
       if (!monthCheckIns) {
         yearMap?.set(month, new Map([
-          [dayjs(d.checkinDate).format(format), [{ id: d.id, activity: d.activity }]],
+          [dayjs(d.checkinDate).format(format), [{ id: d.id, activity: d.activity, originalDate }]],
         ]))
       } else {
         const existingDate = monthCheckIns.get(dayjs(d.checkinDate).format(format))
         if (existingDate) {
-          existingDate.push({ id: d.id, activity: d.activity })
+          existingDate.push({ id: d.id, activity: d.activity, originalDate })
         } else {
-          monthCheckIns.set(dayjs(d.checkinDate).format(format), [{ id: d.id, activity: d.activity }])
+          monthCheckIns.set(dayjs(d.checkinDate).format(format), [{ id: d.id, activity: d.activity, originalDate }])
         }
       }
     })

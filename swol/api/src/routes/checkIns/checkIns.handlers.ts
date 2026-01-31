@@ -5,82 +5,31 @@ import * as HttpStatusCodes from 'stoker/http-status-codes'
 import * as HttpStatusPhrases from 'stoker/http-status-phrases'
 import { db } from '@/db'
 import { activity, gymCheckin, programs } from '@/db/schema'
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+
+dayjs.extend(utc);
 
 export const list: AppRouteHandler<ListRoute> = async (c) => {
   const user = c.get('user')
-  const { year, month, ids } = c.req.valid('query')
-
-  if (ids && ids.length !== 0) {
-    const rows = await db.query.gymCheckin.findMany({
-      where: and(eq(gymCheckin.userId, user!.id), inArray(gymCheckin.id, ids)),
-      columns: {
-        id: true,
-        checkinDate: true,
-        notes: true,
-      },
-      with: {
-        activity: {
-          columns: {
-            id: true,
-            name: true,
-          },
-        },
-        program: {
-          columns: {
-            id: true,
-            name: true,
-          },
-        },
-      },
-    })
-
-    return c.json({
-      checkIns: rows,
-      hasMore: false,
-    })
-  }
-
-  let hasMore = false
+  const { from, to } = c.req.valid('query')
   const whereConditions = []
 
-  if (year) {
-    whereConditions.push(eq(sql`EXTRACT(YEAR FROM ${gymCheckin.checkinDate})`, year))
-    let earliestMonth = null
+  let start = from ? dayjs.utc(from) : dayjs.utc().subtract(30, 'day');
+  let end = to ? dayjs.utc(to) : dayjs.utc();
 
-    if (month) {
-      const [startMonth, endMonth] = month.split('-').map(m => Number.parseInt(m, 10))
-      if (endMonth) {
-        whereConditions.push(sql`${sql`EXTRACT(MONTH FROM ${gymCheckin.checkinDate})`} BETWEEN ${startMonth} AND ${endMonth}`)
-      }
-      else {
-        whereConditions.push(eq(sql`EXTRACT(MONTH FROM ${gymCheckin.checkinDate})`, startMonth))
-      }
+  const startStr = start.startOf('day').toISOString();
+  const endStr = end.endOf('day').toISOString();
 
-      earliestMonth = startMonth
-    }
-
-    let startDateString = `${year}-01-01`
-    if (earliestMonth) {
-      const paddedMonth = String(earliestMonth).padStart(2, '0')
-      startDateString = `${year}-${paddedMonth}-01`
-    }
-
-    const result = await db
-      .select({ id: gymCheckin.id })
-      .from(gymCheckin)
-      .where(and(
-        eq(gymCheckin.userId, user!.id),
-        lt(gymCheckin.checkinDate, startDateString),
-      ))
-      .limit(1)
-    hasMore = result.length > 0
-  }
+  whereConditions.push(sql`${gymCheckin.checkinDate} >= ${startStr}`);
+  whereConditions.push(sql`${gymCheckin.checkinDate} <= ${endStr}`);
 
   const rows = await db.query.gymCheckin.findMany({
     where: and(eq(gymCheckin.userId, user!.id), ...whereConditions),
     columns: {
       id: true,
       checkinDate: true,
+      notes: true,
     },
     with: {
       activity: {
@@ -100,7 +49,6 @@ export const list: AppRouteHandler<ListRoute> = async (c) => {
 
   return c.json({
     checkIns: rows,
-    hasMore,
   })
 }
 

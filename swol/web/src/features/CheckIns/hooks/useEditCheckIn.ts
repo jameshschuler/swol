@@ -2,7 +2,6 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAuth, useNotifications } from '@/hooks'
 import { client } from '@/lib/honoClient'
 import { CHECKINS_QUERY_KEY } from './useGetCheckIns'
-import { CHECKINS_BY_IDS_QUERY_KEY } from './useGetCheckInsByIds'
 
 export interface EditCheckInRequest {
   id: number
@@ -13,6 +12,7 @@ export interface EditCheckInRequest {
 }
 
 export async function editCheckIn(payload: EditCheckInRequest, accessToken?: string) {
+
   const { id, ...rest } = payload
   const response = await client['check-ins'][':id'].$patch({
     param: { id },
@@ -34,14 +34,13 @@ export async function editCheckIn(payload: EditCheckInRequest, accessToken?: str
 export function useEditCheckIn() {
   const { session } = useAuth()
   const queryClient = useQueryClient()
-  
+  const { error } = useNotifications()
+
   return useMutation({
     onSuccess: ({ id }) => {
+      // TODO: fix
       queryClient.invalidateQueries({
         queryKey: [CHECKINS_QUERY_KEY],
-      })
-      queryClient.invalidateQueries({
-        queryKey: [CHECKINS_BY_IDS_QUERY_KEY],
       })
     },
     onError: (_err) => {

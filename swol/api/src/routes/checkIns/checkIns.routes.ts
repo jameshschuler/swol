@@ -21,7 +21,6 @@ export const list = createRoute({
     [HttpStatusCodes.OK]: jsonContent(
       z.object({
         checkIns: z.array(selectCheckInsSchema),
-        hasMore: z.boolean(),
       }),
       'The list of check-ins',
     ),

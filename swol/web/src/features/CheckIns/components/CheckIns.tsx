@@ -1,7 +1,6 @@
 import type { CheckIn } from '../types/checkIns'
 import { Box, Flex } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
-import { useEffect, useState } from 'react'
 import { useGetAllCheckIns } from '@/features/CheckIns/hooks/useGetCheckIns'
 import { useTransformCheckIns } from '../hooks/useTransformCheckIns'
 import { AddCheckInDrawer } from './AddCheckInDrawer'
@@ -10,43 +9,52 @@ import { CheckInsList } from './CheckInsList'
 import { Error } from './Error'
 import { ListSkeleton } from './ListSkeleton'
 import { NoData } from './NoData'
+import { useState } from 'react'
+import dayjs from 'dayjs'
 
 export function CheckIns() {
-  const currentYear = new Date().getFullYear().toString()
-  const [year, setYear] = useState<string>(currentYear)
-  const [month, setMonth] = useState<string>('1-6')
-
-  const [allCheckIns, setAllCheckIns] = useState<CheckIn[]>([])
-
+  const [from, setFrom] = useState<string>(dayjs.utc().subtract(30, 'day').toISOString())
+  const [to, setTo] = useState<string>(dayjs.utc().toISOString())
   const { isLoading, data, error, refetch } = useGetAllCheckIns({
-    year,
-    month,
+    from,
+    to,
   })
-  const { checkIns } = useTransformCheckIns(allCheckIns)
+  const { checkIns } = useTransformCheckIns(data?.checkIns ?? [])
   const [opened, { open, close }] = useDisclosure(false)
 
-  useEffect(() => {
-    if (data) {
-      // TODO: fix (naughty)
-      setAllCheckIns((prevCheckIns) => {
-        return [...prevCheckIns, ...data.checkIns]
-      })
-    }
-  }, [data])
-
-  const handleLoadMore = () => {
-    if (month === '7-12') {
-      setMonth('1-6')
-    } else {
-      const nextYear = (Number.parseInt(year) - 1).toString()
-      setYear(nextYear)
-      setMonth('7-12')
+  function handleFilterChange(value: string | null = '30') {
+    const now = dayjs.utc();
+    switch (value) {
+      case '30':
+        setFrom(now.subtract(30, 'day').toISOString())
+        setTo(now.endOf('day').toISOString());
+        break
+      case '90':
+        setFrom(now.subtract(90, 'day').toISOString())
+        setTo(now.endOf('day').toISOString());
+        break
+      case '180':
+        setFrom(now.subtract(180, 'day').toISOString())
+        setTo(now.endOf('day').toISOString());
+        break
+      case '365':
+        setFrom(now.subtract(365, 'day').toISOString())
+        setTo(now.endOf('day').toISOString());
+        break
+      case 'all':
+        setFrom('1970-01-01T00:00:00.000Z')
+        setTo(now.endOf('day').toISOString());
+        break
+      default:
+        setFrom(now.subtract(30, 'day').toISOString())
+        setTo(now.endOf('day').toISOString());
+        break
     }
   }
 
   return (
     <Flex direction="column" gap={24}>
-      <CheckInsHeader hasCheckIns={checkIns.size > 0} onAddCheckIn={open} />
+      <CheckInsHeader hasCheckIns={checkIns.size > 0} onAddCheckIn={open} onFilterChange={handleFilterChange} />
       <Box>
         {isLoading && <ListSkeleton />}
         {error && (
@@ -57,9 +65,9 @@ export function CheckIns() {
             }}
           />
         )}
-        {!isLoading && allCheckIns?.length === 0 && !error && <NoData onAction={open} />}
-        {!error && !isLoading && allCheckIns.length > 0 && (
-          <CheckInsList hasMore={data?.hasMore ?? false} checkIns={checkIns} loadMore={handleLoadMore} loading={isLoading} />
+        {!isLoading && checkIns.size === 0 && !error && <NoData onAction={open} />}
+        {!error && !isLoading && checkIns.size > 0 && (
+          <CheckInsList checkIns={checkIns} />
         )}
       </Box>
 
