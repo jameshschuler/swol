@@ -15,7 +15,7 @@ export function CheckInsHeader({ onAddCheckIn, hasCheckIns, onFilterChange }: Ch
   const [selectedFilter, setSelectedFilter] = useState<string>('30');
 
   return (
-    <Flex justify="space-between" align="center">
+    <Flex justify="space-between" align="center" direction={{ base: 'column', sm: 'row' }} gap={{ base: 16, sm: 0 }}>
       <Title>My Check Ins</Title>
       <Flex gap={8} align="center">
         {hasCheckIns && (
