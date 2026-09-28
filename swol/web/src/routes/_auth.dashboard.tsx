@@ -15,7 +15,7 @@ function DashboardPage() {
       <p>
         Hi {auth.user?.email}!
       </p>
-      <ComingSoon />
+      <ComingSoon page="Dashboard" />
     </Box>
   )
 }

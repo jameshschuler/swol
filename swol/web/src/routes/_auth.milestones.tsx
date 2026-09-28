@@ -9,7 +9,7 @@ export const Route = createFileRoute('/_auth/milestones')({
 function RouteComponent() {
   return (
     <Box>
-      <ComingSoon />
+      <ComingSoon page="Milestones" />
     </Box>
   )
 }

@@ -9,7 +9,7 @@ export const Route = createFileRoute('/_auth/achievements')({
 function RouteComponent() {
   return (
     <Box>
-      <ComingSoon />
+      <ComingSoon page="Achievements" />
     </Box>
   )
 }

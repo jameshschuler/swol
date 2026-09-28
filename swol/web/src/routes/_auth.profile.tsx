@@ -9,7 +9,7 @@ export const Route = createFileRoute('/_auth/profile')({
 function ProfilePage() {
   return (
     <Flex direction="column" align="center">
-      <ComingSoon />
+      <ComingSoon page="Profile" />
     </Flex>
   )
 }
