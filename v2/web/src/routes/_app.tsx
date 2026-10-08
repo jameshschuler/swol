@@ -6,7 +6,8 @@ import {
   useRouter,
 } from '@tanstack/react-router'
 import { useQueryClient } from '@tanstack/react-query'
-import { BottomTabs, Sidebar } from '#/components/AppNav'
+import { BottomTabs } from '#/components/layout/BottomTabs'
+import { Sidebar } from '#/components/layout/Sidebar'
 import { getSession, supabase } from '#/lib/supabase'
 
 export const Route = createFileRoute('/_app')({

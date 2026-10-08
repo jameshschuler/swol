@@ -1,12 +1,13 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 import { LogOut } from 'lucide-react'
-import { PageHeader } from '#/components/PageHeader'
+import { PageHeader } from '#/components/shared/PageHeader'
 import { Button } from '#/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '#/components/ui/card'
-import { meQuery, useUpdateWeightUnit } from '#/lib/queries'
+import { useUpdateWeightUnit } from '#/hooks/useUpdateWeightUnit'
+import { meQuery } from '#/lib/queries'
 import { supabase } from '#/lib/supabase'
-import type { WeightUnit } from '#/lib/api'
+import type { WeightUnit } from '#/types/api'
 
 export const Route = createFileRoute('/_app/account')({
   component: Account,

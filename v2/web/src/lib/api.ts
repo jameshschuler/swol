@@ -1,13 +1,5 @@
 import { getSession } from './supabase'
 
-export type WeightUnit = 'lb' | 'kg'
-
-export interface Me {
-  id: string
-  email: string
-  weightUnit: WeightUnit
-}
-
 export class ApiError extends Error {
   constructor(
     readonly status: number,

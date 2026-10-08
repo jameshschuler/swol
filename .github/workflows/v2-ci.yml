@@ -108,11 +108,11 @@ jobs:
           cache-dependency-path: v2/web/package-lock.json
       - run: npm ci
       - name: Format
-        run: npm run check
+        run: npm run format:check
       - name: Lint
         run: npm run lint
       - name: Typecheck
-        run: npx tsc --noEmit
+        run: npm run typecheck
       - name: Build
         run: npm run build
       - name: Audit

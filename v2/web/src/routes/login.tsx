@@ -1,5 +1,5 @@
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
-import { AuthForm } from '#/components/AuthForm'
+import { AuthForm } from '#/components/auth/AuthForm'
 import { getSession, supabase } from '#/lib/supabase'
 
 export const Route = createFileRoute('/login')({
