@@ -1,0 +1,39 @@
+services:
+  - type: web
+    name: swol-api
+    runtime: go
+    rootDir: v2/api
+    buildCommand: go build -o bin/server ./cmd/server && go build -o bin/migrate ./cmd/migrate
+    startCommand: ./bin/migrate up && ./bin/server
+    healthCheckPath: /api/health
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_PUBLISHABLE_KEY
+        sync: false
+      - key: ALLOWED_ORIGINS
+        sync: false
+
+  - type: web
+    name: swol-web
+    runtime: static
+    rootDir: v2/web
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist/client
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /_shell.html
+    headers:
+      - path: /assets/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+    envVars:
+      - key: VITE_SUPABASE_URL
+        sync: false
+      - key: VITE_SUPABASE_PUBLISHABLE_KEY
+        sync: false
+      - key: VITE_API_URL
+        sync: false
