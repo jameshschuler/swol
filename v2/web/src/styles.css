@@ -3,6 +3,10 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@theme {
+  --font-sans: 'Archivo', ui-sans-serif, system-ui, sans-serif;
+}
+
 @theme inline {
   --color-main: var(--main);
 
@@ -72,11 +76,11 @@
 }
 
 :root {
-  --background: hsl(214, 95%, 93%);
+  --background: hsl(142, 84%, 93%);
 
   --secondary-background: oklch(100% 0 0);
 
-  --main: hsl(217, 100%, 66%);
+  --main: hsl(152, 96%, 45%);
 
   --ring: oklch(0% 0 0);
 
@@ -90,13 +94,13 @@
 
   --shadow: 4px 4px 0px 0px var(--border);
 
-  --chart-1: #5294ff;
+  --chart-1: #05e17a;
 
-  --chart-2: #ff4d50;
+  --chart-2: #ff7a05;
 
-  --chart-3: #facc00;
+  --chart-3: #0099ff;
 
-  --chart-4: #05e17a;
+  --chart-4: #ffbf00;
 
   --chart-5: #7a83ff;
 
@@ -107,6 +111,14 @@
   body {
     font-weight: var(--font-weight-base);
     color: var(--foreground);
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-weight: var(--font-weight-heading);
   }
   h1,
   h2,
@@ -140,4 +152,9 @@ body,
   .scrollbar {
     scrollbar-color: var(--sb-thumb-color) var(--sb-track-color);
   }
+}
+body,
+.scrollbar {
+  --sb-track-color: #ffffff;
+  --sb-thumb-color: #000000;
 }

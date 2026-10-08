@@ -7,6 +7,7 @@ import {
 } from '@tanstack/react-router'
 import { useQueryClient } from '@tanstack/react-query'
 import { BottomTabs } from '#/components/layout/BottomTabs'
+import { MobileHeader } from '#/components/layout/MobileHeader'
 import { Sidebar } from '#/components/layout/Sidebar'
 import { getSession, supabase } from '#/lib/supabase'
 
@@ -37,9 +38,12 @@ function AppLayout() {
   return (
     <div className="flex min-h-dvh">
       <Sidebar />
-      <main className="mx-auto w-full max-w-4xl flex-1 p-4 pb-24 md:p-8">
-        <Outlet />
-      </main>
+      <div className="flex min-w-0 flex-1 flex-col">
+        <MobileHeader />
+        <main className="mx-auto w-full max-w-4xl flex-1 p-4 pb-[calc(7rem+env(safe-area-inset-bottom))] md:p-8">
+          <Outlet />
+        </main>
+      </div>
       <BottomTabs />
     </div>
   )
