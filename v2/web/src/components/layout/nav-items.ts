@@ -19,5 +19,10 @@ export const navItems: NavItem[] = [
   { to: '/milestones', label: 'Milestones', icon: Trophy },
   { to: '/goals', label: 'Goals', icon: Flag },
   { to: '/achievements', label: 'Achievements', icon: Medal },
-  { to: '/account', label: 'Account', icon: UserRound },
 ]
+
+export const accountItem: NavItem = {
+  to: '/account',
+  label: 'Account',
+  icon: UserRound,
+}
