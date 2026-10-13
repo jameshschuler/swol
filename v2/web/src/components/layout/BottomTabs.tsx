@@ -3,7 +3,7 @@ import { navItems } from './nav-items'
 
 export function BottomTabs() {
   return (
-    <nav className="fixed inset-x-4 bottom-[calc(1rem+env(safe-area-inset-bottom))] z-40 grid grid-cols-5 gap-1 rounded-base border-2 border-border bg-secondary-background p-1.5 shadow-shadow md:hidden">
+    <nav className="fixed inset-x-4 bottom-[calc(1rem+env(safe-area-inset-bottom))] z-40 grid grid-cols-4 gap-1 rounded-base border-2 border-border bg-secondary-background p-1.5 shadow-shadow md:hidden">
       {navItems.map(({ to, label, icon: Icon }) => (
         <Link
           key={to}

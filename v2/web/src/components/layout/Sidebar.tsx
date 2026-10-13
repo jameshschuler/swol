@@ -1,5 +1,5 @@
 import { SidebarLink } from './SidebarLink'
-import { accountItem, navItems } from './nav-items'
+import { navItems, utilityItems } from './nav-items'
 
 export function Sidebar() {
   return (
@@ -8,8 +8,10 @@ export function Sidebar() {
       {navItems.map((item) => (
         <SidebarLink key={item.to} {...item} />
       ))}
-      <div className="mt-auto">
-        <SidebarLink {...accountItem} />
+      <div className="mt-auto flex flex-col gap-2">
+        {utilityItems.map((item) => (
+          <SidebarLink key={item.to} {...item} />
+        ))}
       </div>
     </aside>
   )

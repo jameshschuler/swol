@@ -18,7 +18,8 @@ import { Route as AppAchievementsRouteImport } from './routes/_app.achievements'
 import { Route as AppDashboardRouteImport } from './routes/_app.dashboard'
 import { Route as AppGoalsRouteImport } from './routes/_app.goals'
 import { Route as AppMilestonesRouteImport } from './routes/_app.milestones'
-import { Route as AppSessionsRouteImport } from './routes/_app.sessions'
+import { Route as AppSessionsIndexRouteImport } from './routes/_app.sessions.index'
+import { Route as AppSessionsSessionIdRouteImport } from './routes/_app.sessions.$sessionId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -64,9 +65,14 @@ const AppMilestonesRoute = AppMilestonesRouteImport.update({
   path: '/milestones',
   getParentRoute: () => AppRoute,
 } as any)
-const AppSessionsRoute = AppSessionsRouteImport.update({
-  id: '/sessions',
-  path: '/sessions',
+const AppSessionsIndexRoute = AppSessionsIndexRouteImport.update({
+  id: '/sessions/',
+  path: '/sessions/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSessionsSessionIdRoute = AppSessionsSessionIdRouteImport.update({
+  id: '/sessions/$sessionId',
+  path: '/sessions/$sessionId',
   getParentRoute: () => AppRoute,
 } as any)
 
@@ -79,7 +85,8 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AppDashboardRoute
   '/goals': typeof AppGoalsRoute
   '/milestones': typeof AppMilestonesRoute
-  '/sessions': typeof AppSessionsRoute
+  '/sessions/$sessionId': typeof AppSessionsSessionIdRoute
+  '/sessions/': typeof AppSessionsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -90,7 +97,8 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AppDashboardRoute
   '/goals': typeof AppGoalsRoute
   '/milestones': typeof AppMilestonesRoute
-  '/sessions': typeof AppSessionsRoute
+  '/sessions/$sessionId': typeof AppSessionsSessionIdRoute
+  '/sessions': typeof AppSessionsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -103,7 +111,8 @@ export interface FileRoutesById {
   '/_app/dashboard': typeof AppDashboardRoute
   '/_app/goals': typeof AppGoalsRoute
   '/_app/milestones': typeof AppMilestonesRoute
-  '/_app/sessions': typeof AppSessionsRoute
+  '/_app/sessions/$sessionId': typeof AppSessionsSessionIdRoute
+  '/_app/sessions/': typeof AppSessionsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -116,7 +125,8 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/goals'
     | '/milestones'
-    | '/sessions'
+    | '/sessions/$sessionId'
+    | '/sessions/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -127,6 +137,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/goals'
     | '/milestones'
+    | '/sessions/$sessionId'
     | '/sessions'
   id:
     | '__root__'
@@ -139,7 +150,8 @@ export interface FileRouteTypes {
     | '/_app/dashboard'
     | '/_app/goals'
     | '/_app/milestones'
-    | '/_app/sessions'
+    | '/_app/sessions/$sessionId'
+    | '/_app/sessions/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -214,11 +226,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppMilestonesRouteImport
       parentRoute: typeof AppRoute
     }
-    '/_app/sessions': {
-      id: '/_app/sessions'
+    '/_app/sessions/': {
+      id: '/_app/sessions/'
       path: '/sessions'
-      fullPath: '/sessions'
-      preLoaderRoute: typeof AppSessionsRouteImport
+      fullPath: '/sessions/'
+      preLoaderRoute: typeof AppSessionsIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/sessions/$sessionId': {
+      id: '/_app/sessions/$sessionId'
+      path: '/sessions/$sessionId'
+      fullPath: '/sessions/$sessionId'
+      preLoaderRoute: typeof AppSessionsSessionIdRouteImport
       parentRoute: typeof AppRoute
     }
   }
@@ -230,7 +249,8 @@ interface AppRouteChildren {
   AppDashboardRoute: typeof AppDashboardRoute
   AppGoalsRoute: typeof AppGoalsRoute
   AppMilestonesRoute: typeof AppMilestonesRoute
-  AppSessionsRoute: typeof AppSessionsRoute
+  AppSessionsSessionIdRoute: typeof AppSessionsSessionIdRoute
+  AppSessionsIndexRoute: typeof AppSessionsIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
@@ -239,7 +259,8 @@ const AppRouteChildren: AppRouteChildren = {
   AppDashboardRoute: AppDashboardRoute,
   AppGoalsRoute: AppGoalsRoute,
   AppMilestonesRoute: AppMilestonesRoute,
-  AppSessionsRoute: AppSessionsRoute,
+  AppSessionsSessionIdRoute: AppSessionsSessionIdRoute,
+  AppSessionsIndexRoute: AppSessionsIndexRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
