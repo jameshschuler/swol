@@ -39,6 +39,19 @@ func NewHandler(queries db.Querier, authenticator Authenticator, allowedOrigins 
 		r.Patch("/me", handle(s.updateMe))
 		r.Get("/exercises", handle(s.listExercises))
 		r.Post("/exercises", handle(s.createExercise))
+		r.Get("/legacy-check-ins", handle(s.listLegacyCheckIns))
+		r.Route("/sessions", func(r chi.Router) {
+			r.Get("/", handle(s.listSessions))
+			r.Post("/", handle(s.startSession))
+			r.Post("/check-in", handle(s.checkIn))
+			r.Get("/current", handle(s.getOpenSession))
+			r.Get("/{id}", handle(s.getSession))
+			r.Patch("/{id}", handle(s.updateSessionNotes))
+			r.Delete("/{id}", handle(s.deleteSession))
+			r.Post("/{id}/pause", handle(s.pauseSession))
+			r.Post("/{id}/resume", handle(s.resumeSession))
+			r.Post("/{id}/end", handle(s.endSession))
+		})
 	})
 
 	return router

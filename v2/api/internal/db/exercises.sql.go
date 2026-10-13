@@ -46,7 +46,7 @@ func (q *Queries) ListExercises(ctx context.Context, userID *uuid.UUID) ([]Exerc
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Exercise
+	items := []Exercise{}
 	for rows.Next() {
 		var i Exercise
 		if err := rows.Scan(
