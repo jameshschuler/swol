@@ -14,6 +14,7 @@
 - **Not verbose.** Say it once, in as little code as reads clearly. Avoid redundant variables, wrapper functions that only forward arguments, defensive checks for states that can't occur, and restating types the compiler infers. Clarity beats cleverness — don't golf.
 - **Pragmatic, not enterprise.** Don't add defensive null-checks or enterprise-grade error boundaries unless explicitly asked. Write pragmatic, clean, readable code.
 - **Maintainable by default.** Keep functions short with a single responsibility, avoid deep nesting (return early), keep side effects at the edges, and keep modules loosely coupled so a change touches one place.
+- **Never edit generated files** (the sqlc `.go` files in `v2/api/internal/db/`, `v2/web/src/routeTree.gen.ts`), by hand or by running formatters over them. Change the source (SQL queries, route files) and rerun the generator.
 - **Follow existing patterns.** Match the conventions, libraries and structure already in the codebase rather than introducing new ones; add a dependency only when it clearly beats a few lines of code.
 
 ## Testing
@@ -42,6 +43,18 @@
 - **Props are fine for small, reusable presentational components** (layout primitives, `ui/` components, charts) whose inputs genuinely vary per use — keep them to a handful.
 - **Type the domain at the source.** Give DB columns and enums precise types in the schema or generated code so server results match client types without casts.
 - **Keep checks green.** Formatting, lint, typecheck, tests and build must all pass locally before pushing (CI runs them).
+
+## Go
+
+- **Write idiomatic Go.** Follow [Effective Go](https://go.dev/doc/effective_go) and the [Go Code Review Comments](https://go.dev/wiki/CodeReviewComments). Code must pass `gofmt`, `go vet` and `golangci-lint`.
+- **Errors are values.** Return them, don't panic. Check `err` right after the call and handle it once: return it, wrap it with context (`fmt.Errorf("load session: %w", err)`), or log it, not all three. Compare with `errors.Is`/`errors.As`, never by string.
+- **Small, flat code.** Return early instead of nesting `else`. Keep the happy path on the left edge.
+- **Naming.** Short, clear names; short receivers (`s *Server`); initialisms in one case (`ID`, `URL`, `userID`); no `Get` prefix on getters; package names are short, lowercase, and not repeated in identifiers (`db.Session`, not `db.DBSession`).
+- **Interfaces belong to the consumer.** Define them where they're used, keep them small, accept interfaces and return concrete types. Don't create an interface until something needs it.
+- **Pass `context.Context` first** to anything that does I/O, and never store it in a struct.
+- **Prefer the standard library.** Reach for a dependency only when stdlib clearly falls short.
+- **Tests use the standard `testing` package.** Table-driven tests for many similar cases, `t.Helper()` in helpers, hand-written fakes over mocking libraries, and `go test -race` must pass.
+- **Generated code is never edited by hand.** Change the SQL in `internal/db/queries/` and run `sqlc generate`.
 
 ## Response Guidelines
 
