@@ -11,9 +11,20 @@ import (
 )
 
 type Querier interface {
+	CheckIn(ctx context.Context, arg CheckInParams) (WorkoutSession, error)
 	CreateExercise(ctx context.Context, arg CreateExerciseParams) (Exercise, error)
+	DeleteSession(ctx context.Context, arg DeleteSessionParams) (int64, error)
+	EndSession(ctx context.Context, arg EndSessionParams) (WorkoutSession, error)
+	GetOpenSession(ctx context.Context, userID uuid.UUID) (WorkoutSession, error)
 	GetOrCreateUserSettings(ctx context.Context, userID uuid.UUID) (UserSettings, error)
+	GetSession(ctx context.Context, arg GetSessionParams) (WorkoutSession, error)
 	ListExercises(ctx context.Context, userID *uuid.UUID) ([]Exercise, error)
+	ListLegacyCheckIns(ctx context.Context, userID uuid.UUID) ([]ListLegacyCheckInsRow, error)
+	ListSessions(ctx context.Context, userID uuid.UUID) ([]WorkoutSession, error)
+	PauseSession(ctx context.Context, arg PauseSessionParams) (WorkoutSession, error)
+	ResumeSession(ctx context.Context, arg ResumeSessionParams) (WorkoutSession, error)
+	StartSession(ctx context.Context, userID uuid.UUID) (WorkoutSession, error)
+	UpdateSessionNotes(ctx context.Context, arg UpdateSessionNotesParams) (WorkoutSession, error)
 	UpdateWeightUnit(ctx context.Context, arg UpdateWeightUnitParams) (UserSettings, error)
 }
 

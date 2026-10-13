@@ -13,7 +13,8 @@
     "lint": "eslint",
     "format": "prettier --write . && eslint --fix",
     "format:check": "prettier --check .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",
@@ -47,6 +48,7 @@
     "eslint": "^9.20.0",
     "prettier": "^3.8.1",
     "typescript": "^6.0.2",
-    "vite": "^8.3.3"
+    "vite": "^8.3.3",
+    "vitest": "4.1.11"
   }
 }

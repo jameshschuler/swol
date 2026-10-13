@@ -1,7 +1,9 @@
 version: "2"
 sql:
   - engine: postgresql
-    schema: migrations
+    schema:
+      - migrations
+      - internal/db/schema
     queries: internal/db/queries
     gen:
       go:
@@ -12,6 +14,7 @@ sql:
         emit_interface: true
         json_tags_case_style: camel
         emit_pointers_for_null_types: true
+        emit_empty_slices: true
         overrides:
           - db_type: uuid
             go_type: github.com/google/uuid.UUID
@@ -40,12 +43,14 @@ sql:
           swol_user_setting: UserSettings
           swol_exercise: Exercise
           swol_workout_session: WorkoutSession
-          swol_session_note: SessionNote
           swol_milestone: Milestone
           swol_goal: Goal
           swol_user_achievement: UserAchievement
           swol_weight_unit: WeightUnit
           swol_session_status: SessionStatus
+          swol_session_kind: SessionKind
+          swol_session_kind_workout: SessionKindWorkout
+          swol_session_kind_check_in: SessionKindCheckIn
           swol_weight_unit_lb: WeightUnitLb
           swol_weight_unit_kg: WeightUnitKg
           swol_session_status_active: SessionStatusActive

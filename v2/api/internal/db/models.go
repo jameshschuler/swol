@@ -12,6 +12,48 @@ import (
 	"github.com/google/uuid"
 )
 
+type SessionKind string
+
+const (
+	SessionKindWorkout SessionKind = "workout"
+	SessionKindCheckIn SessionKind = "check_in"
+)
+
+func (e *SessionKind) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = SessionKind(s)
+	case string:
+		*e = SessionKind(s)
+	default:
+		return fmt.Errorf("unsupported scan type for SessionKind: %T", src)
+	}
+	return nil
+}
+
+type NullSessionKind struct {
+	SessionKind SessionKind `json:"swolSessionKind"`
+	Valid       bool        `json:"valid"` // Valid is true if SessionKind is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullSessionKind) Scan(value interface{}) error {
+	if value == nil {
+		ns.SessionKind, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.SessionKind.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullSessionKind) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.SessionKind), nil
+}
+
 type SessionStatus string
 
 const (
@@ -132,11 +174,10 @@ type Milestone struct {
 	CreatedAt  time.Time  `json:"createdAt"`
 }
 
-type SessionNote struct {
-	ID        uuid.UUID `json:"id"`
-	SessionID uuid.UUID `json:"sessionId"`
-	Body      string    `json:"body"`
-	CreatedAt time.Time `json:"createdAt"`
+type SwolGymCheckin struct {
+	ID          int64     `json:"id"`
+	UserID      uuid.UUID `json:"userId"`
+	CheckinDate time.Time `json:"checkinDate"`
 }
 
 type UserAchievement struct {
@@ -153,14 +194,15 @@ type UserSettings struct {
 }
 
 type WorkoutSession struct {
-	ID              uuid.UUID     `json:"id"`
-	UserID          uuid.UUID     `json:"userId"`
-	Status          SessionStatus `json:"status"`
-	StartedAt       time.Time     `json:"startedAt"`
-	PausedAt        *time.Time    `json:"pausedAt"`
-	PausedSeconds   int64         `json:"pausedSeconds"`
-	EndedAt         *time.Time    `json:"endedAt"`
-	LegacyCheckinID *int64        `json:"legacyCheckinId"`
-	CreatedAt       time.Time     `json:"createdAt"`
-	UpdatedAt       time.Time     `json:"updatedAt"`
+	ID            uuid.UUID     `json:"id"`
+	UserID        uuid.UUID     `json:"userId"`
+	Status        SessionStatus `json:"status"`
+	StartedAt     time.Time     `json:"startedAt"`
+	PausedAt      *time.Time    `json:"pausedAt"`
+	PausedSeconds int64         `json:"pausedSeconds"`
+	EndedAt       *time.Time    `json:"endedAt"`
+	CreatedAt     time.Time     `json:"createdAt"`
+	UpdatedAt     time.Time     `json:"updatedAt"`
+	Notes         *string       `json:"notes"`
+	Kind          SessionKind   `json:"kind"`
 }

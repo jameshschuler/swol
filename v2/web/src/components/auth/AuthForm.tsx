@@ -64,7 +64,7 @@ export function AuthForm({ mode, onSubmit, notice }: AuthFormProps) {
               />
             </div>
             {error && (
-              <p className="text-sm font-heading text-red-600">{error}</p>
+              <p className="text-sm font-heading text-danger">{error}</p>
             )}
             {notice && <p className="text-sm font-heading">{notice}</p>}
           </CardContent>

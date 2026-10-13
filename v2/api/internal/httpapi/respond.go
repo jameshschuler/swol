@@ -20,6 +20,10 @@ func badRequest(message string) error {
 	return apiError{status: http.StatusBadRequest, message: message}
 }
 
+func notFound(message string) error {
+	return apiError{status: http.StatusNotFound, message: message}
+}
+
 func conflict(message string) error {
 	return apiError{status: http.StatusConflict, message: message}
 }
@@ -32,8 +36,7 @@ func handle(fn handlerFunc) http.HandlerFunc {
 		if err == nil {
 			return
 		}
-		var apiErr apiError
-		if errors.As(err, &apiErr) {
+		if apiErr, ok := errors.AsType[apiError](err); ok {
 			writeJSON(w, apiErr.status, map[string]string{"error": apiErr.message})
 			return
 		}
