@@ -17,6 +17,16 @@
 - **Never edit generated files** (the sqlc `.go` files in `v2/api/internal/db/`, `v2/web/src/routeTree.gen.ts`), by hand or by running formatters over them. Change the source (SQL queries, route files) and rerun the generator.
 - **Follow existing patterns.** Match the conventions, libraries and structure already in the codebase rather than introducing new ones; add a dependency only when it clearly beats a few lines of code.
 
+## Strategic Design
+
+- **Think long term.** Working code isn't enough; each change should leave the design as good or better than before. Small tactical shortcuts add up to a codebase that's hard to change, so spend a little extra time on the design now instead of paying for it later.
+- **Fix the design, don't work around it.** When a change doesn't fit the current structure, reshape the structure instead of bolting on a special case, flag, or duplicate path. If the cleanup is large or unrelated, raise it and do it as a separate change rather than skipping it silently.
+- **Deep modules, simple interfaces.** A module should hide real complexity behind a small, obvious API. Avoid shallow layers that just pass calls through, and pull complexity down into the module so its callers stay simple.
+- **Put boundaries where change happens.** Keep code that changes together in one place, and keep domain rules out of UI components and HTTP handlers so they can evolve on their own.
+- **Name things after the domain.** Use the words the product uses (session, check-in, milestone) so the code reads like the problem it solves, and use one name per concept everywhere.
+- **Make trade-offs visible.** When you knowingly take a shortcut, say so in the PR description with what it costs and when to revisit it. Don't leave hidden debt.
+- **Strategic isn't speculative.** Design for the change you can see coming, not every change you can imagine. KISS and YAGNI still apply: a clean, simple design is the long-term one.
+
 ## Testing
 
 - **Every change ships with tests.** New logic gets unit tests; bug fixes get a regression test that fails before the fix. Lib helpers, server functions and Go packages must be covered.
