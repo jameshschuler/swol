@@ -101,6 +101,7 @@ I know the domain. The problem is answers buried under qualifiers, shorthand, an
 ### Hard rules
 
 - **Never push to the default branch (`main`).** All changes land via pull request. Branch → commit → open PR.
+- **Review before every commit or PR.** Run the `/code-review` skill on the pending changes first. Fix any confirmed findings, or tell me which ones you're leaving and why, before committing.
 - **Never create a new repository without confirming with me first.** Ask before any `gh repo create` or equivalent.
 - **Never create a repo, fork, or push outside `jameshschuler`** without explicit confirmation.
 
