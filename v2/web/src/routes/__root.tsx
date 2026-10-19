@@ -23,6 +23,10 @@ export const Route = createRootRouteWithContext<RouterContext>()({
         content: 'width=device-width, initial-scale=1, viewport-fit=cover',
       },
       { name: 'theme-color', content: '#000000' },
+      { name: 'mobile-web-app-capable', content: 'yes' },
+      { name: 'apple-mobile-web-app-capable', content: 'yes' },
+      { name: 'apple-mobile-web-app-title', content: 'Swol' },
+      { name: 'apple-mobile-web-app-status-bar-style', content: 'black' },
       { title: 'Swol' },
     ],
     links: [
@@ -38,6 +42,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
       },
       { rel: 'icon', type: 'image/png', href: '/favicon.png' },
       { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
+      { rel: 'manifest', href: '/manifest.webmanifest' },
       { rel: 'stylesheet', href: appCss },
     ],
   }),
