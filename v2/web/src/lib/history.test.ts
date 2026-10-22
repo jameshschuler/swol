@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { buildHistory } from './history'
+import { buildHistory, groupByMonth } from './history'
 import type { WorkoutSession } from '#/types/api'
 
 const session = (
@@ -44,5 +44,40 @@ describe('buildHistory', () => {
 
   it('is empty when there is nothing', () => {
     expect(buildHistory([], [])).toEqual([])
+  })
+})
+
+describe('groupByMonth', () => {
+  const legacy = (id: number, at: Date) => ({
+    type: 'legacy' as const,
+    at: at.toISOString(),
+    checkIn: { id, checkedInAt: at.toISOString() },
+  })
+
+  it('splits newest-first items into months, keeping their order', () => {
+    const months = groupByMonth([
+      legacy(1, new Date(2026, 9, 13)),
+      legacy(2, new Date(2026, 9, 2)),
+      legacy(3, new Date(2026, 1, 13)),
+      legacy(4, new Date(2025, 11, 31)),
+    ])
+    expect(
+      months.map((m) => [m.year, m.month, m.items.map((i) => i.at)]),
+    ).toEqual([
+      [
+        2026,
+        9,
+        [
+          new Date(2026, 9, 13).toISOString(),
+          new Date(2026, 9, 2).toISOString(),
+        ],
+      ],
+      [2026, 1, [new Date(2026, 1, 13).toISOString()]],
+      [2025, 11, [new Date(2025, 11, 31).toISOString()]],
+    ])
+  })
+
+  it('is empty when there is nothing', () => {
+    expect(groupByMonth([])).toEqual([])
   })
 })
