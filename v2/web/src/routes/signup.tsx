@@ -1,15 +1,11 @@
 import { useState } from 'react'
-import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { AuthForm } from '#/components/auth/AuthForm'
-import { getSession, supabase } from '#/lib/supabase'
+import { redirectIfSignedIn, supabase } from '#/lib/supabase'
 
 export const Route = createFileRoute('/signup')({
   ssr: false,
-  beforeLoad: async () => {
-    if (await getSession()) {
-      throw redirect({ to: '/dashboard' })
-    }
-  },
+  beforeLoad: redirectIfSignedIn,
   component: Signup,
 })
 
