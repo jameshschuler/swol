@@ -39,6 +39,12 @@ sql:
             go_type:
               type: float64
               pointer: true
+          - column: swol.milestones.weight_kg
+            go_type:
+              type: float64
+          - column: swol.goals.target_weight_kg
+            go_type:
+              type: float64
         rename:
           swol_user_setting: UserSettings
           swol_exercise: Exercise

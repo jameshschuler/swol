@@ -40,6 +40,9 @@ func NewHandler(queries db.Querier, authenticator Authenticator, allowedOrigins 
 		r.Get("/exercises", handle(s.listExercises))
 		r.Post("/exercises", handle(s.createExercise))
 		r.Get("/legacy-check-ins", handle(s.listLegacyCheckIns))
+		r.Get("/milestones", handle(s.listMilestones))
+		r.Post("/milestones", handle(s.createMilestone))
+		r.Delete("/milestones/{id}", handle(s.deleteMilestone))
 		r.Route("/sessions", func(r chi.Router) {
 			r.Get("/", handle(s.listSessions))
 			r.Post("/", handle(s.startSession))

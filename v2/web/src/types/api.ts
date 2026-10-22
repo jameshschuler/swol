@@ -25,3 +25,21 @@ export interface LegacyCheckIn {
   id: number
   checkedInAt: string
 }
+
+export interface Exercise {
+  id: string
+  userId: string | null
+  name: string
+}
+
+export interface Milestone {
+  id: string
+  exerciseId: string
+  exerciseName: string
+  weight: number
+  unit: WeightUnit
+  weightKg: number
+  reps: number
+  achievedAt: string
+  note: string | null
+}

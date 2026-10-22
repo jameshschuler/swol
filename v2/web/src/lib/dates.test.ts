@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { groupByDay, localDateKey, monthGrid } from './dates'
+import { groupByDay, localDateKey, monthGrid, timeForDate } from './dates'
 
 describe('localDateKey', () => {
   it('formats the local date with zero padding', () => {
@@ -38,5 +38,19 @@ describe('groupByDay', () => {
     expect(days.get('2026-10-01')).toHaveLength(2)
     expect(days.get('2026-10-02')).toHaveLength(1)
     expect(days.has('2026-10-03')).toBe(false)
+  })
+})
+
+describe('timeForDate', () => {
+  const now = new Date(2026, 9, 13, 18, 30)
+
+  it('uses the current time when the date is today', () => {
+    expect(timeForDate('2026-10-13', now)).toBe(now.toISOString())
+  })
+
+  it('uses local noon for an earlier date', () => {
+    expect(timeForDate('2026-10-01', now)).toBe(
+      new Date(2026, 9, 1, 12).toISOString(),
+    )
   })
 })

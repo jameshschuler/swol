@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { formatTime } from './format'
-import { checkInTime, elapsedSeconds, sessionTimes } from './sessions'
+import { elapsedSeconds, sessionTimes } from './sessions'
 import type { WorkoutSession } from '#/types/api'
 
 const start = Date.parse('2026-10-12T10:00:00Z')
@@ -49,20 +49,6 @@ describe('elapsedSeconds', () => {
 
   it('never goes negative when the clock is behind the server', () => {
     expect(elapsedSeconds(session({}), start - 5000)).toBe(0)
-  })
-})
-
-describe('checkInTime', () => {
-  const now = new Date(2026, 9, 13, 18, 30)
-
-  it('uses the current time when checking in today', () => {
-    expect(checkInTime('2026-10-13', now)).toBe(now.toISOString())
-  })
-
-  it('uses local noon for an earlier date', () => {
-    expect(checkInTime('2026-10-01', now)).toBe(
-      new Date(2026, 9, 1, 12).toISOString(),
-    )
   })
 })
 

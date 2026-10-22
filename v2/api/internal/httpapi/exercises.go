@@ -28,7 +28,7 @@ func (s *Server) createExercise(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 	name := strings.TrimSpace(body.Name)
-	if name == "" || len(name) > 100 {
+	if name == "" || tooLong(name, 100) {
 		return badRequest("name must be 1-100 characters")
 	}
 

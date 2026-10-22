@@ -152,7 +152,7 @@ type Goal struct {
 	ExerciseID           uuid.UUID  `json:"exerciseId"`
 	TargetWeight         float64    `json:"targetWeight"`
 	Unit                 WeightUnit `json:"unit"`
-	TargetWeightKg       *float64   `json:"targetWeightKg"`
+	TargetWeightKg       float64    `json:"targetWeightKg"`
 	TargetReps           int32      `json:"targetReps"`
 	CompletedAt          *time.Time `json:"completedAt"`
 	CompletedMilestoneID *uuid.UUID `json:"completedMilestoneId"`
@@ -167,7 +167,7 @@ type Milestone struct {
 	SessionID  *uuid.UUID `json:"sessionId"`
 	Weight     float64    `json:"weight"`
 	Unit       WeightUnit `json:"unit"`
-	WeightKg   *float64   `json:"weightKg"`
+	WeightKg   float64    `json:"weightKg"`
 	Reps       int32      `json:"reps"`
 	AchievedAt time.Time  `json:"achievedAt"`
 	Note       *string    `json:"note"`
