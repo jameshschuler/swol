@@ -5,7 +5,7 @@ import { formatMonth, groupByDay, localDateKey, monthGrid } from '#/lib/dates'
 import { formatDate } from '#/lib/format'
 import type { HistoryItem } from '#/lib/history'
 import { cn } from '#/lib/utils'
-import { HistoryList } from './HistoryList'
+import { HistoryTiles } from './HistoryTiles'
 
 const weekdays = ['S', 'M', 'T', 'W', 'T', 'F', 'S']
 
@@ -85,7 +85,7 @@ export function HistoryCalendar({ items }: { items: HistoryItem[] }) {
           {selectedItems.length === 0 ? (
             <p className="text-sm">Nothing logged this day.</p>
           ) : (
-            <HistoryList items={selectedItems} />
+            <HistoryTiles items={selectedItems} />
           )}
         </div>
       ) : (

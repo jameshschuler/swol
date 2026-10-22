@@ -31,3 +31,27 @@ export function formatTime(iso: string): string {
     minute: '2-digit',
   })
 }
+
+export function formatShortDate(date: Date): string {
+  return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
+}
+
+export function formatShortMonth(date: Date): string {
+  return date.toLocaleDateString(undefined, { month: 'short' })
+}
+
+export function formatWeeks(count: number): string {
+  return `${count} ${count === 1 ? 'week' : 'weeks'}`
+}
+
+export function formatWeekdayName(weekday: number): string {
+  return formatShortWeekday(new Date(2026, 0, 4 + weekday))
+}
+
+export function formatShortWeekday(date: Date): string {
+  return date.toLocaleDateString(undefined, { weekday: 'short' })
+}
+
+export function formatHours(seconds: number): string {
+  return `${Number((seconds / 3600).toFixed(1))} h`
+}

@@ -24,3 +24,27 @@ export function buildHistory(
   ]
   return items.sort((a, b) => Date.parse(b.at) - Date.parse(a.at))
 }
+
+export interface HistoryMonth {
+  year: number
+  month: number
+  items: HistoryItem[]
+}
+
+export function groupByMonth(items: HistoryItem[]): HistoryMonth[] {
+  const months: HistoryMonth[] = []
+  for (const item of items) {
+    const date = new Date(item.at)
+    const last = months.at(-1)
+    if (last?.year === date.getFullYear() && last.month === date.getMonth()) {
+      last.items.push(item)
+    } else {
+      months.push({
+        year: date.getFullYear(),
+        month: date.getMonth(),
+        items: [item],
+      })
+    }
+  }
+  return months
+}

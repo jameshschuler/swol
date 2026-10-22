@@ -4,6 +4,14 @@ export function localDateKey(date: Date): string {
   return `${date.getFullYear()}-${month}-${day}`
 }
 
+export function addDays(date: Date, days: number): Date {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate() + days)
+}
+
+export function startOfWeek(date: Date): Date {
+  return addDays(date, -date.getDay())
+}
+
 export function timeForDate(dateKey: string, now: Date): string {
   if (dateKey === localDateKey(now)) {
     return now.toISOString()
@@ -17,11 +25,7 @@ export function monthGrid(year: number, month: number): Date[] {
   const start = new Date(year, month, 1 - first.getDay())
   const daysInMonth = new Date(year, month + 1, 0).getDate()
   const weeks = Math.ceil((first.getDay() + daysInMonth) / 7)
-  return Array.from(
-    { length: weeks * 7 },
-    (_, i) =>
-      new Date(start.getFullYear(), start.getMonth(), start.getDate() + i),
-  )
+  return Array.from({ length: weeks * 7 }, (_, i) => addDays(start, i))
 }
 
 export function groupByDay<T>(
