@@ -52,7 +52,7 @@ func (s *Server) checkIn(w http.ResponseWriter, r *http.Request) error {
 	if body.CheckedInAt != nil {
 		checkedInAt = *body.CheckedInAt
 	}
-	if checkedInAt.After(time.Now()) {
+	if isInFuture(checkedInAt) {
 		return badRequest("checkedInAt cannot be in the future")
 	}
 
@@ -167,16 +167,12 @@ func (s *Server) updateSessionNotes(w http.ResponseWriter, r *http.Request) erro
 		return err
 	}
 	text := strings.TrimSpace(body.Notes)
-	if len(text) > 5000 {
+	if tooLong(text, 5000) {
 		return badRequest("notes must be at most 5000 characters")
-	}
-	var notes *string
-	if text != "" {
-		notes = &text
 	}
 
 	user := auth.FromContext(r.Context())
-	session, err := s.queries.UpdateSessionNotes(r.Context(), db.UpdateSessionNotesParams{ID: id, UserID: user.ID, Notes: notes})
+	session, err := s.queries.UpdateSessionNotes(r.Context(), db.UpdateSessionNotesParams{ID: id, UserID: user.ID, Notes: nilIfEmpty(text)})
 	if errors.Is(err, pgx.ErrNoRows) {
 		return errSessionNotFound
 	}

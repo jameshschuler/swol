@@ -13,6 +13,8 @@ import (
 type Querier interface {
 	CheckIn(ctx context.Context, arg CheckInParams) (WorkoutSession, error)
 	CreateExercise(ctx context.Context, arg CreateExerciseParams) (Exercise, error)
+	CreateMilestone(ctx context.Context, arg CreateMilestoneParams) (Milestone, error)
+	DeleteMilestone(ctx context.Context, arg DeleteMilestoneParams) (int64, error)
 	DeleteSession(ctx context.Context, arg DeleteSessionParams) (int64, error)
 	EndSession(ctx context.Context, arg EndSessionParams) (WorkoutSession, error)
 	GetOpenSession(ctx context.Context, userID uuid.UUID) (WorkoutSession, error)
@@ -20,6 +22,7 @@ type Querier interface {
 	GetSession(ctx context.Context, arg GetSessionParams) (WorkoutSession, error)
 	ListExercises(ctx context.Context, userID *uuid.UUID) ([]Exercise, error)
 	ListLegacyCheckIns(ctx context.Context, userID uuid.UUID) ([]ListLegacyCheckInsRow, error)
+	ListMilestones(ctx context.Context, userID uuid.UUID) ([]ListMilestonesRow, error)
 	ListSessions(ctx context.Context, userID uuid.UUID) ([]WorkoutSession, error)
 	PauseSession(ctx context.Context, arg PauseSessionParams) (WorkoutSession, error)
 	ResumeSession(ctx context.Context, arg ResumeSessionParams) (WorkoutSession, error)

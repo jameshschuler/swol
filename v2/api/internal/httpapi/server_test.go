@@ -33,6 +33,8 @@ type fakeQueries struct {
 	createExerciseE error
 	sessions        []db.WorkoutSession
 	legacyCheckIns  []db.ListLegacyCheckInsRow
+	exercises       []db.Exercise
+	milestones      []db.Milestone
 }
 
 func (f *fakeQueries) GetOrCreateUserSettings(_ context.Context, userID uuid.UUID) (db.UserSettings, error) {

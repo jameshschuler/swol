@@ -4,8 +4,7 @@ import { MapPin } from 'lucide-react'
 import { Button } from '#/components/ui/button'
 import { Input } from '#/components/ui/input'
 import { useCheckIn } from '#/hooks/useSessionMutations'
-import { localDateKey } from '#/lib/dates'
-import { checkInTime } from '#/lib/sessions'
+import { localDateKey, timeForDate } from '#/lib/dates'
 
 export function CheckInForm() {
   const today = localDateKey(new Date())
@@ -14,7 +13,7 @@ export function CheckInForm() {
 
   const submit = (event: FormEvent) => {
     event.preventDefault()
-    checkIn.mutate(checkInTime(date, new Date()))
+    checkIn.mutate(timeForDate(date, new Date()))
   }
 
   return (

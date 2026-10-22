@@ -4,6 +4,14 @@ export function localDateKey(date: Date): string {
   return `${date.getFullYear()}-${month}-${day}`
 }
 
+export function timeForDate(dateKey: string, now: Date): string {
+  if (dateKey === localDateKey(now)) {
+    return now.toISOString()
+  }
+  const [year, month, day] = dateKey.split('-').map(Number)
+  return new Date(year, month - 1, day, 12).toISOString()
+}
+
 export function monthGrid(year: number, month: number): Date[] {
   const first = new Date(year, month, 1)
   const start = new Date(year, month, 1 - first.getDay())

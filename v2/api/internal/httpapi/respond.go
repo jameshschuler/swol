@@ -5,6 +5,8 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
+	"time"
+	"unicode/utf8"
 )
 
 type apiError struct {
@@ -58,4 +60,21 @@ func decodeJSON(r *http.Request, dst any) error {
 		return badRequest("invalid request body")
 	}
 	return nil
+}
+
+const clockSkew = 5 * time.Minute
+
+func isInFuture(t time.Time) bool {
+	return t.After(time.Now().Add(clockSkew))
+}
+
+func tooLong(s string, maxChars int) bool {
+	return utf8.RuneCountInString(s) > maxChars
+}
+
+func nilIfEmpty(s string) *string {
+	if s == "" {
+		return nil
+	}
+	return &s
 }

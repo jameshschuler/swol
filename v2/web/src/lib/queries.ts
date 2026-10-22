@@ -1,6 +1,12 @@
 import { queryOptions } from '@tanstack/react-query'
 import { api } from './api'
-import type { LegacyCheckIn, Me, WorkoutSession } from '#/types/api'
+import type {
+  Exercise,
+  LegacyCheckIn,
+  Me,
+  Milestone,
+  WorkoutSession,
+} from '#/types/api'
 
 export const meQuery = queryOptions({
   queryKey: ['me'],
@@ -27,4 +33,14 @@ export const legacyCheckInsQuery = queryOptions({
   queryKey: ['legacy-check-ins'],
   queryFn: () => api<LegacyCheckIn[]>('/legacy-check-ins'),
   staleTime: Infinity,
+})
+
+export const exercisesQuery = queryOptions({
+  queryKey: ['exercises'],
+  queryFn: () => api<Exercise[]>('/exercises'),
+})
+
+export const milestonesQuery = queryOptions({
+  queryKey: ['milestones'],
+  queryFn: () => api<Milestone[]>('/milestones'),
 })
