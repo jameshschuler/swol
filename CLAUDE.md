@@ -52,7 +52,7 @@
 - **Use context instead of prop drilling.** When a screen shares state and actions across components (or a component needs more than ~5 state/action props), expose them through a context in `src/contexts/` — a `XProvider` plus `useXContext()` hook. Routes wrap their layout in the provider; components read from the hook and take no state/action props.
 - **Props are fine for small, reusable presentational components** (layout primitives, `ui/` components, charts) whose inputs genuinely vary per use — keep them to a handful.
 - **Type the domain at the source.** Give DB columns and enums precise types in the schema or generated code so server results match client types without casts.
-- **Keep checks green.** Formatting, lint, typecheck, tests and build must all pass locally before pushing (CI runs them).
+- **Before committing, run only format, lint and tests** (plus `/code-review`, below). Web: `npm run format:check`, `npm run lint`, `npm test`. API: `gofmt -l .`, `go vet ./...`, `go test ./...`. Leave typecheck, build, audit and the rest to CI.
 
 ## Go
 
@@ -127,5 +127,5 @@ There is no PR template. Use a short `## Summary` (what changed and why) and a `
 
 ### Misc
 
-- There are no git hooks. Run the same checks CI runs locally before pushing.
+- There are no git hooks. Run format, lint and tests locally before committing; CI runs the full set.
 - Security issues/vulnerabilities are never reported in public issue trackers or PRs.
