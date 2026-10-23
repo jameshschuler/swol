@@ -10,7 +10,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/jamesschuler/swol/v2/api/internal/auth"
 	"github.com/jamesschuler/swol/v2/api/internal/config"
 	"github.com/jamesschuler/swol/v2/api/internal/db"
@@ -33,7 +32,7 @@ func run() error {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
-	pool, err := pgxpool.New(ctx, cfg.DatabaseURL)
+	pool, err := db.NewPool(ctx, cfg.DatabaseURL)
 	if err != nil {
 		return err
 	}
