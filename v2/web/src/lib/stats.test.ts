@@ -1,7 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import { localDateKey } from './dates'
+import { localDateKey, msPerWeek } from './dates'
 import {
-  averageVisitsPerWeek,
+  firstVisit,
+  lifetimeVisitsPerWeek,
+  visitYears,
+  yearStats,
   heatmapWeeks,
   recentWorkoutLengths,
   visitDays,
@@ -58,13 +61,9 @@ describe('visitDays', () => {
 })
 
 describe('visitTotals', () => {
-  it('counts all time, this year and this month', () => {
+  it('counts all time and this month', () => {
     const days = new Set(['2025-12-30', ...keys([0, 5], [9, 1], [9, 21])])
-    expect(visitTotals(days, now)).toEqual({
-      all: 4,
-      thisYear: 3,
-      thisMonth: 2,
-    })
+    expect(visitTotals(days, now)).toEqual({ all: 4, thisMonth: 2 })
   })
 })
 
@@ -125,24 +124,6 @@ describe('visitsByWeekday', () => {
   })
 })
 
-describe('averageVisitsPerWeek', () => {
-  it('averages over complete weeks, leaving out this week', () => {
-    const days = keys([8, 22], [8, 29], [9, 6], [9, 7], [9, 13], [9, 20])
-    expect(averageVisitsPerWeek(days, now, 4)).toBe(1.25)
-  })
-
-  it('only counts weeks since the first visit', () => {
-    expect(averageVisitsPerWeek(keys([9, 6], [9, 7], [9, 13]), now, 12)).toBe(
-      1.5,
-    )
-  })
-
-  it('is zero before a full week has passed', () => {
-    expect(averageVisitsPerWeek(keys([9, 20]), now, 12)).toBe(0)
-    expect(averageVisitsPerWeek(new Set(), now, 12)).toBe(0)
-  })
-})
-
 describe('workoutTotals', () => {
   it('sums finished workouts only, minus paused time', () => {
     const totals = workoutTotals(
@@ -194,5 +175,85 @@ describe('heatmapWeeks', () => {
     expect(weeks).toHaveLength(2)
     expect(localDateKey(weeks[0][0])).toBe('2026-10-11')
     expect(localDateKey(weeks[1][6])).toBe('2026-10-24')
+  })
+})
+
+describe('firstVisit', () => {
+  it('finds the earliest visit day', () => {
+    expect(firstVisit(new Set(['2026-10-01', '2023-07-14']))).toEqual(
+      new Date(2023, 6, 14),
+    )
+    expect(firstVisit(new Set())).toBeNull()
+  })
+})
+
+describe('lifetimeVisitsPerWeek', () => {
+  it('averages from the first visit through today', () => {
+    const start = new Date(2026, 8, 30)
+    const days = new Set(
+      Array.from({ length: 6 }, (_, i) =>
+        localDateKey(new Date(2026, 8, 30 + i * 3)),
+      ),
+    )
+    const endOfToday = new Date(2026, 9, 22)
+    const weeks = (endOfToday.getTime() - start.getTime()) / msPerWeek
+    expect(lifetimeVisitsPerWeek(days, now)).toBeCloseTo(6 / weeks)
+  })
+
+  it('treats a brand-new account as at least one week', () => {
+    expect(lifetimeVisitsPerWeek(keys([9, 21]), now)).toBe(1)
+  })
+
+  it('is zero with no visits', () => {
+    expect(lifetimeVisitsPerWeek(new Set(), now)).toBe(0)
+  })
+})
+
+describe('visitYears', () => {
+  it('lists years from this one back to the first visit', () => {
+    expect(visitYears(new Set(['2023-07-14']), now)).toEqual([
+      2026, 2025, 2024, 2023,
+    ])
+  })
+
+  it('still lists this year if a visit is dated in the future', () => {
+    expect(visitYears(new Set(['2027-01-01']), now)).toEqual([2026])
+  })
+
+  it('lists only this year with no visits', () => {
+    expect(visitYears(new Set(), now)).toEqual([2026])
+  })
+})
+
+describe('yearStats', () => {
+  const days = new Set([
+    '2023-07-14',
+    '2024-01-10',
+    '2024-06-01',
+    '2024-12-31',
+    '2026-10-20',
+  ])
+
+  it('averages a full past year over the whole year', () => {
+    const stats = yearStats(days, 2024, now)
+    expect(stats.visits).toBe(3)
+    expect(stats.visitsPerWeek).toBeCloseTo(3 / (366 / 7))
+  })
+
+  it('starts the first year at the first visit', () => {
+    const first = new Date(2023, 6, 14)
+    const weeks = (new Date(2024, 0, 1).getTime() - first.getTime()) / msPerWeek
+    expect(yearStats(days, 2023, now).visitsPerWeek).toBeCloseTo(1 / weeks)
+  })
+
+  it('stops the current year at today', () => {
+    const weeks =
+      (new Date(2026, 9, 22).getTime() - new Date(2026, 0, 1).getTime()) /
+      msPerWeek
+    expect(yearStats(days, 2026, now).visitsPerWeek).toBeCloseTo(1 / weeks)
+  })
+
+  it('is zero for a year before the first visit', () => {
+    expect(yearStats(days, 2022, now)).toEqual({ visits: 0, visitsPerWeek: 0 })
   })
 })

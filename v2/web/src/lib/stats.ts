@@ -1,4 +1,4 @@
-import { addDays, localDateKey, startOfWeek } from './dates'
+import { addDays, localDateKey, msPerWeek, startOfWeek } from './dates'
 import { elapsedSeconds } from './sessions'
 import type { LegacyCheckIn, WorkoutSession } from '#/types/api'
 
@@ -36,7 +36,6 @@ export function visitTotals(days: Set<string>, now: Date) {
   const tomorrow = addDays(now, 1)
   return {
     all: days.size,
-    thisYear: visitsBetween(days, new Date(now.getFullYear(), 0, 1), tomorrow),
     thisMonth: visitsBetween(
       days,
       new Date(now.getFullYear(), now.getMonth(), 1),
@@ -106,26 +105,43 @@ export function visitsByWeekday(days: Set<string>): number[] {
   return counts
 }
 
-export function averageVisitsPerWeek(
-  days: Set<string>,
-  now: Date,
-  weeks: number,
-): number {
-  const firstVisit = [...days].sort()[0]
-  if (!firstVisit) {
-    return 0
+export function firstVisit(days: Set<string>): Date | null {
+  let first: string | null = null
+  for (const day of days) {
+    if (first === null || day < first) {
+      first = day
+    }
   }
-  const thisWeek = startOfWeek(now)
-  const weeksSinceFirst = Math.round(
-    (thisWeek.getTime() - startOfWeek(dateFromKey(firstVisit)).getTime()) /
-      (7 * 86400000),
-  )
-  const counted = Math.min(weeks, weeksSinceFirst)
-  if (counted === 0) {
-    return 0
+  return first ? dateFromKey(first) : null
+}
+
+function perWeek(visits: number, start: Date, end: Date): number {
+  return visits / Math.max(1, (end.getTime() - start.getTime()) / msPerWeek)
+}
+
+export function lifetimeVisitsPerWeek(days: Set<string>, now: Date): number {
+  const first = firstVisit(days)
+  return first ? perWeek(days.size, first, addDays(now, 1)) : 0
+}
+
+export function visitYears(days: Set<string>, now: Date): number[] {
+  const thisYear = now.getFullYear()
+  const first = Math.min(firstVisit(days)?.getFullYear() ?? thisYear, thisYear)
+  return Array.from({ length: thisYear - first + 1 }, (_, i) => thisYear - i)
+}
+
+export function yearStats(days: Set<string>, year: number, now: Date) {
+  const first = firstVisit(days)
+  const yearStart = new Date(year, 0, 1)
+  const start = first && first > yearStart ? first : yearStart
+  const nextYear = new Date(year + 1, 0, 1)
+  const tomorrow = addDays(now, 1)
+  const end = tomorrow < nextYear ? tomorrow : nextYear
+  if (end <= start) {
+    return { visits: 0, visitsPerWeek: 0 }
   }
-  const visits = visitsBetween(days, addDays(thisWeek, -counted * 7), thisWeek)
-  return visits / counted
+  const visits = visitsBetween(days, start, end)
+  return { visits, visitsPerWeek: perWeek(visits, start, end) }
 }
 
 function completedWorkouts(sessions: WorkoutSession[]): WorkoutSession[] {
