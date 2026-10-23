@@ -9,7 +9,7 @@ import {
 } from '#/lib/format'
 import { legacyCheckInsQuery, sessionsQuery } from '#/lib/queries'
 import {
-  averageVisitsPerWeek,
+  lifetimeVisitsPerWeek,
   recentWorkoutLengths,
   visitDays,
   visitTotals,
@@ -22,6 +22,7 @@ import {
 import { StatTile } from './StatTile'
 import { BarChartCard } from './BarChartCard'
 import { VisitsHeatmap } from './VisitsHeatmap'
+import { YearStats } from './YearStats'
 
 const weeksShown = 12
 
@@ -47,11 +48,10 @@ export function StatsView() {
     <div className="flex flex-col gap-6">
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         <StatTile label="Total visits" value={String(totals.all)} />
-        <StatTile label="This year" value={String(totals.thisYear)} />
         <StatTile label="This month" value={String(totals.thisMonth)} />
         <StatTile
-          label="Visits per week"
-          value={averageVisitsPerWeek(days, now, weeksShown).toFixed(1)}
+          label="Visits per week (all time)"
+          value={lifetimeVisitsPerWeek(days, now).toFixed(1)}
         />
         <StatTile label="Current streak" value={formatWeeks(streaks.current)} />
         <StatTile label="Longest streak" value={formatWeeks(streaks.longest)} />
@@ -68,6 +68,7 @@ export function StatsView() {
           }
         />
       </div>
+      <YearStats days={days} now={now} />
       <VisitsHeatmap days={days} now={now} />
       <BarChartCard
         title={`Visits per week (last ${weeksShown})`}
