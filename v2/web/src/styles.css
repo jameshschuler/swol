@@ -77,7 +77,8 @@
   }
 }
 
-:root {
+:root,
+[data-color='green'] {
   --background: hsl(142, 84%, 93%);
 
   --secondary-background: oklch(100% 0 0);
@@ -127,6 +128,66 @@
   --danger: oklch(70.4% 0.191 22.216);
 
   --chart-active-dot: #fff;
+}
+
+[data-color='blue'] {
+  --main: hsl(212, 100%, 64%);
+
+  --background: hsl(212, 100%, 94%);
+}
+
+.dark[data-color='blue'] {
+  --background: hsl(212, 14%, 18%);
+
+  --secondary-background: hsl(212, 10%, 26%);
+}
+
+[data-color='orange'] {
+  --main: hsl(28, 100%, 60%);
+
+  --background: hsl(32, 100%, 92%);
+}
+
+.dark[data-color='orange'] {
+  --background: hsl(28, 14%, 18%);
+
+  --secondary-background: hsl(28, 10%, 26%);
+}
+
+[data-color='pink'] {
+  --main: hsl(330, 90%, 72%);
+
+  --background: hsl(330, 100%, 95%);
+}
+
+.dark[data-color='pink'] {
+  --background: hsl(330, 14%, 18%);
+
+  --secondary-background: hsl(330, 10%, 26%);
+}
+
+[data-color='purple'] {
+  --main: hsl(265, 90%, 72%);
+
+  --background: hsl(265, 100%, 95%);
+}
+
+.dark[data-color='purple'] {
+  --background: hsl(265, 14%, 18%);
+
+  --secondary-background: hsl(265, 10%, 26%);
+}
+
+[data-color='yellow'] {
+  --main: hsl(48, 100%, 55%);
+
+  --background: hsl(50, 100%, 92%);
+}
+
+.dark[data-color='yellow'] {
+  --background: hsl(48, 14%, 18%);
+
+  --secondary-background: hsl(48, 10%, 26%);
 }
 
 @layer base {
