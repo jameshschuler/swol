@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { AuthForm } from '#/components/auth/AuthForm'
-import { redirectIfSignedIn, supabase } from '#/lib/supabase'
+import { redirectIfSignedIn, signUpWithEmail } from '#/lib/supabase'
 
 export const Route = createFileRoute('/signup')({
   ssr: false,
@@ -14,15 +14,12 @@ function Signup() {
   const [notice, setNotice] = useState<string | null>(null)
 
   async function signUp(email: string, password: string) {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: { emailRedirectTo: `${window.location.origin}/dashboard` },
-    })
+    setNotice(null)
+    const { error, signedIn } = await signUpWithEmail(email, password)
     if (error) {
-      return error.message
+      return error
     }
-    if (data.session) {
+    if (signedIn) {
       await navigate({ to: '/dashboard' })
     } else {
       setNotice('Check your email to confirm your account.')

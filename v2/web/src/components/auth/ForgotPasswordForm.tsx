@@ -5,7 +5,9 @@ import { Button } from '#/components/ui/button'
 import { CardContent, CardFooter } from '#/components/ui/card'
 import { Input } from '#/components/ui/input'
 import { Label } from '#/components/ui/label'
+import { useAuthAction } from '#/hooks/useAuthAction'
 import { AuthCard } from './AuthCard'
+import { FormError } from './FormError'
 
 export function ForgotPasswordForm({
   onSubmit,
@@ -13,22 +15,13 @@ export function ForgotPasswordForm({
   onSubmit: (email: string) => Promise<string | null>
 }) {
   const [email, setEmail] = useState('')
-  const [error, setError] = useState<string | null>(null)
   const [sent, setSent] = useState(false)
-  const [pending, setPending] = useState(false)
+  const { error, pending, run } = useAuthAction()
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault()
-    setPending(true)
-    try {
-      const result = await onSubmit(email)
-      setError(result)
-      setSent(result === null)
-    } catch {
-      setError('Something went wrong. Please try again.')
-    } finally {
-      setPending(false)
-    }
+    setSent(false)
+    setSent(await run(() => onSubmit(email)))
   }
 
   return (
@@ -49,7 +42,7 @@ export function ForgotPasswordForm({
               }}
             />
           </div>
-          {error && <p className="text-sm font-heading text-danger">{error}</p>}
+          <FormError message={error} />
           {sent && (
             <p className="text-sm font-heading">
               If an account exists for that email, a reset link is on its way.

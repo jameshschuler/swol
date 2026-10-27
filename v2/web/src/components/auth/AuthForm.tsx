@@ -6,7 +6,9 @@ import { Input } from '#/components/ui/input'
 import { Label } from '#/components/ui/label'
 import { minPasswordLength } from '#/lib/auth'
 import { signInWithGoogle } from '#/lib/supabase'
+import { useAuthAction } from '#/hooks/useAuthAction'
 import { AuthCard } from './AuthCard'
+import { FormError } from './FormError'
 import { GoogleSignInButton } from './GoogleSignInButton'
 
 interface AuthFormProps {
@@ -16,8 +18,6 @@ interface AuthFormProps {
   initialError?: string | null
 }
 
-const genericError = 'Something went wrong. Please try again.'
-
 export function AuthForm({
   mode,
   onSubmit,
@@ -26,35 +26,16 @@ export function AuthForm({
 }: AuthFormProps) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [error, setError] = useState(initialError)
-  const [pending, setPending] = useState(false)
+  const { error, pending, run } = useAuthAction(initialError)
   const isLogin = mode === 'login'
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault()
-    setPending(true)
-    try {
-      setError(await onSubmit(email, password))
-    } catch {
-      setError(genericError)
-    } finally {
-      setPending(false)
-    }
+    await run(() => onSubmit(email, password))
   }
 
-  async function handleGoogle() {
-    setPending(true)
-    setError(null)
-    try {
-      const failure = await signInWithGoogle()
-      if (failure) {
-        setError(failure)
-        setPending(false)
-      }
-    } catch {
-      setError(genericError)
-      setPending(false)
-    }
+  function handleGoogle() {
+    void run(signInWithGoogle, { keepPendingOnSuccess: true })
   }
 
   return (
@@ -94,7 +75,7 @@ export function AuthForm({
               </Link>
             )}
           </div>
-          {error && <p className="text-sm font-heading text-danger">{error}</p>}
+          <FormError message={error} />
           {notice && <p className="text-sm font-heading">{notice}</p>}
         </CardContent>
         <CardFooter className="mt-6 flex flex-col gap-4">

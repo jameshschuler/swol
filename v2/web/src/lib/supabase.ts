@@ -33,3 +33,43 @@ export async function signInWithGoogle(): Promise<string | null> {
   })
   return error ? error.message : null
 }
+
+export async function signInWithEmail(
+  email: string,
+  password: string,
+): Promise<string | null> {
+  const { error } = await supabase.auth.signInWithPassword({ email, password })
+  return error ? error.message : null
+}
+
+export async function signUpWithEmail(
+  email: string,
+  password: string,
+): Promise<{ error: string | null; signedIn: boolean }> {
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: { emailRedirectTo: `${window.location.origin}/dashboard` },
+  })
+  return {
+    error: error ? error.message : null,
+    signedIn: Boolean(data.session),
+  }
+}
+
+export async function sendPasswordReset(email: string): Promise<string | null> {
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${window.location.origin}/reset-password`,
+  })
+  return error ? error.message : null
+}
+
+export async function updatePassword(password: string): Promise<string | null> {
+  const { error } = await supabase.auth.updateUser({ password })
+  return error ? error.message : null
+}
+
+export async function signOut(): Promise<string | null> {
+  const { error } = await supabase.auth.signOut()
+  return error ? error.message : null
+}

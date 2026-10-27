@@ -3,7 +3,7 @@ import { AuthForm } from '#/components/auth/AuthForm'
 import {
   oauthRedirectError,
   redirectIfSignedIn,
-  supabase,
+  signInWithEmail,
 } from '#/lib/supabase'
 
 export const Route = createFileRoute('/login')({
@@ -16,15 +16,11 @@ function Login() {
   const navigate = useNavigate()
 
   async function signIn(email: string, password: string) {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
-    if (error) {
-      return error.message
+    const error = await signInWithEmail(email, password)
+    if (!error) {
+      await navigate({ to: '/dashboard' })
     }
-    await navigate({ to: '/dashboard' })
-    return null
+    return error
   }
 
   return (
