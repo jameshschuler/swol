@@ -28,7 +28,7 @@
     "@tanstack/react-router-devtools": "^1.130.13",
     "@tanstack/router-vite-plugin": "^1.130.15",
     "dayjs": "^1.11.13",
-    "hono": "^4.9.0",
+    "hono": "^4.13.11",
     "react": "19.1.1",
     "react-dom": "19.1.1"
   },
