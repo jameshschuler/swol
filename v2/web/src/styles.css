@@ -248,3 +248,9 @@ body,
     font-size: 16px;
   }
 }
+
+@media (width < 48rem) {
+  [data-slot='toast-viewport'] {
+    bottom: calc(6.5rem + env(safe-area-inset-bottom));
+  }
+}

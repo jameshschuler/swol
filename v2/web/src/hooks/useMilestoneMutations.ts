@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { toast } from '#/components/ui/toast'
 import { api } from '#/lib/api'
 import { exercisesQuery, milestonesQuery } from '#/lib/queries'
 import type { Exercise, Milestone, WeightUnit } from '#/types/api'
@@ -19,14 +20,17 @@ function useInvalidateMilestones() {
 }
 
 export function useCreateMilestone() {
-  const onSuccess = useInvalidateMilestones()
+  const invalidate = useInvalidateMilestones()
   return useMutation({
     mutationFn: (milestone: NewMilestone) =>
       api<Omit<Milestone, 'exerciseName'>>('/milestones', {
         method: 'POST',
         body: JSON.stringify(milestone),
       }),
-    onSuccess,
+    onSuccess: () => {
+      toast.add({ title: 'Milestone logged', type: 'success' })
+      return invalidate()
+    },
   })
 }
 
