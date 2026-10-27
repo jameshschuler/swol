@@ -5,7 +5,9 @@ import { CardContent, CardFooter } from '#/components/ui/card'
 import { Input } from '#/components/ui/input'
 import { Label } from '#/components/ui/label'
 import { newPasswordError } from '#/lib/auth'
+import { useAuthAction } from '#/hooks/useAuthAction'
 import { AuthCard } from './AuthCard'
+import { FormError } from './FormError'
 
 export function ResetPasswordForm({
   onSubmit,
@@ -14,8 +16,7 @@ export function ResetPasswordForm({
 }) {
   const [password, setPassword] = useState('')
   const [confirmation, setConfirmation] = useState('')
-  const [error, setError] = useState<string | null>(null)
-  const [pending, setPending] = useState(false)
+  const { error, setError, pending, run } = useAuthAction()
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault()
@@ -24,14 +25,7 @@ export function ResetPasswordForm({
       setError(invalid)
       return
     }
-    setPending(true)
-    try {
-      setError(await onSubmit(password))
-    } catch {
-      setError('Something went wrong. Please try again.')
-    } finally {
-      setPending(false)
-    }
+    await run(() => onSubmit(password))
   }
 
   return (
@@ -60,7 +54,7 @@ export function ResetPasswordForm({
               onChange={(event) => setConfirmation(event.target.value)}
             />
           </div>
-          {error && <p className="text-sm font-heading text-danger">{error}</p>}
+          <FormError message={error} />
         </CardContent>
         <CardFooter className="mt-6">
           <Button type="submit" className="w-full" disabled={pending}>

@@ -4,10 +4,11 @@ import { LogOut } from 'lucide-react'
 import { AppearanceCard } from '#/components/account/AppearanceCard'
 import { PageHeader } from '#/components/shared/PageHeader'
 import { Button } from '#/components/ui/button'
+import { toast } from '#/components/ui/toast'
 import { Card, CardContent, CardHeader, CardTitle } from '#/components/ui/card'
 import { useUpdateWeightUnit } from '#/hooks/useUpdateWeightUnit'
 import { meQuery } from '#/lib/queries'
-import { supabase } from '#/lib/supabase'
+import { signOut } from '#/lib/supabase'
 import type { WeightUnit } from '#/types/api'
 
 export const Route = createFileRoute('/_app/account')({
@@ -20,6 +21,13 @@ const units: { value: WeightUnit; label: string }[] = [
 ]
 
 function Account() {
+  async function handleSignOut() {
+    const error = await signOut()
+    if (error) {
+      toast.add({ title: "Couldn't sign out", description: error })
+    }
+  }
+
   const { data: me, isPending, error } = useQuery(meQuery)
   const updateWeightUnit = useUpdateWeightUnit()
 
@@ -62,7 +70,7 @@ function Account() {
         <Button
           variant="neutral"
           className="self-start"
-          onClick={() => supabase.auth.signOut()}
+          onClick={handleSignOut}
         >
           <LogOut />
           Sign out
