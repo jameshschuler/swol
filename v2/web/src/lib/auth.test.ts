@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import { isRecoveryHash, minPasswordLength, newPasswordError } from './auth'
+import {
+  isRecoveryHash,
+  minPasswordLength,
+  newPasswordError,
+  oauthErrorFrom,
+} from './auth'
 
 describe('newPasswordError', () => {
   const valid = 'a'.repeat(minPasswordLength)
@@ -31,5 +36,33 @@ describe('isRecoveryHash', () => {
     ['#type=recoveryx', 'a lookalike value'],
   ])('ignores %s (%s)', (hash) => {
     expect(isRecoveryHash(hash)).toBe(false)
+  })
+})
+
+describe('oauthErrorFrom', () => {
+  it('reads the error description from the query string', () => {
+    expect(
+      oauthErrorFrom(
+        '?error=access_denied&error_description=User+cancelled+login',
+        '',
+      ),
+    ).toBe('User cancelled login')
+  })
+
+  it('reads the error description from the hash', () => {
+    expect(
+      oauthErrorFrom(
+        '',
+        '#error=server_error&error_description=Provider%20off',
+      ),
+    ).toBe('Provider off')
+  })
+
+  it('falls back to the error code', () => {
+    expect(oauthErrorFrom('?error=access_denied', '')).toBe('access_denied')
+  })
+
+  it('is null without an error', () => {
+    expect(oauthErrorFrom('?next=/dashboard', '#access_token=abc')).toBeNull()
   })
 })
