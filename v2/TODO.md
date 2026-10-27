@@ -4,12 +4,12 @@ Roughly in order. Each feature already has its tables in `api/migrations/00001_i
 
 ## Features
 
-- [ ] **Milestones.** Log a personal record: exercise, weight, reps, date, in lb or kg. Uses the existing exercises API. Goals and achievements build on this, so it goes first.
-- [ ] **Goals.** Set a target such as "Bench 225 × 1". When a new milestone meets a goal, suggest marking it complete and let the user confirm. Never complete it automatically.
-- [ ] **Achievements.** Badges earned from activity: first session, a 10-session streak, first goal met. Needs sessions and milestones in place.
+- [ ] **Goals.** Set a target such as "Bench 225 × 1" and show progress toward it from your best milestone. When a new milestone meets a goal, suggest marking it complete and let the user confirm. Never complete it automatically.
+- [ ] **Achievements.** Badges earned from activity: first session, a 10-week streak, first goal met.
 - [ ] **Dashboard.** This week's sessions, recent milestones, open goals. Comes last because it pulls from everything above.
 
 ## Smaller tasks
 
-- [ ] After the next Render deploy, confirm migrations `00002` and `00003` ran in prod and that v1 check-ins show up in the session history.
+- [ ] Set up Google sign-in: create a Google Cloud OAuth client with the Supabase callback URL (`https://<project>.supabase.co/auth/v1/callback`), turn on the Google provider in Supabase (dev and prod), and add each site's `/login` (`http://localhost:3000/login` and the prod web URL) to the allowed redirect URLs.
+- [ ] Confirm v1 check-ins show up in the session history in prod.
 - [ ] Write a short overview of each part of the system (web, API, database, Supabase auth, Render) and how they connect.

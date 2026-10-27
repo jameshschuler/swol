@@ -5,18 +5,28 @@ import { CardContent, CardFooter } from '#/components/ui/card'
 import { Input } from '#/components/ui/input'
 import { Label } from '#/components/ui/label'
 import { minPasswordLength } from '#/lib/auth'
+import { signInWithGoogle } from '#/lib/supabase'
 import { AuthCard } from './AuthCard'
+import { GoogleSignInButton } from './GoogleSignInButton'
 
 interface AuthFormProps {
   mode: 'login' | 'signup'
   onSubmit: (email: string, password: string) => Promise<string | null>
   notice?: string | null
+  initialError?: string | null
 }
 
-export function AuthForm({ mode, onSubmit, notice }: AuthFormProps) {
+const genericError = 'Something went wrong. Please try again.'
+
+export function AuthForm({
+  mode,
+  onSubmit,
+  notice,
+  initialError = null,
+}: AuthFormProps) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [error, setError] = useState<string | null>(null)
+  const [error, setError] = useState(initialError)
   const [pending, setPending] = useState(false)
   const isLogin = mode === 'login'
 
@@ -26,8 +36,23 @@ export function AuthForm({ mode, onSubmit, notice }: AuthFormProps) {
     try {
       setError(await onSubmit(email, password))
     } catch {
-      setError('Something went wrong. Please try again.')
+      setError(genericError)
     } finally {
+      setPending(false)
+    }
+  }
+
+  async function handleGoogle() {
+    setPending(true)
+    setError(null)
+    try {
+      const failure = await signInWithGoogle()
+      if (failure) {
+        setError(failure)
+        setPending(false)
+      }
+    } catch {
+      setError(genericError)
       setPending(false)
     }
   }
@@ -76,6 +101,12 @@ export function AuthForm({ mode, onSubmit, notice }: AuthFormProps) {
           <Button type="submit" className="w-full" disabled={pending}>
             {isLogin ? 'Sign in' : 'Sign up'}
           </Button>
+          <div className="flex w-full items-center gap-3 text-sm">
+            <span className="h-0.5 flex-1 bg-foreground/30" />
+            or
+            <span className="h-0.5 flex-1 bg-foreground/30" />
+          </div>
+          <GoogleSignInButton disabled={pending} onClick={handleGoogle} />
           <p className="text-sm">
             {isLogin ? "Don't have an account? " : 'Already have an account? '}
             <Link

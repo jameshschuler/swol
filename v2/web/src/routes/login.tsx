@@ -1,6 +1,10 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { AuthForm } from '#/components/auth/AuthForm'
-import { redirectIfSignedIn, supabase } from '#/lib/supabase'
+import {
+  oauthRedirectError,
+  redirectIfSignedIn,
+  supabase,
+} from '#/lib/supabase'
 
 export const Route = createFileRoute('/login')({
   ssr: false,
@@ -23,5 +27,11 @@ function Login() {
     return null
   }
 
-  return <AuthForm mode="login" onSubmit={signIn} />
+  return (
+    <AuthForm
+      mode="login"
+      onSubmit={signIn}
+      initialError={oauthRedirectError}
+    />
+  )
 }
