@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { Button } from '#/components/ui/button'
 import { Textarea } from '#/components/ui/textarea'
+import { useClearSuccess } from '#/hooks/useClearSuccess'
 import { useUpdateSessionNotes } from '#/hooks/useSessionMutations'
 import type { WorkoutSession } from '#/types/api'
 
@@ -10,15 +11,7 @@ export function SessionNotes({ session }: { session: WorkoutSession }) {
   const [draft, setDraft] = useState(saved)
   const updateNotes = useUpdateSessionNotes(session.id)
   const isDirty = draft.trim() !== saved
-  const { isSuccess, reset } = updateNotes
-
-  useEffect(() => {
-    if (!isSuccess) {
-      return
-    }
-    const timeout = setTimeout(reset, 2000)
-    return () => clearTimeout(timeout)
-  }, [isSuccess, reset])
+  useClearSuccess(updateNotes, 2000)
 
   const submit = (event: FormEvent) => {
     event.preventDefault()
@@ -42,7 +35,7 @@ export function SessionNotes({ session }: { session: WorkoutSession }) {
         <Button type="submit" disabled={!isDirty || updateNotes.isPending}>
           Save notes
         </Button>
-        {isSuccess && !isDirty && <p className="text-sm">Saved</p>}
+        {updateNotes.isSuccess && !isDirty && <p className="text-sm">Saved</p>}
       </div>
       {updateNotes.error && (
         <p className="text-danger">{updateNotes.error.message}</p>
