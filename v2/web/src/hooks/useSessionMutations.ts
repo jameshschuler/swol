@@ -1,6 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
+import { toast } from '#/components/ui/toast'
 import { api } from '#/lib/api'
+import { formatDate } from '#/lib/format'
 import { sessionQuery, sessionsQuery } from '#/lib/queries'
 import type { WorkoutSession } from '#/types/api'
 
@@ -21,14 +23,21 @@ export function useStartSession() {
 }
 
 export function useCheckIn() {
-  const onSuccess = useInvalidateSessions()
+  const invalidate = useInvalidateSessions()
   return useMutation({
     mutationFn: (checkedInAt: string) =>
       api<WorkoutSession>('/sessions/check-in', {
         method: 'POST',
         body: JSON.stringify({ checkedInAt }),
       }),
-    onSuccess,
+    onSuccess: (session) => {
+      toast.add({
+        title: 'Checked in',
+        description: formatDate(session.startedAt),
+        type: 'success',
+      })
+      return invalidate()
+    },
   })
 }
 
@@ -58,13 +67,16 @@ export function useDeleteSession(sessionId: string) {
 }
 
 export function useUpdateSessionNotes(sessionId: string) {
-  const onSuccess = useInvalidateSessions()
+  const invalidate = useInvalidateSessions()
   return useMutation({
     mutationFn: (notes: string) =>
       api<WorkoutSession>(`/sessions/${sessionId}`, {
         method: 'PATCH',
         body: JSON.stringify({ notes }),
       }),
-    onSuccess,
+    onSuccess: () => {
+      toast.add({ title: 'Notes saved', type: 'success' })
+      return invalidate()
+    },
   })
 }
