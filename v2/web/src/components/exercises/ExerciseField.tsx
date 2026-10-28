@@ -8,13 +8,15 @@ import {
   SelectValue,
 } from '#/components/ui/select'
 import { exercisesQuery } from '#/lib/queries'
-import { newExerciseId } from './milestone-constants'
+import { newExerciseId } from './exercise-constants'
 import { NewExerciseForm } from './NewExerciseForm'
 
 export function ExerciseField({
+  id,
   value,
   onChange,
 }: {
+  id: string
   value: string
   onChange: (exerciseId: string) => void
 }) {
@@ -28,14 +30,14 @@ export function ExerciseField({
 
   return (
     <div className="flex flex-col gap-2">
-      <Label htmlFor="milestone-exercise">Exercise</Label>
+      <Label htmlFor={id}>Exercise</Label>
       <Select
         value={value || null}
         onValueChange={(next) => onChange(next ?? '')}
         items={labels}
       >
         <SelectTrigger
-          id="milestone-exercise"
+          id={id}
           className="bg-secondary-background text-foreground"
         >
           <SelectValue placeholder="Choose an exercise" />

@@ -16,8 +16,10 @@ import { localDateKey, timeForDate } from '#/lib/dates'
 import { isCompleteMilestone } from '#/lib/milestones'
 import { meQuery } from '#/lib/queries'
 import type { WeightUnit } from '#/types/api'
-import { ExerciseField } from './ExerciseField'
-import { newExerciseId } from './milestone-constants'
+import { ExerciseField } from '#/components/exercises/ExerciseField'
+import { RepsField } from '#/components/exercises/RepsField'
+import { WeightField } from '#/components/exercises/WeightField'
+import { newExerciseId } from '#/components/exercises/exercise-constants'
 
 export function MilestoneForm() {
   const today = localDateKey(new Date())
@@ -68,48 +70,21 @@ export function MilestoneForm() {
       </CardHeader>
       <CollapsibleContent render={<CardContent />}>
         <form onSubmit={submit} className="flex flex-col gap-4">
-          <ExerciseField value={exerciseId} onChange={setExerciseId} />
-          <div className="grid grid-cols-[1fr_auto] gap-2">
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="milestone-weight">Weight</Label>
-              <Input
-                id="milestone-weight"
-                type="number"
-                inputMode="decimal"
-                min="0"
-                step="any"
-                value={weight}
-                onChange={(event) => setWeight(event.target.value)}
-              />
-            </div>
-            <div className="flex items-end gap-2">
-              {(['lb', 'kg'] as const).map((value) => (
-                <Button
-                  key={value}
-                  type="button"
-                  variant={unit === value ? 'default' : 'neutral'}
-                  aria-pressed={unit === value}
-                  onClick={() => setChosenUnit(value)}
-                >
-                  {value}
-                </Button>
-              ))}
-            </div>
-          </div>
+          <ExerciseField
+            id="milestone-exercise"
+            value={exerciseId}
+            onChange={setExerciseId}
+          />
+          <WeightField
+            id="milestone-weight"
+            label="Weight"
+            weight={weight}
+            onWeightChange={setWeight}
+            unit={unit}
+            onUnitChange={setChosenUnit}
+          />
           <div className="grid grid-cols-2 gap-2">
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="milestone-reps">Reps</Label>
-              <Input
-                id="milestone-reps"
-                type="number"
-                inputMode="numeric"
-                min="1"
-                max="1000"
-                step="1"
-                value={reps}
-                onChange={(event) => setReps(event.target.value)}
-              />
-            </div>
+            <RepsField id="milestone-reps" value={reps} onChange={setReps} />
             <div className="flex flex-col gap-2">
               <Label htmlFor="milestone-date">Date</Label>
               <Input

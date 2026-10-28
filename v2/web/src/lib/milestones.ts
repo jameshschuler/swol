@@ -1,3 +1,4 @@
+import { isValidLift } from './lifts'
 import { fromKg } from './units'
 import type { Milestone, WeightUnit } from '#/types/api'
 
@@ -17,13 +18,9 @@ export function isCompleteMilestone(form: {
   reps: string
   date: string
 }): boolean {
-  const reps = Number(form.reps)
   return (
     form.exerciseId !== '' &&
-    Number(form.weight) > 0 &&
-    Number.isInteger(reps) &&
-    reps >= 1 &&
-    reps <= 1000 &&
+    isValidLift(form.weight, form.reps) &&
     form.date !== ''
   )
 }
