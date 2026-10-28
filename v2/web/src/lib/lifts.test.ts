@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { isValidLift } from './lifts'
+import { estimatedOneRepMax, isValidLift } from './lifts'
 
 describe('isValidLift', () => {
   it('accepts a positive weight and whole reps', () => {
@@ -18,5 +18,16 @@ describe('isValidLift', () => {
     ['rounds over the max', '99999.995', '1'],
   ])('rejects %s', (_, weight, reps) => {
     expect(isValidLift(weight, reps)).toBe(false)
+  })
+})
+
+describe('estimatedOneRepMax', () => {
+  it('is the weight itself for a single', () => {
+    expect(estimatedOneRepMax(455, 1)).toBe(455)
+  })
+
+  it('uses the Epley formula for more reps', () => {
+    expect(estimatedOneRepMax(300, 10)).toBe(400)
+    expect(estimatedOneRepMax(365, 8)).toBeCloseTo(462.33, 2)
   })
 })

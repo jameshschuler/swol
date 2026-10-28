@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest'
-import { displayTarget, goalProgress, goalsNewlyHit, meetsGoal } from './goals'
+import {
+  displayTarget,
+  formatGoalTarget,
+  goalLadders,
+  goalProgress,
+  goalsNewlyHit,
+  meetsGoal,
+} from './goals'
 import { kgPerLb } from './units'
 import type { Goal, Milestone } from '#/types/api'
 
@@ -68,10 +75,6 @@ describe('meetsGoal', () => {
 })
 
 describe('goalProgress', () => {
-  it('rounds progress down so a near miss never shows 100%', () => {
-    expect(goalProgress(goal(), [lift('close', 99.6, 3)]).percent).toBe(99)
-  })
-
   it('measures the best lift with enough reps against the target', () => {
     const progress = goalProgress(goal(), [
       lift('light', 80, 5),
@@ -79,23 +82,23 @@ describe('goalProgress', () => {
       lift('heavy-single', 110, 1),
     ])
     expect(progress.best?.id).toBe('best')
-    expect(progress.percent).toBe(90)
+    expect(progress.remainingKg).toBe(10)
     expect(progress.hitBy).toBeNull()
   })
 
-  it('reports the first lift that met the goal, capped at 100%', () => {
+  it('reports the first lift that met the goal, with nothing left to go', () => {
     const progress = goalProgress(goal(), [
       lift('later', 110, 3, 9),
       lift('first', 101, 4, 3),
     ])
     expect(progress.hitBy?.id).toBe('first')
-    expect(progress.percent).toBe(100)
+    expect(progress.remainingKg).toBe(0)
   })
 
   it('is empty with no lifts for the exercise', () => {
     expect(goalProgress(goal(), [lift('x', 200, 5, 1, 'squat')])).toEqual({
       best: null,
-      percent: 0,
+      remainingKg: 100,
       hitBy: null,
       completedBy: null,
     })
@@ -147,5 +150,44 @@ describe('goalsNewlyHit', () => {
     expect(
       goalsNewlyHit(lift('new', 105, 3), [open, lighter], []).map((g) => g.id),
     ).toEqual(['open', 'lighter'])
+  })
+})
+
+describe('goalLadders', () => {
+  it('groups goals by exercise, sorted by name', () => {
+    const ladders = goalLadders([
+      goal({ id: 's', exerciseId: 'squat', exerciseName: 'Squat' }),
+      goal({ id: 'b', exerciseId: 'bench', exerciseName: 'Bench Press' }),
+    ])
+    expect(ladders.map((l) => l.exerciseName)).toEqual(['Bench Press', 'Squat'])
+  })
+
+  it('puts the hardest target first by estimated one-rep max', () => {
+    const [squat] = goalLadders([
+      goal({ id: '405x1', targetWeightKg: 184, targetReps: 1 }),
+      goal({ id: '365x8', targetWeightKg: 165, targetReps: 8 }),
+      goal({ id: '455x1', targetWeightKg: 206, targetReps: 1 }),
+    ])
+    expect(squat.goals.map((g) => g.id)).toEqual(['365x8', '455x1', '405x1'])
+  })
+
+  it('is empty with no goals', () => {
+    expect(goalLadders([])).toEqual([])
+  })
+})
+
+describe('formatGoalTarget', () => {
+  it('shows the target weight in the display unit and reps', () => {
+    expect(
+      formatGoalTarget(
+        goal({
+          targetWeight: 405,
+          unit: 'lb',
+          targetWeightKg: 183.7,
+          targetReps: 1,
+        }),
+        'lb',
+      ),
+    ).toBe('405 lb × 1')
   })
 })

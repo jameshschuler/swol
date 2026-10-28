@@ -1,10 +1,15 @@
-import { fromKg } from './units'
+import { estimatedOneRepMax } from './lifts'
+import { formatWeight, fromKg } from './units'
 import type { Goal, Milestone, WeightUnit } from '#/types/api'
 
 export function displayTarget(goal: Goal, unit: WeightUnit): number {
   return goal.unit === unit
     ? goal.targetWeight
     : fromKg(goal.targetWeightKg, unit)
+}
+
+export function formatGoalTarget(goal: Goal, unit: WeightUnit): string {
+  return `${formatWeight(displayTarget(goal, unit), unit)} × ${goal.targetReps}`
 }
 
 export function meetsGoal(
@@ -20,7 +25,7 @@ export function meetsGoal(
 
 export interface GoalProgress {
   best: Milestone | null
-  percent: number
+  remainingKg: number
   hitBy: Milestone | null
   completedBy: Milestone | null
 }
@@ -44,12 +49,10 @@ export function goalProgress(
         : first,
     null,
   )
-  const percent = best
-    ? Math.min(100, Math.floor((best.weightKg / goal.targetWeightKg) * 100))
-    : 0
+  const remainingKg = Math.max(0, goal.targetWeightKg - (best?.weightKg ?? 0))
   const completedBy =
     milestones.find((m) => m.id === goal.completedMilestoneId) ?? null
-  return { best, percent, hitBy, completedBy }
+  return { best, remainingKg, hitBy, completedBy }
 }
 
 export function goalsNewlyHit(
@@ -62,5 +65,34 @@ export function goalsNewlyHit(
       !goal.completedAt &&
       meetsGoal(milestone, goal) &&
       !previousMilestones.some((previous) => meetsGoal(previous, goal)),
+  )
+}
+
+export interface GoalLadder {
+  exerciseId: string
+  exerciseName: string
+  goals: Goal[]
+}
+
+export function goalLadders(goals: Goal[]): GoalLadder[] {
+  const ladders = new Map<string, GoalLadder>()
+  for (const goal of goals) {
+    const ladder = ladders.get(goal.exerciseId) ?? {
+      exerciseId: goal.exerciseId,
+      exerciseName: goal.exerciseName,
+      goals: [],
+    }
+    ladder.goals.push(goal)
+    ladders.set(goal.exerciseId, ladder)
+  }
+  for (const ladder of ladders.values()) {
+    ladder.goals.sort(
+      (a, b) =>
+        estimatedOneRepMax(b.targetWeightKg, b.targetReps) -
+        estimatedOneRepMax(a.targetWeightKg, a.targetReps),
+    )
+  }
+  return [...ladders.values()].sort((a, b) =>
+    a.exerciseName.localeCompare(b.exerciseName),
   )
 }

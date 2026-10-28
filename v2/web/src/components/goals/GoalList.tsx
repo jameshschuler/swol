@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
-import { goalProgress } from '#/lib/goals'
+import { goalLadders } from '#/lib/goals'
 import { goalsQuery, meQuery, milestonesQuery } from '#/lib/queries'
-import { GoalCard } from './GoalCard'
+import { GoalLadderCard } from './GoalLadderCard'
 
 export function GoalList() {
   const goals = useQuery(goalsQuery)
@@ -20,21 +20,22 @@ export function GoalList() {
     return <p>No goals yet. Set your first one above.</p>
   }
 
-  const open = goals.data.filter((goal) => !goal.completedAt)
-  const completed = goals.data.filter((goal) => goal.completedAt)
   const sections = [
-    { title: 'Open', goals: open },
-    { title: 'Completed', goals: completed },
+    { title: 'Open', goals: goals.data.filter((goal) => !goal.completedAt) },
+    {
+      title: 'Completed',
+      goals: goals.data.filter((goal) => goal.completedAt),
+    },
   ].filter((section) => section.goals.length > 0)
 
   return sections.map((section) => (
     <section key={section.title} className="flex flex-col gap-3">
       <h2 className="font-heading text-xl">{section.title}</h2>
-      {section.goals.map((goal) => (
-        <GoalCard
-          key={goal.id}
-          goal={goal}
-          progress={goalProgress(goal, milestones.data)}
+      {goalLadders(section.goals).map((ladder) => (
+        <GoalLadderCard
+          key={ladder.exerciseId}
+          ladder={ladder}
+          milestones={milestones.data}
           unit={unit}
         />
       ))}

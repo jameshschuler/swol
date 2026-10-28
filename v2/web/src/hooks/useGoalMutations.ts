@@ -46,15 +46,34 @@ export function useUpdateGoal(goalId: string) {
 export function useCompleteGoal(goalId: string) {
   const invalidate = useInvalidateGoals()
   return useMutation({
-    mutationFn: (milestoneId: string) =>
+    mutationFn: (milestoneId: string | null) =>
       api<unknown>(`/goals/${goalId}/complete`, {
         method: 'POST',
-        body: JSON.stringify({ milestoneId }),
+        body: JSON.stringify(milestoneId ? { milestoneId } : {}),
       }),
     onSuccess: () => {
       toast.add({ title: 'Goal complete', type: 'success' })
       return invalidate()
     },
+    onError: (error) =>
+      toast.add({
+        title: "Couldn't complete goal",
+        description: error.message,
+      }),
+  })
+}
+
+export function useReopenGoal(goalId: string) {
+  const invalidate = useInvalidateGoals()
+  return useMutation({
+    mutationFn: () =>
+      api<unknown>(`/goals/${goalId}/reopen`, { method: 'POST' }),
+    onSuccess: () => {
+      toast.add({ title: 'Goal reopened', type: 'success' })
+      return invalidate()
+    },
+    onError: (error) =>
+      toast.add({ title: "Couldn't reopen goal", description: error.message }),
   })
 }
 
@@ -63,5 +82,7 @@ export function useDeleteGoal(goalId: string) {
   return useMutation({
     mutationFn: () => api<void>(`/goals/${goalId}`, { method: 'DELETE' }),
     onSuccess: invalidate,
+    onError: (error) =>
+      toast.add({ title: "Couldn't delete goal", description: error.message }),
   })
 }

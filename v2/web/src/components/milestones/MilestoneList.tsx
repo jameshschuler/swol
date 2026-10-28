@@ -6,9 +6,8 @@ import {
   CardHeader,
   CardTitle,
 } from '#/components/ui/card'
-import { displayWeight, groupByExercise } from '#/lib/milestones'
+import { formatLift, groupByExercise } from '#/lib/milestones'
 import { meQuery, milestonesQuery } from '#/lib/queries'
-import { formatWeight } from '#/lib/units'
 import { MilestoneRow } from './MilestoneRow'
 
 export function MilestoneList() {
@@ -31,8 +30,7 @@ export function MilestoneList() {
       <CardHeader>
         <CardTitle>{group.exerciseName}</CardTitle>
         <CardAction className="font-heading tabular-nums">
-          {formatWeight(displayWeight(group.best, unit), unit)} ×{' '}
-          {group.best.reps}
+          {formatLift(group.best, unit)}
         </CardAction>
       </CardHeader>
       <CardContent>

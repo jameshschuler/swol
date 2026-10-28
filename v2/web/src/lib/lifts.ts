@@ -12,3 +12,7 @@ export function isValidLift(weight: string, reps: string): boolean {
     repCount <= maxReps
   )
 }
+
+export function estimatedOneRepMax(weight: number, reps: number): number {
+  return reps === 1 ? weight : weight * (1 + reps / 30)
+}

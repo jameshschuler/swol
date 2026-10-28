@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   formatClock,
+  formatDate,
   formatDuration,
   formatHours,
   formatWeekdayName,
@@ -59,5 +60,15 @@ describe('formatWeekdayName', () => {
     expect(formatWeekdayName(0)).toBe(
       new Date(2026, 0, 4).toLocaleDateString(undefined, { weekday: 'short' }),
     )
+  })
+})
+
+describe('formatDate', () => {
+  it('spells out the day of the week', () => {
+    const iso = new Date(2026, 9, 27, 12).toISOString()
+    const weekday = new Date(2026, 9, 27).toLocaleDateString(undefined, {
+      weekday: 'long',
+    })
+    expect(formatDate(iso).startsWith(weekday)).toBe(true)
   })
 })

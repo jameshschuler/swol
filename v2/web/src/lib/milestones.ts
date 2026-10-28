@@ -1,5 +1,5 @@
 import { isValidLift } from './lifts'
-import { fromKg } from './units'
+import { formatWeight, fromKg } from './units'
 import type { Milestone, WeightUnit } from '#/types/api'
 
 export type PersonalRecord = 'weight' | 'reps'
@@ -23,6 +23,10 @@ export function isCompleteMilestone(form: {
     isValidLift(form.weight, form.reps) &&
     form.date !== ''
   )
+}
+
+export function formatLift(milestone: Milestone, unit: WeightUnit): string {
+  return `${formatWeight(displayWeight(milestone, unit), unit)} × ${milestone.reps}`
 }
 
 export function displayWeight(milestone: Milestone, unit: WeightUnit): number {
