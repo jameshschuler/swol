@@ -47,6 +47,7 @@ func NewHandler(queries db.Querier, authenticator Authenticator, allowedOrigins 
 		r.Post("/goals", handle(s.createGoal))
 		r.Patch("/goals/{id}", handle(s.updateGoal))
 		r.Post("/goals/{id}/complete", handle(s.completeGoal))
+		r.Post("/goals/{id}/reopen", handle(s.reopenGoal))
 		r.Delete("/goals/{id}", handle(s.deleteGoal))
 		r.Route("/sessions", func(r chi.Router) {
 			r.Get("/", handle(s.listSessions))

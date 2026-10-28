@@ -30,6 +30,7 @@ type Querier interface {
 	ListMilestones(ctx context.Context, userID uuid.UUID) ([]ListMilestonesRow, error)
 	ListSessions(ctx context.Context, userID uuid.UUID) ([]WorkoutSession, error)
 	PauseSession(ctx context.Context, arg PauseSessionParams) (WorkoutSession, error)
+	ReopenGoal(ctx context.Context, arg ReopenGoalParams) (Goal, error)
 	ResumeSession(ctx context.Context, arg ResumeSessionParams) (WorkoutSession, error)
 	StartSession(ctx context.Context, userID uuid.UUID) (WorkoutSession, error)
 	UpdateGoal(ctx context.Context, arg UpdateGoalParams) (Goal, error)

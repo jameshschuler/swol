@@ -18,21 +18,24 @@ set completed_at = now(), completed_milestone_id = $1::uuid, updated_at = now()
 where g.id = $2
   and g.user_id = $3
   and g.completed_at is null
-  and exists (
-    select 1 from swol.milestones m
-    where m.id = $1::uuid
-      and m.user_id = g.user_id
-      and m.exercise_id = g.exercise_id
-      and m.weight_kg >= g.target_weight_kg
-      and m.reps >= g.target_reps
+  and (
+    $1::uuid is null
+    or exists (
+      select 1 from swol.milestones m
+      where m.id = $1::uuid
+        and m.user_id = g.user_id
+        and m.exercise_id = g.exercise_id
+        and m.weight_kg >= g.target_weight_kg
+        and m.reps >= g.target_reps
+    )
   )
 returning id, user_id, exercise_id, target_weight, unit, target_weight_kg, target_reps, completed_at, completed_milestone_id, created_at, updated_at
 `
 
 type CompleteGoalParams struct {
-	MilestoneID uuid.UUID `json:"milestoneId"`
-	ID          uuid.UUID `json:"id"`
-	UserID      uuid.UUID `json:"userId"`
+	MilestoneID *uuid.UUID `json:"milestoneId"`
+	ID          uuid.UUID  `json:"id"`
+	UserID      uuid.UUID  `json:"userId"`
 }
 
 func (q *Queries) CompleteGoal(ctx context.Context, arg CompleteGoalParams) (Goal, error) {
@@ -199,6 +202,37 @@ func (q *Queries) ListGoals(ctx context.Context, userID uuid.UUID) ([]ListGoalsR
 		return nil, err
 	}
 	return items, nil
+}
+
+const reopenGoal = `-- name: ReopenGoal :one
+update swol.goals
+set completed_at = null, completed_milestone_id = null, updated_at = now()
+where id = $1 and user_id = $2 and completed_at is not null
+returning id, user_id, exercise_id, target_weight, unit, target_weight_kg, target_reps, completed_at, completed_milestone_id, created_at, updated_at
+`
+
+type ReopenGoalParams struct {
+	ID     uuid.UUID `json:"id"`
+	UserID uuid.UUID `json:"userId"`
+}
+
+func (q *Queries) ReopenGoal(ctx context.Context, arg ReopenGoalParams) (Goal, error) {
+	row := q.db.QueryRow(ctx, reopenGoal, arg.ID, arg.UserID)
+	var i Goal
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.ExerciseID,
+		&i.TargetWeight,
+		&i.Unit,
+		&i.TargetWeightKg,
+		&i.TargetReps,
+		&i.CompletedAt,
+		&i.CompletedMilestoneID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }
 
 const updateGoal = `-- name: UpdateGoal :one

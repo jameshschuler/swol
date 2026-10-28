@@ -39,8 +39,13 @@ func (f *fakeQueries) CompleteGoal(_ context.Context, arg db.CompleteGoalParams)
 		if goal.ID != arg.ID || goal.UserID != arg.UserID || goal.CompletedAt != nil {
 			continue
 		}
+		if arg.MilestoneID == nil {
+			now := time.Now()
+			goal.CompletedAt = &now
+			return *goal, nil
+		}
 		for _, m := range f.milestones {
-			if m.ID == arg.MilestoneID && m.UserID == goal.UserID && m.ExerciseID == goal.ExerciseID && m.WeightKg >= goal.TargetWeightKg && m.Reps >= goal.TargetReps {
+			if m.ID == *arg.MilestoneID && m.UserID == goal.UserID && m.ExerciseID == goal.ExerciseID && m.WeightKg >= goal.TargetWeightKg && m.Reps >= goal.TargetReps {
 				now := time.Now()
 				goal.CompletedAt = &now
 				goal.CompletedMilestoneID = &m.ID
@@ -56,6 +61,17 @@ func (f *fakeQueries) UpdateGoal(_ context.Context, arg db.UpdateGoalParams) (db
 		goal := &f.goals[i]
 		if goal.ID == arg.ID && goal.UserID == arg.UserID && goal.CompletedAt == nil {
 			goal.TargetWeight, goal.Unit, goal.TargetReps = arg.TargetWeight, arg.Unit, arg.TargetReps
+			return *goal, nil
+		}
+	}
+	return db.Goal{}, pgx.ErrNoRows
+}
+
+func (f *fakeQueries) ReopenGoal(_ context.Context, arg db.ReopenGoalParams) (db.Goal, error) {
+	for i := range f.goals {
+		goal := &f.goals[i]
+		if goal.ID == arg.ID && goal.UserID == arg.UserID && goal.CompletedAt != nil {
+			goal.CompletedAt, goal.CompletedMilestoneID = nil, nil
 			return *goal, nil
 		}
 	}
@@ -122,9 +138,6 @@ func TestCompleteGoal(t *testing.T) {
 	path := "/api/v1/goals/" + goal.ID.String() + "/complete"
 	with := func(m db.Milestone) string { return `{"milestoneId":"` + m.ID.String() + `"}` }
 
-	if rec := request(t, h, http.MethodPost, path, `{}`); rec.Code != http.StatusBadRequest {
-		t.Errorf("missing milestone: %d", rec.Code)
-	}
 	if rec := request(t, h, http.MethodPost, path, with(tooFewReps)); rec.Code != http.StatusConflict {
 		t.Errorf("too few reps: %d", rec.Code)
 	}
@@ -189,6 +202,55 @@ func TestUpdateGoal(t *testing.T) {
 	for _, c := range cases {
 		if rec := request(t, h, http.MethodPatch, "/api/v1/goals/"+c.path, c.body); rec.Code != c.want {
 			t.Errorf("%s: %d %s", c.name, rec.Code, rec.Body)
+		}
+	}
+}
+
+func TestCompleteGoalWithoutMilestone(t *testing.T) {
+	goal := db.Goal{ID: uuid.New(), UserID: testUser.ID, ExerciseID: uuid.New(), TargetWeightKg: 100, TargetReps: 1}
+	q := &fakeQueries{goals: []db.Goal{goal}}
+	h := NewHandler(q, fakeAuth{allow: true}, nil)
+	path := "/api/v1/goals/" + goal.ID.String() + "/complete"
+
+	rec := request(t, h, http.MethodPost, path, `{}`)
+	if rec.Code != http.StatusOK {
+		t.Fatalf("complete without a lift: %d %s", rec.Code, rec.Body)
+	}
+	if done := decode[db.Goal](t, rec.Body.String()); done.CompletedAt == nil || done.CompletedMilestoneID != nil {
+		t.Fatalf("completed goal = %+v", done)
+	}
+	if rec := request(t, h, http.MethodPost, path, `{}`); rec.Code != http.StatusConflict {
+		t.Errorf("complete again: %d", rec.Code)
+	}
+}
+
+func TestReopenGoal(t *testing.T) {
+	now := time.Now()
+	lift := uuid.New()
+	done := db.Goal{ID: uuid.New(), UserID: testUser.ID, CompletedAt: &now, CompletedMilestoneID: &lift}
+	open := db.Goal{ID: uuid.New(), UserID: testUser.ID}
+	q := &fakeQueries{goals: []db.Goal{done, open}}
+	h := NewHandler(q, fakeAuth{allow: true}, nil)
+
+	rec := request(t, h, http.MethodPost, "/api/v1/goals/"+done.ID.String()+"/reopen", "")
+	if rec.Code != http.StatusOK {
+		t.Fatalf("reopen: %d %s", rec.Code, rec.Body)
+	}
+	if got := decode[db.Goal](t, rec.Body.String()); got.CompletedAt != nil || got.CompletedMilestoneID != nil {
+		t.Fatalf("reopened goal = %+v", got)
+	}
+
+	cases := []struct {
+		name string
+		id   uuid.UUID
+		want int
+	}{
+		{"already open", open.ID, http.StatusConflict},
+		{"unknown goal", uuid.New(), http.StatusNotFound},
+	}
+	for _, c := range cases {
+		if rec := request(t, h, http.MethodPost, "/api/v1/goals/"+c.id.String()+"/reopen", ""); rec.Code != c.want {
+			t.Errorf("%s: %d", c.name, rec.Code)
 		}
 	}
 }

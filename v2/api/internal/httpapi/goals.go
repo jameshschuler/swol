@@ -94,13 +94,10 @@ func (s *Server) completeGoal(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 	var body struct {
-		MilestoneID uuid.UUID `json:"milestoneId"`
+		MilestoneID *uuid.UUID `json:"milestoneId"`
 	}
 	if err := decodeJSON(r, &body); err != nil {
 		return err
-	}
-	if body.MilestoneID == uuid.Nil {
-		return badRequest("milestoneId is required")
 	}
 
 	user := auth.FromContext(r.Context())
@@ -114,6 +111,26 @@ func (s *Server) completeGoal(w http.ResponseWriter, r *http.Request) error {
 			return conflict("goal is already complete")
 		}
 		return conflict("that milestone doesn't meet this goal")
+	}
+	if err != nil {
+		return err
+	}
+	writeJSON(w, http.StatusOK, goal)
+	return nil
+}
+
+func (s *Server) reopenGoal(w http.ResponseWriter, r *http.Request) error {
+	id, err := pathID(r, "id")
+	if err != nil {
+		return err
+	}
+	user := auth.FromContext(r.Context())
+	goal, err := s.queries.ReopenGoal(r.Context(), db.ReopenGoalParams{ID: id, UserID: user.ID})
+	if errors.Is(err, pgx.ErrNoRows) {
+		if _, err := s.findGoal(r, id, user.ID); err != nil {
+			return err
+		}
+		return conflict("goal isn't complete")
 	}
 	if err != nil {
 		return err

@@ -21,17 +21,20 @@ returning *;
 
 -- name: CompleteGoal :one
 update swol.goals g
-set completed_at = now(), completed_milestone_id = sqlc.arg(milestone_id)::uuid, updated_at = now()
+set completed_at = now(), completed_milestone_id = sqlc.narg(milestone_id)::uuid, updated_at = now()
 where g.id = sqlc.arg(id)
   and g.user_id = sqlc.arg(user_id)
   and g.completed_at is null
-  and exists (
-    select 1 from swol.milestones m
-    where m.id = sqlc.arg(milestone_id)::uuid
-      and m.user_id = g.user_id
-      and m.exercise_id = g.exercise_id
-      and m.weight_kg >= g.target_weight_kg
-      and m.reps >= g.target_reps
+  and (
+    sqlc.narg(milestone_id)::uuid is null
+    or exists (
+      select 1 from swol.milestones m
+      where m.id = sqlc.narg(milestone_id)::uuid
+        and m.user_id = g.user_id
+        and m.exercise_id = g.exercise_id
+        and m.weight_kg >= g.target_weight_kg
+        and m.reps >= g.target_reps
+    )
   )
 returning *;
 
@@ -50,4 +53,10 @@ set target_weight = sqlc.arg(target_weight)::numeric,
   target_reps = sqlc.arg(target_reps)::int,
   updated_at = now()
 where id = sqlc.arg(id) and user_id = sqlc.arg(user_id) and completed_at is null
+returning *;
+
+-- name: ReopenGoal :one
+update swol.goals
+set completed_at = null, completed_milestone_id = null, updated_at = now()
+where id = $1 and user_id = $2 and completed_at is not null
 returning *;
