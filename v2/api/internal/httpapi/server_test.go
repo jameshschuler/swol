@@ -35,6 +35,7 @@ type fakeQueries struct {
 	legacyCheckIns  []db.ListLegacyCheckInsRow
 	exercises       []db.Exercise
 	milestones      []db.Milestone
+	goals           []db.Goal
 }
 
 func (f *fakeQueries) GetOrCreateUserSettings(_ context.Context, userID uuid.UUID) (db.UserSettings, error) {
