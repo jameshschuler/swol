@@ -43,3 +43,16 @@ export interface Milestone {
   achievedAt: string
   note: string | null
 }
+
+export interface Goal {
+  id: string
+  exerciseId: string
+  exerciseName: string
+  targetWeight: number
+  unit: WeightUnit
+  targetWeightKg: number
+  targetReps: number
+  completedAt: string | null
+  completedMilestoneId: string | null
+  createdAt: string
+}

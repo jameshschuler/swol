@@ -4,7 +4,6 @@ Roughly in order. Each feature already has its tables in `api/migrations/00001_i
 
 ## Features
 
-- [ ] **Goals.** Set a target such as "Bench 225 × 1" and show progress toward it from your best milestone. When a new milestone meets a goal, suggest marking it complete and let the user confirm. Never complete it automatically.
 - [ ] **Achievements.** Badges earned from activity: first session, a 10-week streak, first goal met.
 - [ ] **Dashboard.** This week's sessions, recent milestones, open goals. Comes last because it pulls from everything above.
 

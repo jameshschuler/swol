@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "dev": "concurrently -k -n api,web -c blue,green \"npm run dev:api\" \"npm run dev:web\"",
-    "dev:api": "cd api && set -a && { [ ! -f .env ] || . ./.env; } && set +a && go run ./cmd/server",
+    "dev:api": "cd api && set -a && { [ ! -f .env ] || . ./.env; } && set +a && go run github.com/air-verse/air@v1.67.4",
     "dev:web": "npm --prefix web run dev",
     "build": "npm --prefix web run build && cd api && go build -o bin/server ./cmd/server",
     "test": "cd api && go test ./...",

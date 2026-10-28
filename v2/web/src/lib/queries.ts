@@ -2,6 +2,7 @@ import { queryOptions } from '@tanstack/react-query'
 import { api } from './api'
 import type {
   Exercise,
+  Goal,
   LegacyCheckIn,
   Me,
   Milestone,
@@ -43,4 +44,9 @@ export const exercisesQuery = queryOptions({
 export const milestonesQuery = queryOptions({
   queryKey: ['milestones'],
   queryFn: () => api<Milestone[]>('/milestones'),
+})
+
+export const goalsQuery = queryOptions({
+  queryKey: ['goals'],
+  queryFn: () => api<Goal[]>('/goals'),
 })

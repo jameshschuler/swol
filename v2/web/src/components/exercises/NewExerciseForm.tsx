@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Button } from '#/components/ui/button'
 import { Input } from '#/components/ui/input'
-import { useCreateExercise } from '#/hooks/useMilestoneMutations'
+import { useCreateExercise } from '#/hooks/useCreateExercise'
 
 export function NewExerciseForm({
   onCreated,

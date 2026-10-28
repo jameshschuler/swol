@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   displayWeight,
+  formatLift,
   groupByExercise,
   isCompleteMilestone,
   personalRecords,
@@ -156,5 +157,16 @@ describe('isCompleteMilestone', () => {
     ['no date', { date: '' }],
   ])('rejects %s', (_, change) => {
     expect(isCompleteMilestone({ ...form, ...change })).toBe(false)
+  })
+})
+
+describe('formatLift', () => {
+  it('shows weight in the display unit and reps', () => {
+    expect(
+      formatLift(
+        milestone({ weight: 225, unit: 'lb', weightKg: 102.058, reps: 3 }),
+        'lb',
+      ),
+    ).toBe('225 lb × 3')
   })
 })

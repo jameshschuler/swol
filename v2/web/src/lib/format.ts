@@ -18,7 +18,7 @@ export function formatDuration(seconds: number): string {
 
 export function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString(undefined, {
-    weekday: 'short',
+    weekday: 'long',
     month: 'short',
     day: 'numeric',
     year: 'numeric',

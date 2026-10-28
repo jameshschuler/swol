@@ -2,7 +2,6 @@ package httpapi
 
 import (
 	"errors"
-	"math"
 	"net/http"
 	"strings"
 	"time"
@@ -12,8 +11,6 @@ import (
 	"github.com/jamesschuler/swol/v2/api/internal/auth"
 	"github.com/jamesschuler/swol/v2/api/internal/db"
 )
-
-const maxWeight = 99999.99
 
 func (s *Server) listMilestones(w http.ResponseWriter, r *http.Request) error {
 	user := auth.FromContext(r.Context())
@@ -37,15 +34,9 @@ func (s *Server) createMilestone(w http.ResponseWriter, r *http.Request) error {
 	if err := decodeJSON(r, &body); err != nil {
 		return err
 	}
-	weight := math.Round(body.Weight*100) / 100
-	if weight <= 0 || weight > maxWeight {
-		return badRequest("weight must be between 0 and 99999.99")
-	}
-	if body.Unit != db.WeightUnitLb && body.Unit != db.WeightUnitKg {
-		return badRequest("unit must be lb or kg")
-	}
-	if body.Reps < 1 || body.Reps > 1000 {
-		return badRequest("reps must be 1-1000")
+	weight, err := validateLift(body.Weight, body.Unit, body.Reps)
+	if err != nil {
+		return err
 	}
 	achievedAt := time.Now()
 	if body.AchievedAt != nil {
