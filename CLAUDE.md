@@ -14,7 +14,7 @@
 - **Not verbose.** Say it once, in as little code as reads clearly. Avoid redundant variables, wrapper functions that only forward arguments, defensive checks for states that can't occur, and restating types the compiler infers. Clarity beats cleverness — don't golf.
 - **Pragmatic, not enterprise.** Don't add defensive null-checks or enterprise-grade error boundaries unless explicitly asked. Write pragmatic, clean, readable code.
 - **Maintainable by default.** Keep functions short with a single responsibility, avoid deep nesting (return early), keep side effects at the edges, and keep modules loosely coupled so a change touches one place.
-- **Never edit generated files** (the sqlc `.go` files in `v2/api/internal/db/`, `v2/web/src/routeTree.gen.ts`), by hand or by running formatters over them. Change the source (SQL queries, route files) and rerun the generator.
+- **Never edit generated files** (the sqlc `.go` files in `v2/api/internal/db/`, `v2/web/src/routeTree.gen.ts`), by hand or by running formatters over them. Change the source and rerun its generator: `sqlc generate` for the SQL queries, and `npm run dev` or `npm run build` for route files (the TanStack Start Vite plugin writes the route tree, including its Start `Register` block).
 - **Follow existing patterns.** Match the conventions, libraries and structure already in the codebase rather than introducing new ones; add a dependency only when it clearly beats a few lines of code.
 
 ## Strategic Design
