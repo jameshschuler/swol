@@ -7,7 +7,7 @@ import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
 import appCss from '../styles.css?url'
-import { Toaster } from '#/components/ui/toast'
+import { AppToaster } from '#/components/shared/AppToaster'
 import { themeScript } from '#/lib/theme'
 import type { QueryClient } from '@tanstack/react-query'
 
@@ -58,7 +58,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body className="bg-background font-base text-foreground antialiased">
-        <Toaster>{children}</Toaster>
+        <AppToaster>{children}</AppToaster>
         <TanStackDevtools
           config={{ position: 'bottom-right' }}
           plugins={[

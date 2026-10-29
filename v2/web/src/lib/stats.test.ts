@@ -30,6 +30,7 @@ const session = (overrides: Partial<WorkoutSession>): WorkoutSession => ({
   pausedSeconds: 0,
   endedAt: day(9, 20, 10),
   notes: null,
+  createdAt: '2026-10-01T12:00:00Z',
   ...overrides,
 })
 

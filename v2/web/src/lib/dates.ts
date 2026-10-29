@@ -4,7 +4,8 @@ export function localDateKey(date: Date): string {
   return `${date.getFullYear()}-${month}-${day}`
 }
 
-export const msPerWeek = 7 * 24 * 60 * 60 * 1000
+export const msPerHour = 60 * 60 * 1000
+export const msPerWeek = 7 * 24 * msPerHour
 
 export function addDays(date: Date, days: number): Date {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate() + days)

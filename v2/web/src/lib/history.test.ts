@@ -15,6 +15,7 @@ const session = (
   pausedSeconds: 0,
   endedAt: status === 'completed' ? startedAt : null,
   notes: null,
+  createdAt: startedAt,
 })
 
 describe('buildHistory', () => {

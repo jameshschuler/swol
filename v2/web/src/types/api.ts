@@ -19,6 +19,7 @@ export interface WorkoutSession {
   pausedSeconds: number
   endedAt: string | null
   notes: string | null
+  createdAt: string
 }
 
 export interface LegacyCheckIn {

@@ -15,6 +15,7 @@ const session = (overrides: Partial<WorkoutSession>): WorkoutSession => ({
   pausedSeconds: 0,
   endedAt: null,
   notes: null,
+  createdAt: '2026-10-01T12:00:00Z',
   ...overrides,
 })
 
@@ -53,12 +54,39 @@ describe('elapsedSeconds', () => {
 })
 
 describe('sessionTimes', () => {
-  it('has no times for a check-in', () => {
-    expect(
-      sessionTimes(
-        session({ kind: 'check_in', status: 'completed', endedAt: at(0) }),
-      ),
-    ).toBeUndefined()
+  it('shows the time of a check-in made that day', () => {
+    const checkIn = session({
+      kind: 'check_in',
+      status: 'completed',
+      startedAt: at(0),
+      endedAt: at(0),
+      createdAt: at(0),
+    })
+    expect(sessionTimes(checkIn)).toBe(`Checked in at ${formatTime(at(0))}`)
+  })
+
+  it('shows the time when saved a few seconds later, even across midnight', () => {
+    const lateNight = session({
+      kind: 'check_in',
+      status: 'completed',
+      startedAt: at(86400 - 5),
+      endedAt: at(86400 - 5),
+      createdAt: at(86400 + 5),
+    })
+    expect(sessionTimes(lateNight)).toBe(
+      `Checked in at ${formatTime(at(86400 - 5))}`,
+    )
+  })
+
+  it('has no time for a backdated check-in', () => {
+    const backdated = session({
+      kind: 'check_in',
+      status: 'completed',
+      startedAt: at(0),
+      endedAt: at(0),
+      createdAt: at(3 * 86400),
+    })
+    expect(sessionTimes(backdated)).toBeUndefined()
   })
 
   it('shows the start and end of a finished workout', () => {
