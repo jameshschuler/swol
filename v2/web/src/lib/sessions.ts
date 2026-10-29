@@ -1,3 +1,4 @@
+import { msPerHour } from './dates'
 import { formatTime } from './format'
 import type { WorkoutSession } from '#/types/api'
 
@@ -12,7 +13,12 @@ export function elapsedSeconds(session: WorkoutSession, now: number): number {
 
 export function sessionTimes(session: WorkoutSession): string | undefined {
   if (session.kind === 'check_in') {
-    return undefined
+    const backdated =
+      Math.abs(Date.parse(session.createdAt) - Date.parse(session.startedAt)) >
+      msPerHour
+    return backdated
+      ? undefined
+      : `Checked in at ${formatTime(session.startedAt)}`
   }
   if (session.endedAt) {
     return `${formatTime(session.startedAt)} – ${formatTime(session.endedAt)}`
