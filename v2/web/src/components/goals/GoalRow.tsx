@@ -1,10 +1,9 @@
 import { useState } from 'react'
 import { PartyPopper, Trophy } from 'lucide-react'
 import { formatDate } from '#/lib/format'
-import { formatGoalTarget } from '#/lib/goals'
+import { formatGoalTarget, goalStatus } from '#/lib/goals'
 import type { GoalProgress } from '#/lib/goals'
 import { formatLift } from '#/lib/milestones'
-import { formatWeight, fromKg } from '#/lib/units'
 import { cn } from '#/lib/utils'
 import type { Goal, WeightUnit } from '#/types/api'
 import { GoalCompleteButton } from './GoalCompleteButton'
@@ -25,7 +24,7 @@ export function GoalRow({
 }) {
   const [editing, setEditing] = useState(false)
   const target = formatGoalTarget(goal, unit)
-  const { best, remainingKg, hitBy, completedBy } = progress
+  const { hitBy, completedBy } = progress
 
   if (editing) {
     return (
@@ -58,13 +57,7 @@ export function GoalRow({
     )
   }
 
-  const status = hitBy
-    ? null
-    : best
-      ? `${formatWeight(fromKg(remainingKg, unit), unit)} to go`
-      : goal.targetReps === 1
-        ? 'No lifts yet'
-        : `No ${goal.targetReps}-rep lifts yet`
+  const status = goalStatus(goal, progress, unit)
 
   return (
     <li

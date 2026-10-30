@@ -5,9 +5,9 @@ import { ActiveSessionCard } from './ActiveSessionCard'
 import { StartSessionCard } from './StartSessionCard'
 
 export function CurrentSession() {
-  const { data: session, isPending, error } = useQuery(currentSessionQuery)
+  const { data: session, error } = useQuery(currentSessionQuery)
 
-  if (isPending || error) {
+  if (session === undefined) {
     return (
       <Card>
         <CardContent>

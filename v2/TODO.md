@@ -5,7 +5,6 @@ Roughly in order. Each feature already has its tables in `api/migrations/00001_i
 ## Features
 
 - [ ] **Achievements.** Badges earned from activity: first session, a 10-week streak, first goal met.
-- [ ] **Dashboard.** This week's sessions, recent milestones, open goals. Comes last because it pulls from everything above.
 
 ## Smaller tasks
 
