@@ -55,6 +55,41 @@ export function goalProgress(
   return { best, remainingKg, hitBy, completedBy }
 }
 
+export function goalStatus(
+  goal: Goal,
+  progress: GoalProgress,
+  unit: WeightUnit,
+): string | null {
+  if (progress.hitBy) {
+    return null
+  }
+  if (progress.best) {
+    return `${formatWeight(fromKg(progress.remainingKg, unit), unit)} to go`
+  }
+  return goal.targetReps === 1
+    ? 'No lifts yet'
+    : `No ${goal.targetReps}-rep lifts yet`
+}
+
+export interface GoalWithProgress {
+  goal: Goal
+  progress: GoalProgress
+}
+
+export function closestGoals(
+  goals: Goal[],
+  milestones: Milestone[],
+  limit: number,
+): GoalWithProgress[] {
+  const distance = ({ progress }: GoalWithProgress) =>
+    progress.best ? progress.remainingKg : Number.MAX_VALUE
+  return goals
+    .filter((goal) => !goal.completedAt)
+    .map((goal) => ({ goal, progress: goalProgress(goal, milestones) }))
+    .sort((a, b) => distance(a) - distance(b))
+    .slice(0, limit)
+}
+
 export function goalsNewlyHit(
   milestone: Pick<Milestone, 'exerciseId' | 'weightKg' | 'reps'>,
   goals: Goal[],

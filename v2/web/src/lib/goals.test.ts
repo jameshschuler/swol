@@ -1,9 +1,11 @@
 import { describe, expect, it } from 'vitest'
 import {
+  closestGoals,
   displayTarget,
   formatGoalTarget,
   goalLadders,
   goalProgress,
+  goalStatus,
   goalsNewlyHit,
   meetsGoal,
 } from './goals'
@@ -189,5 +191,80 @@ describe('formatGoalTarget', () => {
         'lb',
       ),
     ).toBe('405 lb × 1')
+  })
+})
+
+describe('goalStatus', () => {
+  it('shows the weight left to lift', () => {
+    const target = goal({ targetWeightKg: 100 })
+    expect(
+      goalStatus(target, goalProgress(target, [lift('a', 90, 3)]), 'kg'),
+    ).toBe('10 kg to go')
+  })
+
+  it('shows nothing once a lift meets the goal', () => {
+    const target = goal()
+    expect(
+      goalStatus(target, goalProgress(target, [lift('a', 100, 3)]), 'kg'),
+    ).toBeNull()
+  })
+
+  it.each([
+    [1, 'No lifts yet'],
+    [5, 'No 5-rep lifts yet'],
+  ])('says when there are no %i-rep lifts', (targetReps, text) => {
+    const target = goal({ targetReps })
+    expect(goalStatus(target, goalProgress(target, []), 'kg')).toBe(text)
+  })
+})
+
+describe('closestGoals', () => {
+  const ids = (goals: Goal[], milestones: Milestone[], limit = 5) =>
+    closestGoals(goals, milestones, limit).map((closest) => closest.goal.id)
+
+  it('puts the goals with the least weight to go first', () => {
+    const goals = [
+      goal({ id: 'far', targetWeightKg: 140 }),
+      goal({ id: 'hit', targetWeightKg: 90 }),
+      goal({ id: 'near', targetWeightKg: 110 }),
+    ]
+    expect(ids(goals, [lift('a', 100, 3)])).toEqual(['hit', 'near', 'far'])
+  })
+
+  it('puts goals with no lifts last', () => {
+    const goals = [
+      goal({ id: 'untried', exerciseId: 'squat', targetWeightKg: 20 }),
+      goal({ id: 'tried', targetWeightKg: 200 }),
+    ]
+    expect(ids(goals, [lift('a', 100, 3)])).toEqual(['tried', 'untried'])
+  })
+
+  it('keeps goals with no lifts in their original order', () => {
+    const goals = ['a', 'b', 'c'].map((id) =>
+      goal({ id, exerciseId: `untried-${id}` }),
+    )
+    expect(ids([goal({ id: 'tried' }), ...goals], [lift('l', 90, 3)])).toEqual([
+      'tried',
+      'a',
+      'b',
+      'c',
+    ])
+  })
+
+  it('leaves out completed goals', () => {
+    const goals = [
+      goal({ id: 'done', completedAt: '2026-10-02T12:00:00Z' }),
+      goal({ id: 'open' }),
+    ]
+    expect(ids(goals, [])).toEqual(['open'])
+  })
+
+  it('returns at most the limit', () => {
+    const goals = ['a', 'b', 'c'].map((id) => goal({ id }))
+    expect(ids(goals, [], 2)).toEqual(['a', 'b'])
+  })
+
+  it('returns nothing when there are no goals', () => {
+    expect(ids([], [])).toEqual([])
   })
 })
