@@ -1,4 +1,10 @@
-import { addDays, localDateKey, msPerWeek, startOfWeek } from './dates'
+import {
+  addDays,
+  dateFromKey,
+  localDateKey,
+  msPerWeek,
+  startOfWeek,
+} from './dates'
 import { elapsedSeconds } from './sessions'
 import type { LegacyCheckIn, WorkoutSession } from '#/types/api'
 
@@ -19,11 +25,6 @@ export function visitDays(
       localDateKey(new Date(checkIn.checkedInAt)),
     ),
   ])
-}
-
-function dateFromKey(key: string): Date {
-  const [year, month, day] = key.split('-').map(Number)
-  return new Date(year, month - 1, day)
 }
 
 function visitsBetween(days: Set<string>, start: Date, end: Date): number {

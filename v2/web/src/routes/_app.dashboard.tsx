@@ -1,10 +1,10 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { DashboardError } from '#/components/dashboard/DashboardError'
 import { DashboardGoals } from '#/components/dashboard/DashboardGoals'
 import { DashboardMilestones } from '#/components/dashboard/DashboardMilestones'
 import { DashboardWeek } from '#/components/dashboard/DashboardWeek'
 import { CurrentSession } from '#/components/sessions/CurrentSession'
 import { PageHeader } from '#/components/shared/PageHeader'
+import { PageLoadError } from '#/components/shared/PageLoadError'
 import {
   currentSessionQuery,
   goalsQuery,
@@ -25,7 +25,7 @@ export const Route = createFileRoute('/_app/dashboard')({
       queryClient.ensureQueryData(milestonesQuery),
     ]),
   pendingComponent: () => <p>Loading…</p>,
-  errorComponent: DashboardError,
+  errorComponent: PageLoadError,
   component: Dashboard,
 })
 

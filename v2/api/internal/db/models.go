@@ -180,12 +180,6 @@ type SwolGymCheckin struct {
 	CheckinDate time.Time `json:"checkinDate"`
 }
 
-type UserAchievement struct {
-	UserID          uuid.UUID `json:"userId"`
-	AchievementCode string    `json:"achievementCode"`
-	UnlockedAt      time.Time `json:"unlockedAt"`
-}
-
 type UserSettings struct {
 	UserID     uuid.UUID  `json:"userId"`
 	WeightUnit WeightUnit `json:"weightUnit"`
