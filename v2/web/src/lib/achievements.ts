@@ -502,10 +502,13 @@ export function currentTier(achievement: Achievement): AchievementTier | null {
   return achievement.tiers.filter((tier) => tier.unlockedAt).at(-1) ?? null
 }
 
-export function tierStatus(achievement: Achievement): string {
+export function tierStatus(achievement: Achievement): string | null {
   const current = currentTier(achievement)
+  if (!nextTier(achievement)) {
+    return achievement.progress?.label ?? null
+  }
   if (achievement.tiers.length === 1) {
-    return current ? 'Unlocked' : 'Locked'
+    return 'Locked'
   }
   return current ? current.label : `Next: ${achievement.tiers[0].label}`
 }

@@ -480,13 +480,24 @@ describe('tier labels and colors', () => {
     expect(tierStatus(bench)).toBe('Next: 135 lb')
   })
 
-  it('says unlocked or locked for single-level achievements', () => {
+  it('shows the best value once every level is unlocked', () => {
+    const bench = find('bench-press', {
+      milestones: [lift('Bench Press', 425, 1, at(0, 1))],
+    })
+    expect(tierStatus(bench)).toBe('Best: 425 lb')
+    const tomPlatz = find('tom-platz', {
+      milestones: [lift('Squat', 135, 25, at(0, 1))],
+    })
+    expect(tierStatus(tomPlatz)).toBe('Most reps: 25')
+  })
+
+  it('says locked, or nothing once done, for single-level achievements', () => {
     expect(tierStatus(find('pr-month'))).toBe('Locked')
     expect(
       tierStatus(
         find('comeback', { sessions: [session(at(0, 1)), session(at(2, 1))] }),
       ),
-    ).toBe('Unlocked')
+    ).toBeNull()
   })
 
   it.each([

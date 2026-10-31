@@ -10,7 +10,9 @@ import { AchievementLevelPips } from './AchievementLevelPips'
 export function AchievementTile({ achievement }: { achievement: Achievement }) {
   const unlocked = unlockedTiers(achievement)
   const total = achievement.tiers.length
-  const Icon = unlocked === total ? Trophy : unlocked > 0 ? Medal : Lock
+  const isComplete = unlocked === total
+  const status = tierStatus(achievement)
+  const Icon = isComplete ? Trophy : unlocked > 0 ? Medal : Lock
 
   return (
     <Dialog>
@@ -35,11 +37,13 @@ export function AchievementTile({ achievement }: { achievement: Achievement }) {
             <span className="font-heading leading-tight">
               {achievement.title}
             </span>
-            <span className="text-sm tabular-nums">
-              {tierStatus(achievement)}
-            </span>
+            {status && <span className="text-sm tabular-nums">{status}</span>}
           </span>
-          <AchievementLevelPips unlocked={unlocked} total={total} />
+          {isComplete ? (
+            <span className="font-heading text-sm">Completed!</span>
+          ) : (
+            <AchievementLevelPips unlocked={unlocked} total={total} />
+          )}
         </span>
       </DialogTrigger>
       <DialogContent>
