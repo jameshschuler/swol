@@ -1,5 +1,9 @@
 import { useSuspenseQuery } from '@tanstack/react-query'
-import { achievementSections, achievements } from '#/lib/achievements'
+import {
+  achievementSections,
+  achievements,
+  unlockedTiers,
+} from '#/lib/achievements'
 import {
   goalsQuery,
   legacyCheckInsQuery,
@@ -7,7 +11,7 @@ import {
   milestonesQuery,
   sessionsQuery,
 } from '#/lib/queries'
-import { AchievementBadge } from './AchievementBadge'
+import { AchievementTile } from './AchievementTile'
 
 export function AchievementList() {
   const { data: sessions } = useSuspenseQuery(sessionsQuery)
@@ -18,32 +22,26 @@ export function AchievementList() {
   const all = achievements(
     { sessions, legacyCheckIns, milestones, goals },
     me.weightUnit,
+    new Date(),
   )
-  const unlocked = all.filter((achievement) => achievement.unlockedAt).length
+  const unlocked = all.reduce((sum, a) => sum + unlockedTiers(a), 0)
+  const total = all.reduce((sum, a) => sum + a.tiers.length, 0)
 
   return (
     <div className="flex flex-col gap-8">
       <p className="font-heading text-lg">
-        {unlocked} of {all.length} unlocked
+        {unlocked} of {total} levels unlocked
       </p>
       {achievementSections(all).map((section) => (
         <section key={section.group} className="flex flex-col gap-3">
           <h2 className="font-heading text-xl">{section.group}</h2>
-          <div className="flex flex-col gap-6">
-            {section.series.map((run) => (
-              <ul
-                key={run[0].series}
-                className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
-              >
-                {run.map((achievement) => (
-                  <AchievementBadge
-                    key={achievement.code}
-                    achievement={achievement}
-                  />
-                ))}
-              </ul>
+          <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+            {section.achievements.map((achievement) => (
+              <li key={achievement.code}>
+                <AchievementTile achievement={achievement} />
+              </li>
             ))}
-          </div>
+          </ul>
         </section>
       ))}
     </div>
