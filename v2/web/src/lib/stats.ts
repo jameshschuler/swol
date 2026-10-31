@@ -145,7 +145,9 @@ export function yearStats(days: Set<string>, year: number, now: Date) {
   return { visits, visitsPerWeek: perWeek(visits, start, end) }
 }
 
-function completedWorkouts(sessions: WorkoutSession[]): WorkoutSession[] {
+export function completedWorkouts(
+  sessions: WorkoutSession[],
+): WorkoutSession[] {
   return sessions.filter(
     (session) => session.kind === 'workout' && session.status === 'completed',
   )
