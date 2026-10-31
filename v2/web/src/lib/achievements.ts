@@ -13,7 +13,7 @@ import type {
 } from '#/types/api'
 
 export type AchievementGroup =
-  'Showing up' | 'Strength' | 'Goals and milestones'
+  'Showing up' | 'Strength' | 'Goals and Milestones'
 
 export interface AchievementTier {
   label: string
@@ -440,7 +440,7 @@ export function achievements(
     }),
     {
       code: 'milestones',
-      group: 'Goals and milestones',
+      group: 'Goals and Milestones',
       title: 'Milestones',
       description: 'Log your personal records.',
       tiers: milestoneCounts.map((count) => ({
@@ -458,7 +458,7 @@ export function achievements(
     },
     {
       code: 'goals-done',
-      group: 'Goals and milestones',
+      group: 'Goals and Milestones',
       title: 'Goals done',
       description: 'Complete the goals you set.',
       tiers: goalsDoneCounts.map((count) => ({
@@ -473,7 +473,7 @@ export function achievements(
     },
     oneTier({
       code: 'goal-set',
-      group: 'Goals and milestones',
+      group: 'Goals and Milestones',
       title: 'First goal',
       description: 'Set a goal.',
       target: 1,
@@ -484,7 +484,7 @@ export function achievements(
     }),
     oneTier({
       code: 'ladder-done',
-      group: 'Goals and milestones',
+      group: 'Goals and Milestones',
       title: 'Top of the ladder',
       description:
         'Complete every goal for one exercise, with at least two goals.',

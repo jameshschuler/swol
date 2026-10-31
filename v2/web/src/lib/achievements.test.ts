@@ -266,7 +266,7 @@ describe('achievementSections', () => {
     expect(sections.map((section) => section.group)).toEqual([
       'Showing up',
       'Strength',
-      'Goals and milestones',
+      'Goals and Milestones',
     ])
     expect(sections[0].achievements[0].code).toBe('visits')
   })
