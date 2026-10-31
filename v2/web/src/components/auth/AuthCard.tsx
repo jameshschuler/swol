@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { LegalLinks } from '#/components/legal/LegalLinks'
 import { Card, CardHeader, CardTitle } from '#/components/ui/card'
 
 export function AuthCard({
@@ -9,7 +10,7 @@ export function AuthCard({
   children: ReactNode
 }) {
   return (
-    <main className="flex min-h-dvh items-center justify-center p-4">
+    <main className="flex min-h-dvh flex-col items-center justify-center gap-4 p-4">
       <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle className="text-3xl">SWOL</CardTitle>
@@ -17,6 +18,7 @@ export function AuthCard({
         </CardHeader>
         {children}
       </Card>
+      <LegalLinks />
     </main>
   )
 }
