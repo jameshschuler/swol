@@ -4,6 +4,11 @@ export function localDateKey(date: Date): string {
   return `${date.getFullYear()}-${month}-${day}`
 }
 
+export function dateFromKey(key: string): Date {
+  const [year, month, day] = key.split('-').map(Number)
+  return new Date(year, month - 1, day)
+}
+
 export const msPerHour = 60 * 60 * 1000
 export const msPerWeek = 7 * 24 * msPerHour
 

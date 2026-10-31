@@ -1,9 +1,25 @@
 import { describe, expect, it } from 'vitest'
-import { groupByDay, localDateKey, monthGrid, timeForDate } from './dates'
+import {
+  dateFromKey,
+  groupByDay,
+  localDateKey,
+  monthGrid,
+  timeForDate,
+} from './dates'
 
 describe('localDateKey', () => {
   it('formats the local date with zero padding', () => {
     expect(localDateKey(new Date(2026, 0, 5, 23, 59))).toBe('2026-01-05')
+  })
+})
+
+describe('dateFromKey', () => {
+  it('reads a date key as local midnight', () => {
+    expect(dateFromKey('2026-03-08')).toEqual(new Date(2026, 2, 8))
+  })
+
+  it('round-trips with localDateKey', () => {
+    expect(localDateKey(dateFromKey('2026-12-31'))).toBe('2026-12-31')
   })
 })
 
