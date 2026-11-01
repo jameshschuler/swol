@@ -8,7 +8,7 @@ export function AppToaster({ children }: { children: ReactNode }) {
     <Toast.Provider toastManager={toast}>
       {children}
       <Toast.Portal>
-        <Toast.Viewport className="fixed top-[calc(4.5rem+env(safe-area-inset-top))] md:top-4 right-4 z-50 flex w-[min(20rem,calc(100vw-2rem))] flex-col gap-2 outline-none">
+        <Toast.Viewport className="fixed inset-x-0 bottom-[calc(6rem+env(safe-area-inset-bottom))] z-50 mx-auto flex w-[min(18rem,calc(100vw-2rem))] flex-col gap-2 outline-none md:right-4 md:bottom-4 md:left-auto md:mx-0 md:w-80">
           <ToastList />
         </Toast.Viewport>
       </Toast.Portal>

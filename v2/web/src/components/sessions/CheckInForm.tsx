@@ -17,8 +17,8 @@ export function CheckInForm() {
   }
 
   return (
-    <form onSubmit={submit} className="flex flex-col items-center">
-      <div className="flex gap-2">
+    <form onSubmit={submit} className="flex w-full flex-col items-center">
+      <div className="grid w-full max-w-xs grid-cols-2 gap-2">
         <Input
           type="date"
           value={date}
@@ -28,11 +28,12 @@ export function CheckInForm() {
             checkIn.reset()
           }}
           aria-label="Check-in date"
-          className="w-auto"
+          className="h-10 min-w-0 appearance-none"
         />
         <Button
           type="submit"
           variant="neutral"
+          className="w-full"
           disabled={!date || checkIn.isPending}
         >
           <MapPin />
