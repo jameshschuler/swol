@@ -54,6 +54,19 @@
 - **Type the domain at the source.** Give DB columns and enums precise types in the schema or generated code so server results match client types without casts.
 - **Before committing, run only format, lint and tests** (plus `/code-review`, below). Web: `npm run format:check`, `npm run lint`, `npm test`. API: `gofmt -l .`, `go vet ./...`, `go test ./...`. Leave typecheck, build, audit and the rest to CI.
 
+## UI & Frontend
+
+- **The design system is neobrutalism.** The `ui/` primitives come from the [neobrutalism](https://neobrutalism.dev) shadcn registry on Base UI. Match their look: `border-2 border-border`, `rounded-base`, `shadow-shadow` on raised surfaces and primary actions, `bg-secondary-background` for cards and `bg-main` for primary and active states. No gradients, glows, colored shadows, soft blurred shadows or `rounded-2xl`/`rounded-3xl`.
+- **Use theme tokens, not raw colors.** Colors come from the CSS variables (`bg-main`, `bg-background`, `text-foreground`, `border-border`) so every color theme and dark mode works. A deliberate fixed palette, like the achievement level colors, lives in one feature style file.
+- **Compose, don't hand-roll.** Build features from the `ui/` primitives (`Button`, `Card`, `Input`, `Dialog`, …) instead of raw elements with long class strings. If a primitive is missing, add it with `npx -y shadcn@4.20.1 add https://neobrutalism.dev/r/<name>.json` and decline overwriting existing files.
+- **Use `cn()` for conditional classes.** Never build class strings with template literals or `+`.
+- **Cover every interactive state.** Hover, `focus-visible` (match the primitives' `ring-2 ring-black ring-offset-2`), disabled, and pending. Disable submit buttons while a mutation runs.
+- **Keep it dense.** Use `p-3`/`p-4` inside cards and `gap-2` to `gap-4` between items. Larger spacing is for separating page sections or a landing page hero.
+- **Icons only where they help.** Use them for primary actions, status and navigation. Don't put an icon on every heading, row or button.
+- **Defend against real data.** Use `min-w-0` and `truncate` (or wrapping) on text in flex rows, `tabular-nums` on numbers that change, and `whitespace-nowrap` on short values like "225 lb × 5". Check layouts at 375px wide.
+- **Loading, error and empty states are part of the feature.** Every data view handles all three. A page that needs several queries loads them in its route loader so it shows one loading state and one `PageLoadError`.
+- **Use real copy.** No lorem ipsum or "Title goes here". Sample data and empty states use the product's own words and realistic lifts, dates and counts.
+
 ## Go
 
 - **Write idiomatic Go.** Follow [Effective Go](https://go.dev/doc/effective_go) and the [Go Code Review Comments](https://go.dev/wiki/CodeReviewComments). Code must pass `gofmt`, `go vet` and `golangci-lint`.
