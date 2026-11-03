@@ -4,6 +4,7 @@ import {
   formatLift,
   groupByExercise,
   isCompleteMilestone,
+  isLift,
   personalRecords,
 } from './milestones'
 import { kgPerLb } from './units'
@@ -168,5 +169,19 @@ describe('formatLift', () => {
         'lb',
       ),
     ).toBe('225 lb × 3')
+  })
+})
+
+describe('isLift', () => {
+  it('matches the exercise name regardless of case', () => {
+    expect(
+      isLift(milestone({ exerciseName: 'bench press' }), 'Bench Press'),
+    ).toBe(true)
+  })
+
+  it('does not match a different exercise', () => {
+    expect(isLift(milestone({ exerciseName: 'Front Squat' }), 'Squat')).toBe(
+      false,
+    )
   })
 })

@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { useSuspenseQuery } from '@tanstack/react-query'
 import {
   Card,
   CardAction,
@@ -11,16 +11,10 @@ import { meQuery, milestonesQuery } from '#/lib/queries'
 import { MilestoneRow } from './MilestoneRow'
 
 export function MilestoneList() {
-  const { data: milestones, isPending, error } = useQuery(milestonesQuery)
-  const { data: me } = useQuery(meQuery)
-  const unit = me?.weightUnit ?? 'lb'
+  const { data: milestones } = useSuspenseQuery(milestonesQuery)
+  const { data: me } = useSuspenseQuery(meQuery)
+  const unit = me.weightUnit
 
-  if (isPending) {
-    return <p>Loading…</p>
-  }
-  if (error) {
-    return <p className="text-danger">{error.message}</p>
-  }
   if (milestones.length === 0) {
     return <p>No milestones yet. Log your first one above.</p>
   }

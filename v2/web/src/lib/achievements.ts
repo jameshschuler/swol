@@ -1,8 +1,9 @@
 import { addDays, dateFromKey, localDateKey, startOfWeek } from './dates'
 import { goalLadders } from './goals'
-import { displayWeight } from './milestones'
+import { displayWeight, isLift } from './milestones'
 import { elapsedSeconds } from './sessions'
 import { completedWorkouts, visitDays, weekStreaks } from './stats'
+import { powerliftingTotal, totalHistory } from './totals'
 import { formatWeight, fromKg, kgPerLb } from './units'
 import type {
   Goal,
@@ -54,7 +55,7 @@ const comebackDays = 28
 const yearOfIronVisits = 100
 const longHaulMinutes = 120
 const clubTotalsLb = [1000, 1200, 1500]
-const bigLifts = ['squat', 'bench press', 'deadlift']
+const bigLifts = powerliftingTotal.lifts
 const squatLb = [225, 315, 365, 405, 455, 495]
 const benchLb = [135, 225, 275, 315, 365, 405]
 const liftTargets = [
@@ -160,9 +161,6 @@ function longHaulAt(workouts: WorkoutSession[]): Date | null {
   return workout ? workoutEnd(workout) : null
 }
 
-const isLift = (milestone: Milestone, lift: string) =>
-  milestone.exerciseName.toLowerCase() === lift.toLowerCase()
-
 function firstMilestoneAt(
   milestones: Milestone[],
   matches: (milestone: Milestone) => boolean,
@@ -181,20 +179,10 @@ function bestLb(milestones: Milestone[], lift: string): number {
 }
 
 function clubReachedAt(milestones: Milestone[], totalLb: number): Date | null {
-  const bestSingles = new Map<string, number>()
-  for (const milestone of milestones) {
-    const lift = bigLifts.find((name) => isLift(milestone, name))
-    if (!lift || milestone.reps !== 1) {
-      continue
-    }
-    const lb = displayWeight(milestone, 'lb')
-    bestSingles.set(lift, Math.max(bestSingles.get(lift) ?? 0, lb))
-    const total = [...bestSingles.values()].reduce((sum, w) => sum + w, 0)
-    if (bestSingles.size === bigLifts.length && total >= totalLb) {
-      return new Date(milestone.achievedAt)
-    }
-  }
-  return null
+  const point = totalHistory(milestones, bigLifts, 'lb').find(
+    (p) => p.total >= totalLb,
+  )
+  return point ? new Date(point.achievedAt) : null
 }
 
 function distinctExercisesAt(

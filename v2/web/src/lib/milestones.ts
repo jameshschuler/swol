@@ -35,6 +35,10 @@ export function displayWeight(milestone: Milestone, unit: WeightUnit): number {
     : fromKg(milestone.weightKg, unit)
 }
 
+export function isLift(milestone: Milestone, lift: string): boolean {
+  return milestone.exerciseName.toLowerCase() === lift.toLowerCase()
+}
+
 function isFirst(a: Milestone, b: Milestone): boolean {
   const byDate = Date.parse(a.achievedAt) - Date.parse(b.achievedAt)
   return byDate !== 0 ? byDate < 0 : a.id < b.id

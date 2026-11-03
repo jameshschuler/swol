@@ -6,6 +6,10 @@ export function fromKg(kg: number, unit: WeightUnit): number {
   return unit === 'kg' ? kg : kg / kgPerLb
 }
 
+export function roundWeight(value: number): number {
+  return Number(value.toFixed(1))
+}
+
 export function formatWeight(value: number, unit: WeightUnit): string {
-  return `${Number(value.toFixed(1))} ${unit}`
+  return `${roundWeight(value)} ${unit}`
 }

@@ -36,6 +36,14 @@ export function formatShortDate(date: Date): string {
   return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
 }
 
+export function formatShortDateWithYear(date: Date): string {
+  return date.toLocaleDateString(undefined, {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  })
+}
+
 export function formatShortMonth(date: Date): string {
   return date.toLocaleDateString(undefined, { month: 'short' })
 }
@@ -54,4 +62,8 @@ export function formatShortWeekday(date: Date): string {
 
 export function formatHours(seconds: number): string {
   return `${Number((seconds / 3600).toFixed(1))} h`
+}
+
+export function formatList(items: string[]): string {
+  return new Intl.ListFormat(undefined).format(items)
 }
