@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatWeight, fromKg, kgPerLb } from './units'
+import { formatWeight, fromKg, kgPerLb, roundWeight } from './units'
 
 describe('fromKg', () => {
   it('keeps kilograms as they are', () => {
@@ -19,5 +19,15 @@ describe('formatWeight', () => {
     [2.5, 'kg', '2.5 kg'],
   ] as const)('formats %d %s as %s', (value, unit, expected) => {
     expect(formatWeight(value, unit)).toBe(expected)
+  })
+})
+
+describe('roundWeight', () => {
+  it.each([
+    [225, 225],
+    [1190.0000001, 1190],
+    [102.058, 102.1],
+  ])('rounds %d to %d', (value, expected) => {
+    expect(roundWeight(value)).toBe(expected)
   })
 })

@@ -4,6 +4,8 @@ import {
   formatDate,
   formatDuration,
   formatHours,
+  formatList,
+  formatShortDateWithYear,
   formatWeekdayName,
   formatWeeks,
 } from './format'
@@ -70,5 +72,27 @@ describe('formatDate', () => {
       weekday: 'long',
     })
     expect(formatDate(iso).startsWith(weekday)).toBe(true)
+  })
+})
+
+describe('formatList', () => {
+  it('is empty for no items', () => {
+    expect(formatList([])).toBe('')
+  })
+
+  it('returns a single item as it is', () => {
+    expect(formatList(['Deadlift'])).toBe('Deadlift')
+  })
+
+  it('separates every item in order', () => {
+    expect(formatList(['Squat', 'Bench Press', 'Deadlift'])).toMatch(
+      /^Squat.+Bench Press.+Deadlift$/,
+    )
+  })
+})
+
+describe('formatShortDateWithYear', () => {
+  it('includes the year', () => {
+    expect(formatShortDateWithYear(new Date(2025, 2, 14))).toContain('2025')
   })
 })
