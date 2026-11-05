@@ -13,19 +13,20 @@ import (
 )
 
 const createMilestone = `-- name: CreateMilestone :one
-insert into swol.milestones (user_id, exercise_id, weight, unit, reps, achieved_at, note)
+insert into swol.milestones (user_id, exercise_id, weight, unit, reps, rpe, achieved_at, note)
 select
   $1::uuid,
   e.id,
   $2::numeric,
   $3::swol.weight_unit,
   $4::int,
-  $5::timestamptz,
-  $6::text
+  $5::numeric,
+  $6::timestamptz,
+  $7::text
 from swol.exercises e
-where e.id = $7
+where e.id = $8
   and (e.user_id is null or e.user_id = $1::uuid)
-returning id, user_id, exercise_id, session_id, weight, unit, weight_kg, reps, achieved_at, note, created_at
+returning id, user_id, exercise_id, session_id, weight, unit, weight_kg, reps, achieved_at, note, created_at, rpe
 `
 
 type CreateMilestoneParams struct {
@@ -33,6 +34,7 @@ type CreateMilestoneParams struct {
 	Weight     float64    `json:"weight"`
 	Unit       WeightUnit `json:"unit"`
 	Reps       int32      `json:"reps"`
+	RPE        *float64   `json:"rpe"`
 	AchievedAt time.Time  `json:"achievedAt"`
 	Note       *string    `json:"note"`
 	ExerciseID uuid.UUID  `json:"exerciseId"`
@@ -44,6 +46,7 @@ func (q *Queries) CreateMilestone(ctx context.Context, arg CreateMilestoneParams
 		arg.Weight,
 		arg.Unit,
 		arg.Reps,
+		arg.RPE,
 		arg.AchievedAt,
 		arg.Note,
 		arg.ExerciseID,
@@ -61,6 +64,7 @@ func (q *Queries) CreateMilestone(ctx context.Context, arg CreateMilestoneParams
 		&i.AchievedAt,
 		&i.Note,
 		&i.CreatedAt,
+		&i.RPE,
 	)
 	return i, err
 }
@@ -83,8 +87,38 @@ func (q *Queries) DeleteMilestone(ctx context.Context, arg DeleteMilestoneParams
 	return result.RowsAffected(), nil
 }
 
+const getMilestone = `-- name: GetMilestone :one
+select id, user_id, exercise_id, session_id, weight, unit, weight_kg, reps, achieved_at, note, created_at, rpe from swol.milestones
+where id = $1 and user_id = $2
+`
+
+type GetMilestoneParams struct {
+	ID     uuid.UUID `json:"id"`
+	UserID uuid.UUID `json:"userId"`
+}
+
+func (q *Queries) GetMilestone(ctx context.Context, arg GetMilestoneParams) (Milestone, error) {
+	row := q.db.QueryRow(ctx, getMilestone, arg.ID, arg.UserID)
+	var i Milestone
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.ExerciseID,
+		&i.SessionID,
+		&i.Weight,
+		&i.Unit,
+		&i.WeightKg,
+		&i.Reps,
+		&i.AchievedAt,
+		&i.Note,
+		&i.CreatedAt,
+		&i.RPE,
+	)
+	return i, err
+}
+
 const listMilestones = `-- name: ListMilestones :many
-select m.id, m.exercise_id, e.name as exercise_name, m.weight, m.unit, m.weight_kg, m.reps, m.achieved_at, m.note
+select m.id, m.exercise_id, e.name as exercise_name, m.weight, m.unit, m.weight_kg, m.reps, m.rpe, m.achieved_at, m.note
 from swol.milestones m
 join swol.exercises e on e.id = m.exercise_id
 where m.user_id = $1
@@ -99,6 +133,7 @@ type ListMilestonesRow struct {
 	Unit         WeightUnit `json:"unit"`
 	WeightKg     float64    `json:"weightKg"`
 	Reps         int32      `json:"reps"`
+	RPE          *float64   `json:"rpe"`
 	AchievedAt   time.Time  `json:"achievedAt"`
 	Note         *string    `json:"note"`
 }
@@ -120,6 +155,7 @@ func (q *Queries) ListMilestones(ctx context.Context, userID uuid.UUID) ([]ListM
 			&i.Unit,
 			&i.WeightKg,
 			&i.Reps,
+			&i.RPE,
 			&i.AchievedAt,
 			&i.Note,
 		); err != nil {
@@ -131,4 +167,77 @@ func (q *Queries) ListMilestones(ctx context.Context, userID uuid.UUID) ([]ListM
 		return nil, err
 	}
 	return items, nil
+}
+
+const updateMilestone = `-- name: UpdateMilestone :one
+with exercise as (
+  select e.id from swol.exercises e
+  where e.id = $9
+    and (e.user_id is null or e.user_id = $8::uuid)
+), unlinked as (
+  update swol.goals g
+  set completed_milestone_id = null, updated_at = now()
+  from exercise
+  where g.completed_milestone_id = $7
+    and g.user_id = $8::uuid
+    and (
+      g.exercise_id <> exercise.id
+      or swol.to_kg($1::numeric, $2::swol.weight_unit) < g.target_weight_kg
+      or $3::int < g.target_reps
+    )
+)
+update swol.milestones m
+set exercise_id = exercise.id,
+  weight = $1::numeric,
+  unit = $2::swol.weight_unit,
+  reps = $3::int,
+  rpe = $4::numeric,
+  achieved_at = $5::timestamptz,
+  note = $6::text
+from exercise
+where m.id = $7
+  and m.user_id = $8::uuid
+returning m.id, m.user_id, m.exercise_id, m.session_id, m.weight, m.unit, m.weight_kg, m.reps, m.achieved_at, m.note, m.created_at, m.rpe
+`
+
+type UpdateMilestoneParams struct {
+	Weight     float64    `json:"weight"`
+	Unit       WeightUnit `json:"unit"`
+	Reps       int32      `json:"reps"`
+	RPE        *float64   `json:"rpe"`
+	AchievedAt time.Time  `json:"achievedAt"`
+	Note       *string    `json:"note"`
+	ID         uuid.UUID  `json:"id"`
+	UserID     uuid.UUID  `json:"userId"`
+	ExerciseID uuid.UUID  `json:"exerciseId"`
+}
+
+func (q *Queries) UpdateMilestone(ctx context.Context, arg UpdateMilestoneParams) (Milestone, error) {
+	row := q.db.QueryRow(ctx, updateMilestone,
+		arg.Weight,
+		arg.Unit,
+		arg.Reps,
+		arg.RPE,
+		arg.AchievedAt,
+		arg.Note,
+		arg.ID,
+		arg.UserID,
+		arg.ExerciseID,
+	)
+	var i Milestone
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.ExerciseID,
+		&i.SessionID,
+		&i.Weight,
+		&i.Unit,
+		&i.WeightKg,
+		&i.Reps,
+		&i.AchievedAt,
+		&i.Note,
+		&i.CreatedAt,
+		&i.RPE,
+	)
+	return i, err
 }

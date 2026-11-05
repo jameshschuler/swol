@@ -1,7 +1,11 @@
 import { describe, expect, it } from 'vitest'
 import {
   displayWeight,
+  draftFromMilestone,
+  draftToMilestone,
+  emptyDraft,
   formatLift,
+  formatLiftWithRpe,
   groupByExercise,
   isCompleteMilestone,
   isLift,
@@ -19,6 +23,7 @@ const milestone = (overrides: Partial<Milestone>): Milestone => ({
   weightKg: 100,
   reps: 1,
   achievedAt: '2026-10-01T12:00:00Z',
+  rpe: null,
   note: null,
   ...overrides,
 })
@@ -137,10 +142,10 @@ describe('personalRecords', () => {
 
 describe('isCompleteMilestone', () => {
   const form = {
+    ...emptyDraft('lb', new Date(2026, 9, 21)),
     exerciseId: 'squat',
     weight: '225',
     reps: '5',
-    date: '2026-10-21',
   }
 
   it('accepts a complete form', () => {
@@ -169,6 +174,116 @@ describe('formatLift', () => {
         'lb',
       ),
     ).toBe('225 lb × 3')
+  })
+
+  it('leaves out the RPE', () => {
+    expect(formatLift(milestone({ rpe: 9 }), 'kg')).toBe('100 kg × 1')
+  })
+})
+
+describe('formatLiftWithRpe', () => {
+  it('adds the RPE when there is one', () => {
+    expect(
+      formatLiftWithRpe(
+        milestone({ weight: 405, unit: 'lb', weightKg: 183.705, rpe: 8.5 }),
+        'lb',
+      ),
+    ).toBe('405 lb × 1 @ RPE 8.5')
+  })
+
+  it('matches formatLift without an RPE', () => {
+    expect(formatLiftWithRpe(milestone({}), 'kg')).toBe('100 kg × 1')
+  })
+})
+
+describe('emptyDraft', () => {
+  it('starts with a single today in the given unit', () => {
+    expect(emptyDraft('kg', new Date(2026, 10, 4, 9))).toEqual({
+      exerciseId: '',
+      weight: '',
+      unit: 'kg',
+      reps: '1',
+      rpe: null,
+      date: '2026-11-04',
+      note: '',
+    })
+  })
+})
+
+describe('draftFromMilestone', () => {
+  it('fills the form from a logged milestone', () => {
+    const logged = milestone({
+      weight: 405,
+      unit: 'lb',
+      reps: 2,
+      rpe: 9,
+      achievedAt: new Date(2026, 9, 1, 18).toISOString(),
+      note: 'Belt and sleeves',
+    })
+    expect(draftFromMilestone(logged)).toEqual({
+      exerciseId: 'squat',
+      weight: '405',
+      unit: 'lb',
+      reps: '2',
+      rpe: 9,
+      date: '2026-10-01',
+      note: 'Belt and sleeves',
+    })
+  })
+
+  it('leaves the note empty when there is none', () => {
+    expect(draftFromMilestone(milestone({})).note).toBe('')
+  })
+})
+
+describe('draftToMilestone', () => {
+  const now = new Date(2026, 10, 4, 9)
+
+  it('turns form text into numbers', () => {
+    const draft = {
+      ...emptyDraft('lb', now),
+      exerciseId: 'squat',
+      weight: '405.5',
+      reps: '3',
+      rpe: 8,
+      note: 'Belt',
+    }
+    expect(draftToMilestone(draft, now)).toEqual({
+      exerciseId: 'squat',
+      weight: 405.5,
+      unit: 'lb',
+      reps: 3,
+      rpe: 8,
+      achievedAt: now.toISOString(),
+      note: 'Belt',
+    })
+  })
+
+  it('uses midday for a past date', () => {
+    const draft = { ...emptyDraft('lb', now), date: '2026-10-01' }
+    expect(draftToMilestone(draft, now).achievedAt).toBe(
+      new Date(2026, 9, 1, 12).toISOString(),
+    )
+  })
+
+  it('keeps the original time when an edit keeps the date', () => {
+    const original = milestone({
+      achievedAt: new Date(2026, 9, 1, 18, 30).toISOString(),
+    })
+    const draft = { ...draftFromMilestone(original), weight: '110' }
+    expect(draftToMilestone(draft, now, original).achievedAt).toBe(
+      original.achievedAt,
+    )
+  })
+
+  it('moves to the new date when an edit changes it', () => {
+    const original = milestone({
+      achievedAt: new Date(2026, 9, 1, 18, 30).toISOString(),
+    })
+    const draft = { ...draftFromMilestone(original), date: '2026-10-03' }
+    expect(draftToMilestone(draft, now, original).achievedAt).toBe(
+      new Date(2026, 9, 3, 12).toISOString(),
+    )
   })
 })
 

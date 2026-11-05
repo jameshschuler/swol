@@ -41,8 +41,19 @@ export interface Milestone {
   unit: WeightUnit
   weightKg: number
   reps: number
+  rpe: number | null
   achievedAt: string
   note: string | null
+}
+
+export interface NewMilestone {
+  exerciseId: string
+  weight: number
+  unit: WeightUnit
+  reps: number
+  rpe: number | null
+  achievedAt: string
+  note: string
 }
 
 export interface Goal {

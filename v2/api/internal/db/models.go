@@ -172,6 +172,7 @@ type Milestone struct {
 	AchievedAt time.Time  `json:"achievedAt"`
 	Note       *string    `json:"note"`
 	CreatedAt  time.Time  `json:"createdAt"`
+	RPE        *float64   `json:"rpe"`
 }
 
 type SwolGymCheckin struct {

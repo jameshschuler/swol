@@ -3,16 +3,9 @@ import { toast } from '#/components/ui/toast'
 import { api } from '#/lib/api'
 import { goalsNewlyHit } from '#/lib/goals'
 import { goalsQuery, milestonesQuery } from '#/lib/queries'
-import type { Milestone, WeightUnit } from '#/types/api'
+import type { Milestone, NewMilestone } from '#/types/api'
 
-export interface NewMilestone {
-  exerciseId: string
-  weight: number
-  unit: WeightUnit
-  reps: number
-  achievedAt: string
-  note: string
-}
+type SavedMilestone = Omit<Milestone, 'exerciseName'>
 
 function useInvalidateMilestones() {
   const queryClient = useQueryClient()
@@ -20,33 +13,54 @@ function useInvalidateMilestones() {
     queryClient.invalidateQueries({ queryKey: milestonesQuery.queryKey })
 }
 
-export function useCreateMilestone() {
+function useOnMilestoneSaved(title: string) {
   const queryClient = useQueryClient()
   const invalidate = useInvalidateMilestones()
+  return (milestone: SavedMilestone) => {
+    toast.add({ title, type: 'success' })
+    const previous = queryClient.getQueryData(milestonesQuery.queryKey) ?? []
+    queryClient
+      .query({ ...goalsQuery, staleTime: 'static' })
+      .then((goals) => {
+        const hit = goalsNewlyHit(milestone, goals, previous)
+        if (hit.length > 0) {
+          toast.add({
+            title: hit.length === 1 ? 'You hit a goal!' : 'You hit goals!',
+            description: `${hit.map((goal) => goal.exerciseName).join(', ')}: mark complete on the Goals page.`,
+            type: 'success',
+          })
+        }
+      })
+      .catch(() => undefined)
+    return invalidate()
+  }
+}
+
+export function useCreateMilestone() {
   return useMutation({
     mutationFn: (milestone: NewMilestone) =>
-      api<Omit<Milestone, 'exerciseName'>>('/milestones', {
+      api<SavedMilestone>('/milestones', {
         method: 'POST',
         body: JSON.stringify(milestone),
       }),
-    onSuccess: (milestone) => {
-      toast.add({ title: 'Milestone logged', type: 'success' })
-      const previous = queryClient.getQueryData(milestonesQuery.queryKey) ?? []
-      void queryClient
-        .ensureQueryData(goalsQuery)
-        .then((goals) => {
-          const hit = goalsNewlyHit(milestone, goals, previous)
-          if (hit.length > 0) {
-            toast.add({
-              title: hit.length === 1 ? 'You hit a goal!' : 'You hit goals!',
-              description: `${hit.map((goal) => goal.exerciseName).join(', ')}: mark complete on the Goals page.`,
-              type: 'success',
-            })
-          }
-        })
-        .catch(() => undefined)
-      return invalidate()
-    },
+    onSuccess: useOnMilestoneSaved('Milestone logged'),
+  })
+}
+
+export function useUpdateMilestone(id: string) {
+  const queryClient = useQueryClient()
+  const onSaved = useOnMilestoneSaved('Milestone updated')
+  return useMutation({
+    mutationFn: (milestone: NewMilestone) =>
+      api<SavedMilestone>(`/milestones/${id}`, {
+        method: 'PATCH',
+        body: JSON.stringify(milestone),
+      }),
+    onSuccess: (milestone) =>
+      Promise.all([
+        onSaved(milestone),
+        queryClient.invalidateQueries({ queryKey: goalsQuery.queryKey }),
+      ]),
   })
 }
 

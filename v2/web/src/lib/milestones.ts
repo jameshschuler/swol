@@ -1,6 +1,7 @@
+import { localDateKey, timeForDate } from './dates'
 import { isValidLift } from './lifts'
 import { formatWeight, fromKg } from './units'
-import type { Milestone, WeightUnit } from '#/types/api'
+import type { Milestone, NewMilestone, WeightUnit } from '#/types/api'
 
 export type PersonalRecord = 'weight' | 'reps'
 
@@ -12,21 +13,76 @@ export interface ExerciseMilestones {
   records: Map<string, PersonalRecord>
 }
 
-export function isCompleteMilestone(form: {
+export interface MilestoneDraft {
   exerciseId: string
   weight: string
+  unit: WeightUnit
   reps: string
+  rpe: number | null
   date: string
-}): boolean {
+  note: string
+}
+
+export function emptyDraft(unit: WeightUnit, now: Date): MilestoneDraft {
+  return {
+    exerciseId: '',
+    weight: '',
+    unit,
+    reps: '1',
+    rpe: null,
+    date: localDateKey(now),
+    note: '',
+  }
+}
+
+export function draftFromMilestone(milestone: Milestone): MilestoneDraft {
+  return {
+    exerciseId: milestone.exerciseId,
+    weight: String(milestone.weight),
+    unit: milestone.unit,
+    reps: String(milestone.reps),
+    rpe: milestone.rpe,
+    date: localDateKey(new Date(milestone.achievedAt)),
+    note: milestone.note ?? '',
+  }
+}
+
+export function draftToMilestone(
+  draft: MilestoneDraft,
+  now: Date,
+  original?: Milestone,
+): NewMilestone {
+  const keepsDate =
+    original && draft.date === localDateKey(new Date(original.achievedAt))
+  return {
+    exerciseId: draft.exerciseId,
+    weight: Number(draft.weight),
+    unit: draft.unit,
+    reps: Number(draft.reps),
+    rpe: draft.rpe,
+    achievedAt: keepsDate ? original.achievedAt : timeForDate(draft.date, now),
+    note: draft.note,
+  }
+}
+
+export function isCompleteMilestone(draft: MilestoneDraft): boolean {
   return (
-    form.exerciseId !== '' &&
-    isValidLift(form.weight, form.reps) &&
-    form.date !== ''
+    draft.exerciseId !== '' &&
+    isValidLift(draft.weight, draft.reps) &&
+    draft.date !== ''
   )
 }
 
 export function formatLift(milestone: Milestone, unit: WeightUnit): string {
   return `${formatWeight(displayWeight(milestone, unit), unit)} × ${milestone.reps}`
+}
+
+export function formatLiftWithRpe(
+  milestone: Milestone,
+  unit: WeightUnit,
+): string {
+  const lift = formatLift(milestone, unit)
+  return milestone.rpe === null ? lift : `${lift} @ RPE ${milestone.rpe}`
 }
 
 export function displayWeight(milestone: Milestone, unit: WeightUnit): number {

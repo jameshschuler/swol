@@ -16,3 +16,5 @@ export function isValidLift(weight: string, reps: string): boolean {
 export function estimatedOneRepMax(weight: number, reps: number): number {
   return reps === 1 ? weight : weight * (1 + reps / 30)
 }
+
+export const rpeValues = [6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10]

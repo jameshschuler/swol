@@ -50,6 +50,7 @@ sql:
           swol_exercise: Exercise
           swol_workout_session: WorkoutSession
           swol_milestone: Milestone
+          rpe: RPE
           swol_goal: Goal
           swol_user_achievement: UserAchievement
           swol_weight_unit: WeightUnit
