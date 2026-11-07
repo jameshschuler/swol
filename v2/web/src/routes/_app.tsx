@@ -29,7 +29,7 @@ function AppLayout() {
     const { data } = supabase.auth.onAuthStateChange((event) => {
       if (event === 'SIGNED_OUT') {
         queryClient.clear()
-        void router.navigate({ to: '/login' })
+        router.navigate({ to: '/login' })
       }
     })
     return () => data.subscription.unsubscribe()

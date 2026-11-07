@@ -9,8 +9,8 @@ import { meQuery, milestonesQuery } from '#/lib/queries'
 export const Route = createFileRoute('/_app/milestones')({
   loader: ({ context: { queryClient } }) =>
     Promise.all([
-      queryClient.ensureQueryData(meQuery),
-      queryClient.ensureQueryData(milestonesQuery),
+      queryClient.query({ ...meQuery, staleTime: 'static' }),
+      queryClient.query({ ...milestonesQuery, staleTime: 'static' }),
     ]),
   pendingComponent: () => <p>Loading…</p>,
   errorComponent: PageLoadError,

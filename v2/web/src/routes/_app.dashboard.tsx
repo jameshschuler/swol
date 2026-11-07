@@ -17,12 +17,12 @@ import {
 export const Route = createFileRoute('/_app/dashboard')({
   loader: ({ context: { queryClient } }) =>
     Promise.all([
-      queryClient.ensureQueryData(meQuery),
-      queryClient.ensureQueryData(currentSessionQuery),
-      queryClient.ensureQueryData(sessionsQuery),
-      queryClient.ensureQueryData(legacyCheckInsQuery),
-      queryClient.ensureQueryData(goalsQuery),
-      queryClient.ensureQueryData(milestonesQuery),
+      queryClient.query({ ...meQuery, staleTime: 'static' }),
+      queryClient.query({ ...currentSessionQuery, staleTime: 'static' }),
+      queryClient.query({ ...sessionsQuery, staleTime: 'static' }),
+      queryClient.query({ ...legacyCheckInsQuery, staleTime: 'static' }),
+      queryClient.query({ ...goalsQuery, staleTime: 'static' }),
+      queryClient.query({ ...milestonesQuery, staleTime: 'static' }),
     ]),
   pendingComponent: () => <p>Loading…</p>,
   errorComponent: PageLoadError,

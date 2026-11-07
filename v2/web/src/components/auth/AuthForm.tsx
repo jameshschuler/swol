@@ -35,7 +35,7 @@ export function AuthForm({
   }
 
   function handleGoogle() {
-    void run(signInWithGoogle, { keepPendingOnSuccess: true })
+    run(signInWithGoogle, { keepPendingOnSuccess: true })
   }
 
   return (

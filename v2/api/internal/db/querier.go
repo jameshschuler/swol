@@ -21,6 +21,7 @@ type Querier interface {
 	DeleteSession(ctx context.Context, arg DeleteSessionParams) (int64, error)
 	EndSession(ctx context.Context, arg EndSessionParams) (WorkoutSession, error)
 	GetGoal(ctx context.Context, arg GetGoalParams) (Goal, error)
+	GetMilestone(ctx context.Context, arg GetMilestoneParams) (Milestone, error)
 	GetOpenSession(ctx context.Context, userID uuid.UUID) (WorkoutSession, error)
 	GetOrCreateUserSettings(ctx context.Context, userID uuid.UUID) (UserSettings, error)
 	GetSession(ctx context.Context, arg GetSessionParams) (WorkoutSession, error)
@@ -34,6 +35,7 @@ type Querier interface {
 	ResumeSession(ctx context.Context, arg ResumeSessionParams) (WorkoutSession, error)
 	StartSession(ctx context.Context, userID uuid.UUID) (WorkoutSession, error)
 	UpdateGoal(ctx context.Context, arg UpdateGoalParams) (Goal, error)
+	UpdateMilestone(ctx context.Context, arg UpdateMilestoneParams) (Milestone, error)
 	UpdateSessionNotes(ctx context.Context, arg UpdateSessionNotesParams) (WorkoutSession, error)
 	UpdateWeightUnit(ctx context.Context, arg UpdateWeightUnitParams) (UserSettings, error)
 }
