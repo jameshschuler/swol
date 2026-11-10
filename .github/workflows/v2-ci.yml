@@ -88,6 +88,15 @@ jobs:
           for _ in $(ls migrations/*.sql); do go run ./cmd/migrate down; done
           go run ./cmd/migrate up
           go run ./cmd/migrate status
+      - name: Migrations table is closed to API roles
+        run: |
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -tA <<'SQL' | grep -qx t
+          select c.relrowsecurity
+            and not has_table_privilege('anon', c.oid, 'select,insert,update,delete')
+            and not has_table_privilege('authenticated', c.oid, 'select,insert,update,delete')
+          from pg_class c
+          where c.oid = 'swol.swol_migrations'::regclass;
+          SQL
 
   web:
     name: Web
