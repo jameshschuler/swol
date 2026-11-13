@@ -1,7 +1,7 @@
 import { useId, useState } from 'react'
 import { Button } from '#/components/ui/button'
 import { Input } from '#/components/ui/input'
-import { useCreateExercise } from '#/hooks/useCreateExercise'
+import { useCreateExercise } from '#/hooks/useExerciseMutations'
 import { BaseExerciseField } from './BaseExerciseField'
 
 export function NewExerciseForm({

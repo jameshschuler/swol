@@ -12,20 +12,21 @@ import { exercisesQuery } from '#/lib/queries'
 
 export function BaseExerciseField({
   id,
+  exerciseId,
   value,
   onChange,
 }: {
   id: string
+  exerciseId?: string
   value: string | null
   onChange: (baseExerciseId: string | null) => void
 }) {
   const { data: exercises = [] } = useQuery(exercisesQuery)
   const items = [
     { value: null, label: 'None' },
-    ...baseExercises(exercises).map((exercise) => ({
-      value: exercise.id,
-      label: exercise.name,
-    })),
+    ...baseExercises(exercises)
+      .filter((exercise) => exercise.id !== exerciseId)
+      .map((exercise) => ({ value: exercise.id, label: exercise.name })),
   ]
 
   return (

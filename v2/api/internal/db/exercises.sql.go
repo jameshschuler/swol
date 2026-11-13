@@ -43,6 +43,47 @@ func (q *Queries) CreateExercise(ctx context.Context, arg CreateExerciseParams) 
 	return i, err
 }
 
+const deleteExercise = `-- name: DeleteExercise :execrows
+delete from swol.exercises
+where id = $1 and user_id = $2::uuid
+`
+
+type DeleteExerciseParams struct {
+	ID     uuid.UUID `json:"id"`
+	UserID uuid.UUID `json:"userId"`
+}
+
+func (q *Queries) DeleteExercise(ctx context.Context, arg DeleteExerciseParams) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteExercise, arg.ID, arg.UserID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
+}
+
+const getOwnExercise = `-- name: GetOwnExercise :one
+select id, user_id, name, created_at, base_exercise_id from swol.exercises
+where id = $1 and user_id = $2::uuid
+`
+
+type GetOwnExerciseParams struct {
+	ID     uuid.UUID `json:"id"`
+	UserID uuid.UUID `json:"userId"`
+}
+
+func (q *Queries) GetOwnExercise(ctx context.Context, arg GetOwnExerciseParams) (Exercise, error) {
+	row := q.db.QueryRow(ctx, getOwnExercise, arg.ID, arg.UserID)
+	var i Exercise
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.Name,
+		&i.CreatedAt,
+		&i.BaseExerciseID,
+	)
+	return i, err
+}
+
 const listExercises = `-- name: ListExercises :many
 select id, user_id, name, created_at, base_exercise_id from swol.exercises
 where user_id is null or user_id = $1
@@ -73,4 +114,53 @@ func (q *Queries) ListExercises(ctx context.Context, userID *uuid.UUID) ([]Exerc
 		return nil, err
 	}
 	return items, nil
+}
+
+const updateExercise = `-- name: UpdateExercise :one
+update swol.exercises e
+set name = $1::text, base_exercise_id = $2::uuid
+where e.id = $3
+  and e.user_id = $4::uuid
+  and (
+    $2::uuid is null
+    or (
+      exists (
+        select 1 from swol.exercises base
+        where base.id = $2::uuid
+          and base.id <> e.id
+          and (base.user_id is null or base.user_id = $4::uuid)
+          and base.base_exercise_id is null
+      )
+      and not exists (
+        select 1 from swol.exercises variation
+        where variation.base_exercise_id = e.id
+      )
+    )
+  )
+returning id, user_id, name, created_at, base_exercise_id
+`
+
+type UpdateExerciseParams struct {
+	Name           string     `json:"name"`
+	BaseExerciseID *uuid.UUID `json:"baseExerciseId"`
+	ID             uuid.UUID  `json:"id"`
+	UserID         uuid.UUID  `json:"userId"`
+}
+
+func (q *Queries) UpdateExercise(ctx context.Context, arg UpdateExerciseParams) (Exercise, error) {
+	row := q.db.QueryRow(ctx, updateExercise,
+		arg.Name,
+		arg.BaseExerciseID,
+		arg.ID,
+		arg.UserID,
+	)
+	var i Exercise
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.Name,
+		&i.CreatedAt,
+		&i.BaseExerciseID,
+	)
+	return i, err
 }
