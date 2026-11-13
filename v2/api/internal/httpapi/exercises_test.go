@@ -2,6 +2,7 @@ package httpapi
 
 import (
 	"context"
+	"errors"
 	"net/http"
 	"slices"
 	"strings"
@@ -47,7 +48,7 @@ func (f *fakeQueries) hasVariations(id uuid.UUID) bool {
 }
 
 func (f *fakeQueries) DeleteExercise(ctx context.Context, arg db.DeleteExerciseParams) (int64, error) {
-	if _, err := f.GetOwnExercise(ctx, db.GetOwnExerciseParams{ID: arg.ID, UserID: arg.UserID}); err != nil {
+	if _, err := f.GetOwnExercise(ctx, db.GetOwnExerciseParams(arg)); errors.Is(err, pgx.ErrNoRows) {
 		return 0, nil
 	}
 	for _, m := range f.milestones {
