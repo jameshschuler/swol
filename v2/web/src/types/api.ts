@@ -31,12 +31,15 @@ export interface Exercise {
   id: string
   userId: string | null
   name: string
+  baseExerciseId: string | null
 }
 
 export interface Milestone {
   id: string
   exerciseId: string
   exerciseName: string
+  baseExerciseId: string | null
+  baseExerciseName: string | null
   weight: number
   unit: WeightUnit
   weightKg: number

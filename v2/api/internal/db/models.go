@@ -140,10 +140,11 @@ func (ns NullWeightUnit) Value() (driver.Value, error) {
 }
 
 type Exercise struct {
-	ID        uuid.UUID  `json:"id"`
-	UserID    *uuid.UUID `json:"userId"`
-	Name      string     `json:"name"`
-	CreatedAt time.Time  `json:"createdAt"`
+	ID             uuid.UUID  `json:"id"`
+	UserID         *uuid.UUID `json:"userId"`
+	Name           string     `json:"name"`
+	CreatedAt      time.Time  `json:"createdAt"`
+	BaseExerciseID *uuid.UUID `json:"baseExerciseId"`
 }
 
 type Goal struct {

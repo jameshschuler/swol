@@ -12,30 +12,39 @@ import (
 )
 
 const createExercise = `-- name: CreateExercise :one
-insert into swol.exercises (user_id, name)
-values ($1, $2)
-returning id, user_id, name, created_at
+insert into swol.exercises (user_id, name, base_exercise_id)
+select $1::uuid, $2::text, $3::uuid
+where $3::uuid is null
+  or exists (
+    select 1 from swol.exercises base
+    where base.id = $3::uuid
+      and (base.user_id is null or base.user_id = $1::uuid)
+      and base.base_exercise_id is null
+  )
+returning id, user_id, name, created_at, base_exercise_id
 `
 
 type CreateExerciseParams struct {
-	UserID *uuid.UUID `json:"userId"`
-	Name   string     `json:"name"`
+	UserID         uuid.UUID  `json:"userId"`
+	Name           string     `json:"name"`
+	BaseExerciseID *uuid.UUID `json:"baseExerciseId"`
 }
 
 func (q *Queries) CreateExercise(ctx context.Context, arg CreateExerciseParams) (Exercise, error) {
-	row := q.db.QueryRow(ctx, createExercise, arg.UserID, arg.Name)
+	row := q.db.QueryRow(ctx, createExercise, arg.UserID, arg.Name, arg.BaseExerciseID)
 	var i Exercise
 	err := row.Scan(
 		&i.ID,
 		&i.UserID,
 		&i.Name,
 		&i.CreatedAt,
+		&i.BaseExerciseID,
 	)
 	return i, err
 }
 
 const listExercises = `-- name: ListExercises :many
-select id, user_id, name, created_at from swol.exercises
+select id, user_id, name, created_at, base_exercise_id from swol.exercises
 where user_id is null or user_id = $1
 order by lower(name)
 `
@@ -54,6 +63,7 @@ func (q *Queries) ListExercises(ctx context.Context, userID *uuid.UUID) ([]Exerc
 			&i.UserID,
 			&i.Name,
 			&i.CreatedAt,
+			&i.BaseExerciseID,
 		); err != nil {
 			return nil, err
 		}

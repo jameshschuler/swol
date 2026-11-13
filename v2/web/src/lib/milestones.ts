@@ -161,3 +161,35 @@ export function groupByExercise(milestones: Milestone[]): ExerciseMilestones[] {
     a.exerciseName.localeCompare(b.exerciseName),
   )
 }
+
+export interface BaseExerciseMilestones {
+  baseExerciseId: string
+  baseExerciseName: string
+  base: ExerciseMilestones | null
+  variations: ExerciseMilestones[]
+}
+
+export function groupByBaseExercise(
+  milestones: Milestone[],
+): BaseExerciseMilestones[] {
+  const groups = new Map<string, BaseExerciseMilestones>()
+  for (const variation of groupByExercise(milestones)) {
+    const [first] = variation.milestones
+    const baseExerciseId = first.baseExerciseId ?? first.exerciseId
+    const group = groups.get(baseExerciseId) ?? {
+      baseExerciseId,
+      baseExerciseName: first.baseExerciseName ?? first.exerciseName,
+      base: null,
+      variations: [],
+    }
+    if (variation.exerciseId === baseExerciseId) {
+      group.base = variation
+    } else {
+      group.variations.push(variation)
+    }
+    groups.set(baseExerciseId, group)
+  }
+  return [...groups.values()].sort((a, b) =>
+    a.baseExerciseName.localeCompare(b.baseExerciseName),
+  )
+}

@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jamesschuler/swol/v2/api/internal/auth"
 	"github.com/jamesschuler/swol/v2/api/internal/db"
@@ -22,7 +24,8 @@ func (s *Server) listExercises(w http.ResponseWriter, r *http.Request) error {
 
 func (s *Server) createExercise(w http.ResponseWriter, r *http.Request) error {
 	var body struct {
-		Name string `json:"name"`
+		Name           string     `json:"name"`
+		BaseExerciseID *uuid.UUID `json:"baseExerciseId"`
 	}
 	if err := decodeJSON(r, &body); err != nil {
 		return err
@@ -33,9 +36,12 @@ func (s *Server) createExercise(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	user := auth.FromContext(r.Context())
-	exercise, err := s.queries.CreateExercise(r.Context(), db.CreateExerciseParams{UserID: &user.ID, Name: name})
+	exercise, err := s.queries.CreateExercise(r.Context(), db.CreateExerciseParams{UserID: user.ID, Name: name, BaseExerciseID: body.BaseExerciseID})
 	if isUniqueViolation(err) {
 		return conflict("exercise already exists")
+	}
+	if errors.Is(err, pgx.ErrNoRows) {
+		return badRequest("unknown base exercise")
 	}
 	if err != nil {
 		return err

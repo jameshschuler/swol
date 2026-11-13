@@ -47,6 +47,8 @@ const lift = (
   weightKg: lb * kgPerLb,
   reps,
   achievedAt,
+  baseExerciseId: null,
+  baseExerciseName: null,
   rpe: null,
   note: null,
 })

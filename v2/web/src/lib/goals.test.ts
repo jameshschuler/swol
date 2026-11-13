@@ -41,6 +41,8 @@ const lift = (
   weightKg,
   reps,
   achievedAt: `2026-10-${String(day).padStart(2, '0')}T12:00:00Z`,
+  baseExerciseId: null,
+  baseExerciseName: null,
   rpe: null,
   note: null,
 })
