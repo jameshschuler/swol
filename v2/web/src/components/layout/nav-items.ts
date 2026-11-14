@@ -1,4 +1,12 @@
-import { Flag, History, House, Medal, Trophy, UserRound } from 'lucide-react'
+import {
+  Dumbbell,
+  Flag,
+  History,
+  House,
+  Medal,
+  Trophy,
+  UserRound,
+} from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
 export interface NavItem {
@@ -7,6 +15,7 @@ export interface NavItem {
     | '/sessions'
     | '/milestones'
     | '/goals'
+    | '/exercises'
     | '/achievements'
     | '/account'
   label: string
@@ -21,6 +30,7 @@ export const navItems: NavItem[] = [
 ]
 
 export const utilityItems: NavItem[] = [
+  { to: '/exercises', label: 'Exercises', icon: Dumbbell },
   { to: '/achievements', label: 'Achievements', icon: Medal },
   { to: '/account', label: 'Account', icon: UserRound },
 ]

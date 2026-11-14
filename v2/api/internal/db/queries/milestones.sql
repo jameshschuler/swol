@@ -1,7 +1,9 @@
 -- name: ListMilestones :many
-select m.id, m.exercise_id, e.name as exercise_name, m.weight, m.unit, m.weight_kg, m.reps, m.rpe, m.achieved_at, m.note
+select m.id, m.exercise_id, e.name as exercise_name, b.id as base_exercise_id, b.name as base_exercise_name,
+  m.weight, m.unit, m.weight_kg, m.reps, m.rpe, m.achieved_at, m.note
 from swol.milestones m
 join swol.exercises e on e.id = m.exercise_id
+left join swol.exercises b on b.id = e.base_exercise_id and (b.user_id is null or b.user_id = m.user_id)
 where m.user_id = $1
 order by m.achieved_at desc, m.created_at desc;
 

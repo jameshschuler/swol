@@ -20,6 +20,7 @@ import { Route as TermsConditionsRouteImport } from './routes/terms-conditions'
 import { Route as AppAccountRouteImport } from './routes/_app.account'
 import { Route as AppAchievementsRouteImport } from './routes/_app.achievements'
 import { Route as AppDashboardRouteImport } from './routes/_app.dashboard'
+import { Route as AppExercisesRouteImport } from './routes/_app.exercises'
 import { Route as AppGoalsRouteImport } from './routes/_app.goals'
 import { Route as AppMilestonesRouteImport } from './routes/_app.milestones'
 import { Route as AppSessionsIndexRouteImport } from './routes/_app.sessions.index'
@@ -80,6 +81,11 @@ const AppDashboardRoute = AppDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AppRoute,
 } as any)
+const AppExercisesRoute = AppExercisesRouteImport.update({
+  id: '/exercises',
+  path: '/exercises',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppGoalsRoute = AppGoalsRouteImport.update({
   id: '/goals',
   path: '/goals',
@@ -117,6 +123,7 @@ export interface FileRoutesByFullPath {
   '/account': typeof AppAccountRoute
   '/achievements': typeof AppAchievementsRoute
   '/dashboard': typeof AppDashboardRoute
+  '/exercises': typeof AppExercisesRoute
   '/goals': typeof AppGoalsRoute
   '/milestones': typeof AppMilestonesRoute
   '/sessions/$sessionId': typeof AppSessionsSessionIdRoute
@@ -134,6 +141,7 @@ export interface FileRoutesByTo {
   '/account': typeof AppAccountRoute
   '/achievements': typeof AppAchievementsRoute
   '/dashboard': typeof AppDashboardRoute
+  '/exercises': typeof AppExercisesRoute
   '/goals': typeof AppGoalsRoute
   '/milestones': typeof AppMilestonesRoute
   '/sessions/$sessionId': typeof AppSessionsSessionIdRoute
@@ -153,6 +161,7 @@ export interface FileRoutesById {
   '/_app/account': typeof AppAccountRoute
   '/_app/achievements': typeof AppAchievementsRoute
   '/_app/dashboard': typeof AppDashboardRoute
+  '/_app/exercises': typeof AppExercisesRoute
   '/_app/goals': typeof AppGoalsRoute
   '/_app/milestones': typeof AppMilestonesRoute
   '/_app/sessions/$sessionId': typeof AppSessionsSessionIdRoute
@@ -172,6 +181,7 @@ export interface FileRouteTypes {
     | '/account'
     | '/achievements'
     | '/dashboard'
+    | '/exercises'
     | '/goals'
     | '/milestones'
     | '/sessions/$sessionId'
@@ -189,6 +199,7 @@ export interface FileRouteTypes {
     | '/account'
     | '/achievements'
     | '/dashboard'
+    | '/exercises'
     | '/goals'
     | '/milestones'
     | '/sessions/$sessionId'
@@ -207,6 +218,7 @@ export interface FileRouteTypes {
     | '/_app/account'
     | '/_app/achievements'
     | '/_app/dashboard'
+    | '/_app/exercises'
     | '/_app/goals'
     | '/_app/milestones'
     | '/_app/sessions/$sessionId'
@@ -304,6 +316,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppDashboardRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/exercises': {
+      id: '/_app/exercises'
+      path: '/exercises'
+      fullPath: '/exercises'
+      preLoaderRoute: typeof AppExercisesRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/goals': {
       id: '/_app/goals'
       path: '/goals'
@@ -346,6 +365,7 @@ interface AppRouteChildren {
   AppAccountRoute: typeof AppAccountRoute
   AppAchievementsRoute: typeof AppAchievementsRoute
   AppDashboardRoute: typeof AppDashboardRoute
+  AppExercisesRoute: typeof AppExercisesRoute
   AppGoalsRoute: typeof AppGoalsRoute
   AppMilestonesRoute: typeof AppMilestonesRoute
   AppSessionsSessionIdRoute: typeof AppSessionsSessionIdRoute
@@ -357,6 +377,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppAccountRoute: AppAccountRoute,
   AppAchievementsRoute: AppAchievementsRoute,
   AppDashboardRoute: AppDashboardRoute,
+  AppExercisesRoute: AppExercisesRoute,
   AppGoalsRoute: AppGoalsRoute,
   AppMilestonesRoute: AppMilestonesRoute,
   AppSessionsSessionIdRoute: AppSessionsSessionIdRoute,

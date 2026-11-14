@@ -39,6 +39,8 @@ func NewHandler(queries db.Querier, authenticator Authenticator, allowedOrigins 
 		r.Patch("/me", handle(s.updateMe))
 		r.Get("/exercises", handle(s.listExercises))
 		r.Post("/exercises", handle(s.createExercise))
+		r.Patch("/exercises/{id}", handle(s.updateExercise))
+		r.Delete("/exercises/{id}", handle(s.deleteExercise))
 		r.Get("/legacy-check-ins", handle(s.listLegacyCheckIns))
 		r.Get("/milestones", handle(s.listMilestones))
 		r.Post("/milestones", handle(s.createMilestone))

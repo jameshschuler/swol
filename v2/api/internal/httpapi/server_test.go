@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jamesschuler/swol/v2/api/internal/auth"
 	"github.com/jamesschuler/swol/v2/api/internal/db"
@@ -51,7 +52,19 @@ func (f *fakeQueries) CreateExercise(_ context.Context, arg db.CreateExercisePar
 	if f.createExerciseE != nil {
 		return db.Exercise{}, f.createExerciseE
 	}
-	return db.Exercise{ID: uuid.New(), UserID: arg.UserID, Name: arg.Name}, nil
+	if arg.BaseExerciseID != nil && !f.isBaseFor(*arg.BaseExerciseID, arg.UserID) {
+		return db.Exercise{}, pgx.ErrNoRows
+	}
+	return db.Exercise{ID: uuid.New(), UserID: &arg.UserID, Name: arg.Name, BaseExerciseID: arg.BaseExerciseID}, nil
+}
+
+func (f *fakeQueries) isBaseFor(id, userID uuid.UUID) bool {
+	for _, e := range f.exercises {
+		if e.ID == id && (e.UserID == nil || *e.UserID == userID) && e.BaseExerciseID == nil {
+			return true
+		}
+	}
+	return false
 }
 
 func request(t *testing.T, h http.Handler, method, path, body string) *httptest.ResponseRecorder {
@@ -103,5 +116,39 @@ func TestCreateExercise(t *testing.T) {
 	dup := NewHandler(&fakeQueries{createExerciseE: &pgconn.PgError{Code: "23505"}}, fakeAuth{allow: true}, nil)
 	if rec := request(t, dup, http.MethodPost, "/api/v1/exercises", `{"name":"Squat"}`); rec.Code != http.StatusConflict {
 		t.Fatalf("duplicate status = %d", rec.Code)
+	}
+}
+
+func TestCreateExerciseVariation(t *testing.T) {
+	someoneElse := uuid.New()
+	squat := db.Exercise{ID: uuid.New(), Name: "Squat"}
+	frontSquat := db.Exercise{ID: uuid.New(), Name: "Front Squat", BaseExerciseID: &squat.ID}
+	ownBase := db.Exercise{ID: uuid.New(), UserID: &testUser.ID, Name: "Hack Squat"}
+	private := db.Exercise{ID: uuid.New(), UserID: &someoneElse, Name: "Secret Lift"}
+	h := NewHandler(&fakeQueries{exercises: []db.Exercise{squat, frontSquat, ownBase, private}}, fakeAuth{allow: true}, nil)
+
+	body := func(base uuid.UUID) string {
+		return `{"name":"Pin Squat","baseExerciseId":"` + base.String() + `"}`
+	}
+	cases := []struct {
+		name, body string
+		want       int
+	}{
+		{"shared base", body(squat.ID), http.StatusCreated},
+		{"own base", body(ownBase.ID), http.StatusCreated},
+		{"no base", `{"name":"Pin Squat","baseExerciseId":null}`, http.StatusCreated},
+		{"base is itself a variation", body(frontSquat.ID), http.StatusBadRequest},
+		{"someone else's base", body(private.ID), http.StatusBadRequest},
+		{"unknown base", body(uuid.New()), http.StatusBadRequest},
+	}
+	for _, c := range cases {
+		if rec := request(t, h, http.MethodPost, "/api/v1/exercises", c.body); rec.Code != c.want {
+			t.Errorf("%s: %d %s", c.name, rec.Code, rec.Body)
+		}
+	}
+
+	created := decode[db.Exercise](t, request(t, h, http.MethodPost, "/api/v1/exercises", body(squat.ID)).Body.String())
+	if created.BaseExerciseID == nil || *created.BaseExerciseID != squat.ID {
+		t.Errorf("base = %v, want %v", created.BaseExerciseID, squat.ID)
 	}
 }

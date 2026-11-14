@@ -6,6 +6,7 @@ import {
   emptyDraft,
   formatLift,
   formatLiftWithRpe,
+  groupByBaseExercise,
   groupByExercise,
   isCompleteMilestone,
   isLift,
@@ -23,6 +24,8 @@ const milestone = (overrides: Partial<Milestone>): Milestone => ({
   weightKg: 100,
   reps: 1,
   achievedAt: '2026-10-01T12:00:00Z',
+  baseExerciseId: null,
+  baseExerciseName: null,
   rpe: null,
   note: null,
   ...overrides,
@@ -298,5 +301,68 @@ describe('isLift', () => {
     expect(isLift(milestone({ exerciseName: 'Front Squat' }), 'Squat')).toBe(
       false,
     )
+  })
+})
+
+describe('groupByBaseExercise', () => {
+  const bench = { exerciseId: 'bench', exerciseName: 'Bench Press' }
+  const paused = {
+    exerciseId: 'paused',
+    exerciseName: 'Paused Bench Press',
+    baseExerciseId: 'bench',
+    baseExerciseName: 'Bench Press',
+  }
+  const incline = {
+    exerciseId: 'incline',
+    exerciseName: 'Incline Bench Press',
+    baseExerciseId: 'bench',
+    baseExerciseName: 'Bench Press',
+  }
+
+  it('is empty when there are no milestones', () => {
+    expect(groupByBaseExercise([])).toEqual([])
+  })
+
+  it('puts variations under their base exercise', () => {
+    const [group] = groupByBaseExercise([
+      milestone({ id: 'p1', ...paused }),
+      milestone({ id: 'i1', ...incline }),
+      milestone({ id: 'b1', ...bench }),
+    ])
+    expect(group.baseExerciseName).toBe('Bench Press')
+    expect(group.base?.exerciseId).toBe('bench')
+    expect(group.variations.map((v) => v.exerciseName)).toEqual([
+      'Incline Bench Press',
+      'Paused Bench Press',
+    ])
+  })
+
+  it('groups a variation even with no milestones for the base', () => {
+    const groups = groupByBaseExercise([milestone({ id: 'p1', ...paused })])
+    expect(groups).toHaveLength(1)
+    expect(groups[0].baseExerciseId).toBe('bench')
+    expect(groups[0].baseExerciseName).toBe('Bench Press')
+    expect(groups[0].base).toBeNull()
+    expect(groups[0].variations.map((v) => v.exerciseId)).toEqual(['paused'])
+  })
+
+  it('keeps bests and records separate for each variation', () => {
+    const [group] = groupByBaseExercise([
+      milestone({ id: 'b1', ...bench, weightKg: 140 }),
+      milestone({ id: 'p1', ...paused, weightKg: 130 }),
+    ])
+    expect(group.base?.best.id).toBe('b1')
+    expect(group.variations[0].best.id).toBe('p1')
+  })
+
+  it('sorts lifts by base name', () => {
+    const groups = groupByBaseExercise([
+      milestone({ id: 's1' }),
+      milestone({ id: 'p1', ...paused }),
+    ])
+    expect(groups.map((g) => g.baseExerciseName)).toEqual([
+      'Bench Press',
+      'Squat',
+    ])
   })
 })

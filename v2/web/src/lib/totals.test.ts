@@ -25,6 +25,8 @@ const single = (
   weightKg: weight * kgPerLb,
   reps: 1,
   achievedAt,
+  baseExerciseId: null,
+  baseExerciseName: null,
   rpe: null,
   note: null,
   ...overrides,
