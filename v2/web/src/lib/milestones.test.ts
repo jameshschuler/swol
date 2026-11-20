@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
+  bestOneRepMax,
+  describeOneRepMax,
   displayWeight,
   draftFromMilestone,
   draftToMilestone,
@@ -10,6 +12,8 @@ import {
   groupByExercise,
   isCompleteMilestone,
   isLift,
+  oneRepMax,
+  oneRepMaxHistory,
   personalRecords,
 } from './milestones'
 import { kgPerLb } from './units'
@@ -211,6 +215,12 @@ describe('emptyDraft', () => {
       note: '',
     })
   })
+
+  it('preselects the given exercise', () => {
+    expect(emptyDraft('lb', new Date(2026, 10, 4, 9), 'squat').exerciseId).toBe(
+      'squat',
+    )
+  })
 })
 
 describe('draftFromMilestone', () => {
@@ -364,5 +374,80 @@ describe('groupByBaseExercise', () => {
       'Bench Press',
       'Squat',
     ])
+  })
+})
+
+describe('oneRepMax', () => {
+  it('is the weight itself for a single', () => {
+    expect(oneRepMax(milestone({ weight: 140, weightKg: 140 }), 'kg')).toBe(140)
+  })
+
+  it('counts a set of exactly 10 reps', () => {
+    const set = milestone({ weight: 300, unit: 'lb', reps: 10 })
+    expect(oneRepMax(set, 'lb')).toBe(400)
+  })
+
+  it('skips sets of more than 10 reps', () => {
+    expect(oneRepMax(milestone({ reps: 11 }), 'kg')).toBeNull()
+  })
+
+  it('converts to the display unit', () => {
+    const set = milestone({
+      weight: 300,
+      unit: 'lb',
+      weightKg: 300 * kgPerLb,
+      reps: 10,
+    })
+    expect(oneRepMax(set, 'kg')).toBeCloseTo(400 * kgPerLb, 5)
+  })
+})
+
+describe('describeOneRepMax', () => {
+  it('describes the estimate in the logged unit', () => {
+    const set = milestone({ weight: 225, unit: 'lb', reps: 5 })
+    expect(describeOneRepMax(set)).toBe('Estimated 1RM: 262.5 lb')
+  })
+
+  it('says nothing for a set over 10 reps', () => {
+    expect(describeOneRepMax(milestone({ reps: 12 }))).toBeUndefined()
+  })
+})
+
+describe('oneRepMaxHistory', () => {
+  it('lists estimates oldest first, leaving out high-rep sets', () => {
+    const history = oneRepMaxHistory(
+      [
+        milestone({ id: 'new', achievedAt: '2026-10-03T12:00:00Z' }),
+        milestone({ id: 'high', reps: 15, achievedAt: '2026-10-02T12:00:00Z' }),
+        milestone({ id: 'old', achievedAt: '2026-10-01T12:00:00Z' }),
+      ],
+      'kg',
+    )
+    expect(history.map((point) => point.milestone.id)).toEqual(['old', 'new'])
+  })
+
+  it('is empty with no milestones', () => {
+    expect(oneRepMaxHistory([], 'kg')).toEqual([])
+  })
+})
+
+describe('bestOneRepMax', () => {
+  it('picks the highest estimate across rep ranges', () => {
+    const best = bestOneRepMax(
+      [
+        milestone({ id: 'single', weight: 140, weightKg: 140, reps: 1 }),
+        milestone({ id: 'five', weight: 130, weightKg: 130, reps: 5 }),
+      ],
+      'kg',
+    )
+    expect(best).toBeCloseTo(151.67, 2)
+  })
+
+  it('is null with no milestones', () => {
+    expect(bestOneRepMax([], 'kg')).toBeNull()
+  })
+
+  it('is null when every set is over 10 reps', () => {
+    expect(bestOneRepMax([milestone({ reps: 20 })], 'kg')).toBeNull()
   })
 })

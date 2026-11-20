@@ -1,3 +1,4 @@
+import { ExerciseLink } from '#/components/exercises/ExerciseLink'
 import {
   Card,
   CardAction,
@@ -21,7 +22,13 @@ export function MilestoneBaseExerciseCard({
     <Card>
       <CardHeader>
         <CardTitle className="min-w-0 truncate">
-          {group.baseExerciseName}
+          {group.base ? (
+            <ExerciseLink exerciseId={group.baseExerciseId}>
+              {group.baseExerciseName}
+            </ExerciseLink>
+          ) : (
+            group.baseExerciseName
+          )}
         </CardTitle>
         {group.base && (
           <CardAction className="font-heading whitespace-nowrap tabular-nums">

@@ -5,6 +5,7 @@ import { Button } from '#/components/ui/button'
 import { useDeleteExercise } from '#/hooks/useExerciseMutations'
 import type { Exercise } from '#/types/api'
 import { ExerciseEditForm } from './ExerciseEditForm'
+import { ExerciseLink } from './ExerciseLink'
 
 export function ExerciseRow({
   exercise,
@@ -22,7 +23,9 @@ export function ExerciseRow({
   return (
     <li className="flex items-start gap-3 rounded-base border-2 border-border bg-secondary-background p-3">
       <div className="min-w-0 flex-1">
-        <p className="truncate font-heading">{exercise.name}</p>
+        <p className="truncate font-heading">
+          <ExerciseLink exerciseId={exercise.id}>{exercise.name}</ExerciseLink>
+        </p>
         {baseExerciseName && (
           <p className="truncate text-sm">Variation of {baseExerciseName}</p>
         )}
