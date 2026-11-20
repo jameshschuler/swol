@@ -44,6 +44,7 @@ export function MilestoneFields({
           <Input
             id={`${idPrefix}-date`}
             type="date"
+            className="min-w-0 appearance-none [&::-webkit-date-and-time-value]:text-left"
             max={localDateKey(new Date())}
             value={draft.date}
             onChange={(event) => onChange({ date: event.target.value })}
