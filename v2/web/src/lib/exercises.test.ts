@@ -3,7 +3,10 @@ import {
   baseExercises,
   exerciseUsage,
   hasVariations,
+  hiddenLast,
   ownExercises,
+  pickableExercises,
+  sharedExercises,
 } from './exercises'
 import type { Exercise, Goal, Milestone } from '#/types/api'
 
@@ -12,6 +15,7 @@ const exercise = (overrides: Partial<Exercise>): Exercise => ({
   userId: null,
   name: 'Squat',
   baseExerciseId: null,
+  hidden: false,
   ...overrides,
 })
 
@@ -46,6 +50,49 @@ describe('ownExercises', () => {
 
   it('leaves out shared exercises', () => {
     expect(ownExercises([squat, front, hack, pin])).toEqual([hack, pin])
+  })
+})
+
+describe('sharedExercises', () => {
+  it('is empty when there are no exercises', () => {
+    expect(sharedExercises([])).toEqual([])
+  })
+
+  it('leaves out your own exercises', () => {
+    expect(sharedExercises([squat, front, hack, pin])).toEqual([squat, front])
+  })
+})
+
+describe('hiddenLast', () => {
+  it('moves hidden exercises to the end, keeping each group in order', () => {
+    const dip = exercise({ id: 'dip', name: 'Dip', hidden: true })
+    const row = exercise({ id: 'row', name: 'Barbell Row', hidden: true })
+    expect(hiddenLast([row, squat, dip, front])).toEqual([
+      squat,
+      front,
+      row,
+      dip,
+    ])
+  })
+
+  it('is empty when there are no exercises', () => {
+    expect(hiddenLast([])).toEqual([])
+  })
+})
+
+describe('pickableExercises', () => {
+  const dip = exercise({ id: 'dip', name: 'Dip', hidden: true })
+
+  it('leaves out hidden exercises', () => {
+    expect(pickableExercises([squat, dip, hack], null)).toEqual([squat, hack])
+  })
+
+  it('keeps a hidden exercise that is already selected', () => {
+    expect(pickableExercises([squat, dip], 'dip')).toEqual([squat, dip])
+  })
+
+  it('is empty when there are no exercises', () => {
+    expect(pickableExercises([], null)).toEqual([])
   })
 })
 

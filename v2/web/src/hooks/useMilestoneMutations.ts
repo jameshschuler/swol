@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from '#/components/ui/toast'
 import { api } from '#/lib/api'
 import { goalsNewlyHit } from '#/lib/goals'
+import { describeOneRepMax } from '#/lib/milestones'
 import { goalsQuery, milestonesQuery } from '#/lib/queries'
 import type { Milestone, NewMilestone } from '#/types/api'
 
@@ -17,7 +18,11 @@ function useOnMilestoneSaved(title: string) {
   const queryClient = useQueryClient()
   const invalidate = useInvalidateMilestones()
   return (milestone: SavedMilestone) => {
-    toast.add({ title, type: 'success' })
+    toast.add({
+      title,
+      description: describeOneRepMax(milestone),
+      type: 'success',
+    })
     const previous = queryClient.getQueryData(milestonesQuery.queryKey) ?? []
     queryClient
       .query({ ...goalsQuery, staleTime: 'static' })

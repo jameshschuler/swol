@@ -27,7 +27,8 @@ type Querier interface {
 	GetOrCreateUserSettings(ctx context.Context, userID uuid.UUID) (UserSettings, error)
 	GetOwnExercise(ctx context.Context, arg GetOwnExerciseParams) (Exercise, error)
 	GetSession(ctx context.Context, arg GetSessionParams) (WorkoutSession, error)
-	ListExercises(ctx context.Context, userID *uuid.UUID) ([]Exercise, error)
+	HideExercise(ctx context.Context, arg HideExerciseParams) (int64, error)
+	ListExercises(ctx context.Context, userID uuid.UUID) ([]ListExercisesRow, error)
 	ListGoals(ctx context.Context, userID uuid.UUID) ([]ListGoalsRow, error)
 	ListLegacyCheckIns(ctx context.Context, userID uuid.UUID) ([]ListLegacyCheckInsRow, error)
 	ListMilestones(ctx context.Context, userID uuid.UUID) ([]ListMilestonesRow, error)
@@ -36,6 +37,7 @@ type Querier interface {
 	ReopenGoal(ctx context.Context, arg ReopenGoalParams) (Goal, error)
 	ResumeSession(ctx context.Context, arg ResumeSessionParams) (WorkoutSession, error)
 	StartSession(ctx context.Context, userID uuid.UUID) (WorkoutSession, error)
+	UnhideExercise(ctx context.Context, arg UnhideExerciseParams) error
 	UpdateExercise(ctx context.Context, arg UpdateExerciseParams) (Exercise, error)
 	UpdateGoal(ctx context.Context, arg UpdateGoalParams) (Goal, error)
 	UpdateMilestone(ctx context.Context, arg UpdateMilestoneParams) (Milestone, error)

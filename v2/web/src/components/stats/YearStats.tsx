@@ -14,7 +14,7 @@ import {
   SelectValue,
 } from '#/components/ui/select'
 import { visitYears, yearStats } from '#/lib/stats'
-import { StatTile } from './StatTile'
+import { StatTile } from '#/components/shared/StatTile'
 
 export function YearStats({ days, now }: { days: Set<string>; now: Date }) {
   const [year, setYear] = useState(now.getFullYear())

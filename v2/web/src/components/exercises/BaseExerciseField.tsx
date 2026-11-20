@@ -7,7 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '#/components/ui/select'
-import { baseExercises } from '#/lib/exercises'
+import { baseExercises, pickableExercises } from '#/lib/exercises'
 import { exercisesQuery } from '#/lib/queries'
 
 export function BaseExerciseField({
@@ -24,7 +24,7 @@ export function BaseExerciseField({
   const { data: exercises = [] } = useQuery(exercisesQuery)
   const items = [
     { value: null, label: 'None' },
-    ...baseExercises(exercises)
+    ...baseExercises(pickableExercises(exercises, value))
       .filter((exercise) => exercise.id !== exerciseId)
       .map((exercise) => ({ value: exercise.id, label: exercise.name })),
   ]

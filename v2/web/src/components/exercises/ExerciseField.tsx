@@ -7,6 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '#/components/ui/select'
+import { pickableExercises } from '#/lib/exercises'
 import { exercisesQuery } from '#/lib/queries'
 import { newExerciseId } from './exercise-constants'
 import { NewExerciseForm } from './NewExerciseForm'
@@ -20,7 +21,8 @@ export function ExerciseField({
   value: string
   onChange: (exerciseId: string) => void
 }) {
-  const { data: exercises = [] } = useQuery(exercisesQuery)
+  const { data = [] } = useQuery(exercisesQuery)
+  const exercises = pickableExercises(data, value)
   const labels: Record<string, string> = {
     ...Object.fromEntries(
       exercises.map((exercise) => [exercise.id, exercise.name]),

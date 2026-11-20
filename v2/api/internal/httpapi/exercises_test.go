@@ -153,3 +153,84 @@ func TestDeleteExercise(t *testing.T) {
 		}
 	}
 }
+
+func (f *fakeQueries) ListExercises(_ context.Context, userID uuid.UUID) ([]db.ListExercisesRow, error) {
+	rows := []db.ListExercisesRow{}
+	for _, e := range f.exercises {
+		if e.UserID == nil || *e.UserID == userID {
+			rows = append(rows, db.ListExercisesRow{ID: e.ID, UserID: e.UserID, Name: e.Name, BaseExerciseID: e.BaseExerciseID, Hidden: slices.Contains(f.hidden, e.ID)})
+		}
+	}
+	return rows, nil
+}
+
+func (f *fakeQueries) HideExercise(_ context.Context, arg db.HideExerciseParams) (int64, error) {
+	for _, e := range f.exercises {
+		if e.ID == arg.ExerciseID && (e.UserID == nil || *e.UserID == arg.UserID) {
+			if !slices.Contains(f.hidden, e.ID) {
+				f.hidden = append(f.hidden, e.ID)
+			}
+			return 1, nil
+		}
+	}
+	return 0, nil
+}
+
+func (f *fakeQueries) UnhideExercise(_ context.Context, arg db.UnhideExerciseParams) error {
+	f.hidden = slices.DeleteFunc(f.hidden, func(id uuid.UUID) bool { return id == arg.ExerciseID })
+	return nil
+}
+
+func TestHideExercise(t *testing.T) {
+	someoneElse := uuid.New()
+	squat := db.Exercise{ID: uuid.New(), Name: "Squat"}
+	pinSquat := db.Exercise{ID: uuid.New(), UserID: &testUser.ID, Name: "Pin Squat"}
+	private := db.Exercise{ID: uuid.New(), UserID: &someoneElse, Name: "Secret Lift"}
+
+	cases := []struct {
+		name   string
+		id     uuid.UUID
+		hidden []uuid.UUID
+		want   int
+	}{
+		{"shared exercise", squat.ID, nil, http.StatusNoContent},
+		{"already hidden", squat.ID, []uuid.UUID{squat.ID}, http.StatusNoContent},
+		{"own exercise", pinSquat.ID, nil, http.StatusNoContent},
+		{"someone else's exercise", private.ID, nil, http.StatusNotFound},
+		{"unknown exercise", uuid.New(), nil, http.StatusNotFound},
+	}
+	for _, c := range cases {
+		h := NewHandler(&fakeQueries{exercises: []db.Exercise{squat, pinSquat, private}, hidden: c.hidden}, fakeAuth{allow: true}, nil)
+		if rec := request(t, h, http.MethodPost, "/api/v1/exercises/"+c.id.String()+"/hide", ""); rec.Code != c.want {
+			t.Errorf("%s: %d %s", c.name, rec.Code, rec.Body)
+		}
+	}
+}
+
+func TestHiddenExercisesAreFlaggedInList(t *testing.T) {
+	squat := db.Exercise{ID: uuid.New(), Name: "Squat"}
+	dip := db.Exercise{ID: uuid.New(), Name: "Dip"}
+	h := NewHandler(&fakeQueries{exercises: []db.Exercise{squat, dip}}, fakeAuth{allow: true}, nil)
+	hidden := func() map[uuid.UUID]bool {
+		rows := decode[[]db.ListExercisesRow](t, request(t, h, http.MethodGet, "/api/v1/exercises", "").Body.String())
+		flags := map[uuid.UUID]bool{}
+		for _, row := range rows {
+			flags[row.ID] = row.Hidden
+		}
+		return flags
+	}
+
+	request(t, h, http.MethodPost, "/api/v1/exercises/"+dip.ID.String()+"/hide", "")
+	if flags := hidden(); !flags[dip.ID] || flags[squat.ID] {
+		t.Fatalf("after hide = %v", flags)
+	}
+
+	for range 2 {
+		if rec := request(t, h, http.MethodPost, "/api/v1/exercises/"+dip.ID.String()+"/unhide", ""); rec.Code != http.StatusNoContent {
+			t.Fatalf("unhide status = %d", rec.Code)
+		}
+	}
+	if flags := hidden(); flags[dip.ID] {
+		t.Fatalf("after unhide = %v", flags)
+	}
+}
