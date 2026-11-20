@@ -1,18 +1,14 @@
-import { useState } from 'react'
 import { Pencil, Trash2 } from 'lucide-react'
 import { ConfirmDialog } from '#/components/shared/ConfirmDialog'
+import { FormSheet } from '#/components/shared/FormSheet'
 import { Badge } from '#/components/ui/badge'
 import { Button } from '#/components/ui/button'
 import { useDeleteMilestone } from '#/hooks/useMilestoneMutations'
 import { formatDate } from '#/lib/format'
 import { formatLiftWithRpe } from '#/lib/milestones'
-import { cn } from '#/lib/utils'
 import type { PersonalRecord } from '#/lib/milestones'
 import type { Milestone, WeightUnit } from '#/types/api'
 import { MilestoneEditForm } from './MilestoneEditForm'
-
-const rowClass =
-  'rounded-base border-2 border-border bg-secondary-background p-3'
 
 export function MilestoneRow({
   milestone,
@@ -23,22 +19,10 @@ export function MilestoneRow({
   unit: WeightUnit
   record: PersonalRecord | undefined
 }) {
-  const [editing, setEditing] = useState(false)
   const deleteMilestone = useDeleteMilestone()
 
-  if (editing) {
-    return (
-      <li className={rowClass}>
-        <MilestoneEditForm
-          milestone={milestone}
-          onDone={() => setEditing(false)}
-        />
-      </li>
-    )
-  }
-
   return (
-    <li className={cn(rowClass, 'flex items-start gap-3')}>
+    <li className="flex items-start gap-3 rounded-base border-2 border-border bg-secondary-background p-3">
       <div className="min-w-0 flex-1">
         <p className="flex items-center gap-2 font-heading tabular-nums">
           {formatLiftWithRpe(milestone, unit)}
@@ -53,15 +37,21 @@ export function MilestoneRow({
           <p className="mt-1 text-sm break-words">{milestone.note}</p>
         )}
       </div>
-      <Button
-        variant="neutral"
-        size="icon-sm"
-        aria-label="Edit milestone"
+      <FormSheet
         title="Edit milestone"
-        onClick={() => setEditing(true)}
+        trigger={
+          <Button
+            variant="neutral"
+            size="icon-sm"
+            aria-label="Edit milestone"
+            title="Edit milestone"
+          >
+            <Pencil />
+          </Button>
+        }
       >
-        <Pencil />
-      </Button>
+        {(close) => <MilestoneEditForm milestone={milestone} onDone={close} />}
+      </FormSheet>
       <ConfirmDialog
         title="Delete this milestone?"
         description="It's removed from your records for good."

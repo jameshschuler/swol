@@ -1,14 +1,10 @@
-import { useState } from 'react'
 import { Pencil, Trash2 } from 'lucide-react'
 import { ConfirmDialog } from '#/components/shared/ConfirmDialog'
+import { FormSheet } from '#/components/shared/FormSheet'
 import { Button } from '#/components/ui/button'
 import { useDeleteExercise } from '#/hooks/useExerciseMutations'
-import { cn } from '#/lib/utils'
 import type { Exercise } from '#/types/api'
 import { ExerciseEditForm } from './ExerciseEditForm'
-
-const rowClass =
-  'rounded-base border-2 border-border bg-secondary-background p-3'
 
 export function ExerciseRow({
   exercise,
@@ -21,22 +17,10 @@ export function ExerciseRow({
   usage: string | null
   isBase: boolean
 }) {
-  const [editing, setEditing] = useState(false)
   const deleteExercise = useDeleteExercise(exercise.id)
 
-  if (editing) {
-    return (
-      <li className={rowClass}>
-        <ExerciseEditForm
-          exercise={exercise}
-          onDone={() => setEditing(false)}
-        />
-      </li>
-    )
-  }
-
   return (
-    <li className={cn(rowClass, 'flex items-start gap-3')}>
+    <li className="flex items-start gap-3 rounded-base border-2 border-border bg-secondary-background p-3">
       <div className="min-w-0 flex-1">
         <p className="truncate font-heading">{exercise.name}</p>
         {baseExerciseName && (
@@ -44,15 +28,21 @@ export function ExerciseRow({
         )}
         {usage && <p className="text-sm">{usage}</p>}
       </div>
-      <Button
-        variant="neutral"
-        size="icon-sm"
-        aria-label="Edit exercise"
+      <FormSheet
         title="Edit exercise"
-        onClick={() => setEditing(true)}
+        trigger={
+          <Button
+            variant="neutral"
+            size="icon-sm"
+            aria-label="Edit exercise"
+            title="Edit exercise"
+          >
+            <Pencil />
+          </Button>
+        }
       >
-        <Pencil />
-      </Button>
+        {(close) => <ExerciseEditForm exercise={exercise} onDone={close} />}
+      </FormSheet>
       <ConfirmDialog
         title={`Delete ${exercise.name}?`}
         description={
