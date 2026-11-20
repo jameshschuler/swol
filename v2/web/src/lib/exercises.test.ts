@@ -3,6 +3,7 @@ import {
   baseExercises,
   exerciseUsage,
   hasVariations,
+  hiddenLast,
   ownExercises,
   pickableExercises,
   sharedExercises,
@@ -59,6 +60,23 @@ describe('sharedExercises', () => {
 
   it('leaves out your own exercises', () => {
     expect(sharedExercises([squat, front, hack, pin])).toEqual([squat, front])
+  })
+})
+
+describe('hiddenLast', () => {
+  it('moves hidden exercises to the end, keeping each group in order', () => {
+    const dip = exercise({ id: 'dip', name: 'Dip', hidden: true })
+    const row = exercise({ id: 'row', name: 'Barbell Row', hidden: true })
+    expect(hiddenLast([row, squat, dip, front])).toEqual([
+      squat,
+      front,
+      row,
+      dip,
+    ])
+  })
+
+  it('is empty when there are no exercises', () => {
+    expect(hiddenLast([])).toEqual([])
   })
 })
 

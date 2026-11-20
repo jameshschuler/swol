@@ -89,7 +89,8 @@ const hideExercise = `-- name: HideExercise :execrows
 insert into swol.hidden_exercises (user_id, exercise_id)
 select $1::uuid, e.id
 from swol.exercises e
-where e.id = $2 and e.user_id is null
+where e.id = $2
+  and (e.user_id is null or e.user_id = $1::uuid)
 on conflict (user_id, exercise_id) do update set exercise_id = excluded.exercise_id
 `
 

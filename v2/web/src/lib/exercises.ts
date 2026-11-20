@@ -13,6 +13,10 @@ export function sharedExercises(exercises: Exercise[]): Exercise[] {
   return exercises.filter((exercise) => exercise.userId === null)
 }
 
+export function hiddenLast(exercises: Exercise[]): Exercise[] {
+  return [...exercises].sort((a, b) => Number(a.hidden) - Number(b.hidden))
+}
+
 export function pickableExercises(
   exercises: Exercise[],
   selectedId: string | null,

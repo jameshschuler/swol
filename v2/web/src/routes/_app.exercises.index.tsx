@@ -21,7 +21,7 @@ function Exercises() {
     <>
       <PageHeader
         title="Exercises"
-        description="Hide defaults you don't do. They stay out of the exercise picker."
+        description="Hide exercises you don't do. They stay out of the exercise picker."
       />
       <ExerciseList />
     </>

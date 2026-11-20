@@ -55,7 +55,8 @@ where id = sqlc.arg(id) and user_id = sqlc.arg(user_id)::uuid;
 insert into swol.hidden_exercises (user_id, exercise_id)
 select sqlc.arg(user_id)::uuid, e.id
 from swol.exercises e
-where e.id = sqlc.arg(exercise_id) and e.user_id is null
+where e.id = sqlc.arg(exercise_id)
+  and (e.user_id is null or e.user_id = sqlc.arg(user_id)::uuid)
 on conflict (user_id, exercise_id) do update set exercise_id = excluded.exercise_id;
 
 -- name: UnhideExercise :exec

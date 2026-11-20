@@ -2,12 +2,13 @@ import { useSuspenseQuery } from '@tanstack/react-query'
 import {
   exerciseUsage,
   hasVariations,
+  hiddenLast,
   ownExercises,
   sharedExercises,
 } from '#/lib/exercises'
 import { exercisesQuery, goalsQuery, milestonesQuery } from '#/lib/queries'
-import { DefaultExerciseRow } from './DefaultExerciseRow'
 import { ExerciseRow } from './ExerciseRow'
+import { OwnExerciseActions } from './OwnExerciseActions'
 
 export function ExerciseList() {
   const { data: exercises } = useSuspenseQuery(exercisesQuery)
@@ -30,14 +31,19 @@ export function ExerciseList() {
           </p>
         ) : (
           <ul className="flex flex-col gap-3">
-            {own.map((exercise) => (
+            {hiddenLast(own).map((exercise) => (
               <ExerciseRow
                 key={exercise.id}
                 exercise={exercise}
                 baseExerciseName={baseName(exercise.baseExerciseId)}
                 usage={usage(exercise.id)}
-                isBase={hasVariations(exercise.id, exercises)}
-              />
+              >
+                <OwnExerciseActions
+                  exercise={exercise}
+                  isUsed={usage(exercise.id) !== null}
+                  isBase={hasVariations(exercise.id, exercises)}
+                />
+              </ExerciseRow>
             ))}
           </ul>
         )}
@@ -45,8 +51,8 @@ export function ExerciseList() {
       <section className="flex flex-col gap-3">
         <h2 className="font-heading text-xl">Defaults</h2>
         <ul className="flex flex-col gap-3">
-          {sharedExercises(exercises).map((exercise) => (
-            <DefaultExerciseRow
+          {hiddenLast(sharedExercises(exercises)).map((exercise) => (
+            <ExerciseRow
               key={exercise.id}
               exercise={exercise}
               baseExerciseName={baseName(exercise.baseExerciseId)}

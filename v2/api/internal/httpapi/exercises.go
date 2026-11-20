@@ -125,7 +125,7 @@ func (s *Server) hideExercise(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 	if hidden == 0 {
-		return notFound("shared exercise not found")
+		return notFound("exercise not found")
 	}
 	w.WriteHeader(http.StatusNoContent)
 	return nil

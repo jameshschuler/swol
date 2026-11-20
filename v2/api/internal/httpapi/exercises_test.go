@@ -166,7 +166,7 @@ func (f *fakeQueries) ListExercises(_ context.Context, userID uuid.UUID) ([]db.L
 
 func (f *fakeQueries) HideExercise(_ context.Context, arg db.HideExerciseParams) (int64, error) {
 	for _, e := range f.exercises {
-		if e.ID == arg.ExerciseID && e.UserID == nil {
+		if e.ID == arg.ExerciseID && (e.UserID == nil || *e.UserID == arg.UserID) {
 			if !slices.Contains(f.hidden, e.ID) {
 				f.hidden = append(f.hidden, e.ID)
 			}
@@ -182,8 +182,10 @@ func (f *fakeQueries) UnhideExercise(_ context.Context, arg db.UnhideExercisePar
 }
 
 func TestHideExercise(t *testing.T) {
+	someoneElse := uuid.New()
 	squat := db.Exercise{ID: uuid.New(), Name: "Squat"}
 	pinSquat := db.Exercise{ID: uuid.New(), UserID: &testUser.ID, Name: "Pin Squat"}
+	private := db.Exercise{ID: uuid.New(), UserID: &someoneElse, Name: "Secret Lift"}
 
 	cases := []struct {
 		name   string
@@ -193,11 +195,12 @@ func TestHideExercise(t *testing.T) {
 	}{
 		{"shared exercise", squat.ID, nil, http.StatusNoContent},
 		{"already hidden", squat.ID, []uuid.UUID{squat.ID}, http.StatusNoContent},
-		{"own exercise", pinSquat.ID, nil, http.StatusNotFound},
+		{"own exercise", pinSquat.ID, nil, http.StatusNoContent},
+		{"someone else's exercise", private.ID, nil, http.StatusNotFound},
 		{"unknown exercise", uuid.New(), nil, http.StatusNotFound},
 	}
 	for _, c := range cases {
-		h := NewHandler(&fakeQueries{exercises: []db.Exercise{squat, pinSquat}, hidden: c.hidden}, fakeAuth{allow: true}, nil)
+		h := NewHandler(&fakeQueries{exercises: []db.Exercise{squat, pinSquat, private}, hidden: c.hidden}, fakeAuth{allow: true}, nil)
 		if rec := request(t, h, http.MethodPost, "/api/v1/exercises/"+c.id.String()+"/hide", ""); rec.Code != c.want {
 			t.Errorf("%s: %d %s", c.name, rec.Code, rec.Body)
 		}
