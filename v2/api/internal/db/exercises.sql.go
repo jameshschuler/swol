@@ -7,6 +7,7 @@ package db
 
 import (
 	"context"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -84,27 +85,63 @@ func (q *Queries) GetOwnExercise(ctx context.Context, arg GetOwnExerciseParams) 
 	return i, err
 }
 
-const listExercises = `-- name: ListExercises :many
-select id, user_id, name, created_at, base_exercise_id from swol.exercises
-where user_id is null or user_id = $1
-order by lower(name)
+const hideExercise = `-- name: HideExercise :execrows
+insert into swol.hidden_exercises (user_id, exercise_id)
+select $1::uuid, e.id
+from swol.exercises e
+where e.id = $2 and e.user_id is null
+on conflict (user_id, exercise_id) do update set exercise_id = excluded.exercise_id
 `
 
-func (q *Queries) ListExercises(ctx context.Context, userID *uuid.UUID) ([]Exercise, error) {
+type HideExerciseParams struct {
+	UserID     uuid.UUID `json:"userId"`
+	ExerciseID uuid.UUID `json:"exerciseId"`
+}
+
+func (q *Queries) HideExercise(ctx context.Context, arg HideExerciseParams) (int64, error) {
+	result, err := q.db.Exec(ctx, hideExercise, arg.UserID, arg.ExerciseID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
+}
+
+const listExercises = `-- name: ListExercises :many
+select e.id, e.user_id, e.name, e.created_at, e.base_exercise_id,
+  exists (
+    select 1 from swol.hidden_exercises h
+    where h.exercise_id = e.id and h.user_id = $1::uuid
+  ) as hidden
+from swol.exercises e
+where e.user_id is null or e.user_id = $1::uuid
+order by lower(e.name)
+`
+
+type ListExercisesRow struct {
+	ID             uuid.UUID  `json:"id"`
+	UserID         *uuid.UUID `json:"userId"`
+	Name           string     `json:"name"`
+	CreatedAt      time.Time  `json:"createdAt"`
+	BaseExerciseID *uuid.UUID `json:"baseExerciseId"`
+	Hidden         bool       `json:"hidden"`
+}
+
+func (q *Queries) ListExercises(ctx context.Context, userID uuid.UUID) ([]ListExercisesRow, error) {
 	rows, err := q.db.Query(ctx, listExercises, userID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []Exercise{}
+	items := []ListExercisesRow{}
 	for rows.Next() {
-		var i Exercise
+		var i ListExercisesRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.UserID,
 			&i.Name,
 			&i.CreatedAt,
 			&i.BaseExerciseID,
+			&i.Hidden,
 		); err != nil {
 			return nil, err
 		}
@@ -114,6 +151,21 @@ func (q *Queries) ListExercises(ctx context.Context, userID *uuid.UUID) ([]Exerc
 		return nil, err
 	}
 	return items, nil
+}
+
+const unhideExercise = `-- name: UnhideExercise :exec
+delete from swol.hidden_exercises
+where user_id = $1 and exercise_id = $2
+`
+
+type UnhideExerciseParams struct {
+	UserID     uuid.UUID `json:"userId"`
+	ExerciseID uuid.UUID `json:"exerciseId"`
+}
+
+func (q *Queries) UnhideExercise(ctx context.Context, arg UnhideExerciseParams) error {
+	_, err := q.db.Exec(ctx, unhideExercise, arg.UserID, arg.ExerciseID)
+	return err
 }
 
 const updateExercise = `-- name: UpdateExercise :one

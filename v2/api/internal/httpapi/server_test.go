@@ -35,6 +35,7 @@ type fakeQueries struct {
 	sessions        []db.WorkoutSession
 	legacyCheckIns  []db.ListLegacyCheckInsRow
 	exercises       []db.Exercise
+	hidden          []uuid.UUID
 	milestones      []db.Milestone
 	goals           []db.Goal
 }

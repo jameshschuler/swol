@@ -48,6 +48,7 @@ sql:
         rename:
           swol_user_setting: UserSettings
           swol_exercise: Exercise
+          swol_hidden_exercise: HiddenExercise
           swol_workout_session: WorkoutSession
           swol_milestone: Milestone
           rpe: RPE

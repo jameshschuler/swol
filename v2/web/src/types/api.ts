@@ -32,6 +32,7 @@ export interface Exercise {
   userId: string | null
   name: string
   baseExerciseId: string | null
+  hidden: boolean
 }
 
 export interface Milestone {

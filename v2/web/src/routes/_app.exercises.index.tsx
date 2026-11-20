@@ -21,7 +21,7 @@ function Exercises() {
     <>
       <PageHeader
         title="Exercises"
-        description="Exercises you added. Shared ones like Squat can't be changed."
+        description="Hide defaults you don't do. They stay out of the exercise picker."
       />
       <ExerciseList />
     </>

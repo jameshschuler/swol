@@ -4,6 +4,8 @@ import { api } from '#/lib/api'
 import { exercisesQuery, goalsQuery, milestonesQuery } from '#/lib/queries'
 import type { Exercise } from '#/types/api'
 
+type SavedExercise = Omit<Exercise, 'hidden'>
+
 export interface NewExercise {
   name: string
   baseExerciseId: string | null
@@ -13,14 +15,14 @@ export function useCreateExercise() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (exercise: NewExercise) =>
-      api<Exercise>('/exercises', {
+      api<SavedExercise>('/exercises', {
         method: 'POST',
         body: JSON.stringify(exercise),
       }),
     onSuccess: (exercise) => {
       queryClient.setQueryData(exercisesQuery.queryKey, (exercises = []) => [
         ...exercises,
-        exercise,
+        { ...exercise, hidden: false },
       ])
       return queryClient.invalidateQueries({
         queryKey: exercisesQuery.queryKey,
@@ -43,7 +45,7 @@ export function useUpdateExercise(id: string) {
   const invalidate = useInvalidateExerciseNames()
   return useMutation({
     mutationFn: (exercise: NewExercise) =>
-      api<Exercise>(`/exercises/${id}`, {
+      api<SavedExercise>(`/exercises/${id}`, {
         method: 'PATCH',
         body: JSON.stringify(exercise),
       }),
@@ -62,6 +64,23 @@ export function useDeleteExercise(id: string) {
     onError: (error) =>
       toast.add({
         title: "Couldn't delete exercise",
+        description: error.message,
+      }),
+  })
+}
+
+export function useSetExerciseHidden(id: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (hidden: boolean) =>
+      api<void>(`/exercises/${id}/${hidden ? 'hide' : 'unhide'}`, {
+        method: 'POST',
+      }),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: exercisesQuery.queryKey }),
+    onError: (error) =>
+      toast.add({
+        title: "Couldn't update exercise",
         description: error.message,
       }),
   })

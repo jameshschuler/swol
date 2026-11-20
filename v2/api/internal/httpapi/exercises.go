@@ -14,7 +14,7 @@ import (
 
 func (s *Server) listExercises(w http.ResponseWriter, r *http.Request) error {
 	user := auth.FromContext(r.Context())
-	exercises, err := s.queries.ListExercises(r.Context(), &user.ID)
+	exercises, err := s.queries.ListExercises(r.Context(), user.ID)
 	if err != nil {
 		return err
 	}
@@ -109,6 +109,36 @@ func (s *Server) deleteExercise(w http.ResponseWriter, r *http.Request) error {
 	}
 	if deleted == 0 {
 		return notFound("exercise not found")
+	}
+	w.WriteHeader(http.StatusNoContent)
+	return nil
+}
+
+func (s *Server) hideExercise(w http.ResponseWriter, r *http.Request) error {
+	id, err := pathID(r, "id")
+	if err != nil {
+		return err
+	}
+	user := auth.FromContext(r.Context())
+	hidden, err := s.queries.HideExercise(r.Context(), db.HideExerciseParams{UserID: user.ID, ExerciseID: id})
+	if err != nil {
+		return err
+	}
+	if hidden == 0 {
+		return notFound("shared exercise not found")
+	}
+	w.WriteHeader(http.StatusNoContent)
+	return nil
+}
+
+func (s *Server) unhideExercise(w http.ResponseWriter, r *http.Request) error {
+	id, err := pathID(r, "id")
+	if err != nil {
+		return err
+	}
+	user := auth.FromContext(r.Context())
+	if err := s.queries.UnhideExercise(r.Context(), db.UnhideExerciseParams{UserID: user.ID, ExerciseID: id}); err != nil {
+		return err
 	}
 	w.WriteHeader(http.StatusNoContent)
 	return nil

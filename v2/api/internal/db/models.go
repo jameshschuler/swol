@@ -161,6 +161,11 @@ type Goal struct {
 	UpdatedAt            time.Time  `json:"updatedAt"`
 }
 
+type HiddenExercise struct {
+	UserID     uuid.UUID `json:"userId"`
+	ExerciseID uuid.UUID `json:"exerciseId"`
+}
+
 type Milestone struct {
 	ID         uuid.UUID  `json:"id"`
 	UserID     uuid.UUID  `json:"userId"`
