@@ -1,3 +1,4 @@
+import { ExerciseLink } from '#/components/exercises/ExerciseLink'
 import { formatLift } from '#/lib/milestones'
 import type { ExerciseMilestones } from '#/lib/milestones'
 import type { WeightUnit } from '#/types/api'
@@ -17,7 +18,9 @@ export function MilestoneVariation({
       {showHeading && (
         <div className="flex items-baseline justify-between gap-3">
           <h3 className="min-w-0 truncate font-heading text-sm">
-            {variation.exerciseName}
+            <ExerciseLink exerciseId={variation.exerciseId}>
+              {variation.exerciseName}
+            </ExerciseLink>
           </h3>
           <p className="font-heading text-sm whitespace-nowrap tabular-nums">
             {formatLift(variation.best, unit)}

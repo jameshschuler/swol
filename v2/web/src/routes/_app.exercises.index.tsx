@@ -4,7 +4,7 @@ import { PageHeader } from '#/components/shared/PageHeader'
 import { PageLoadError } from '#/components/shared/PageLoadError'
 import { exercisesQuery, goalsQuery, milestonesQuery } from '#/lib/queries'
 
-export const Route = createFileRoute('/_app/exercises')({
+export const Route = createFileRoute('/_app/exercises/')({
   loader: ({ context: { queryClient } }) =>
     Promise.all([
       queryClient.query({ ...exercisesQuery, staleTime: 'static' }),

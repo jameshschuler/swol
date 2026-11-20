@@ -19,7 +19,7 @@ import {
   weekStreaks,
   workoutTotals,
 } from '#/lib/stats'
-import { StatTile } from './StatTile'
+import { StatTile } from '#/components/shared/StatTile'
 import { BarChartCard } from './BarChartCard'
 import { VisitsHeatmap } from './VisitsHeatmap'
 import { YearStats } from './YearStats'

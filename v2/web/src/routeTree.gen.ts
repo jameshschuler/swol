@@ -20,9 +20,10 @@ import { Route as TermsConditionsRouteImport } from './routes/terms-conditions'
 import { Route as AppAccountRouteImport } from './routes/_app.account'
 import { Route as AppAchievementsRouteImport } from './routes/_app.achievements'
 import { Route as AppDashboardRouteImport } from './routes/_app.dashboard'
-import { Route as AppExercisesRouteImport } from './routes/_app.exercises'
 import { Route as AppGoalsRouteImport } from './routes/_app.goals'
 import { Route as AppMilestonesRouteImport } from './routes/_app.milestones'
+import { Route as AppExercisesIndexRouteImport } from './routes/_app.exercises.index'
+import { Route as AppExercisesExerciseIdRouteImport } from './routes/_app.exercises.$exerciseId'
 import { Route as AppSessionsIndexRouteImport } from './routes/_app.sessions.index'
 import { Route as AppSessionsSessionIdRouteImport } from './routes/_app.sessions.$sessionId'
 import { Route as AppSessionsStatsRouteImport } from './routes/_app.sessions.stats'
@@ -81,11 +82,6 @@ const AppDashboardRoute = AppDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AppRoute,
 } as any)
-const AppExercisesRoute = AppExercisesRouteImport.update({
-  id: '/exercises',
-  path: '/exercises',
-  getParentRoute: () => AppRoute,
-} as any)
 const AppGoalsRoute = AppGoalsRouteImport.update({
   id: '/goals',
   path: '/goals',
@@ -94,6 +90,16 @@ const AppGoalsRoute = AppGoalsRouteImport.update({
 const AppMilestonesRoute = AppMilestonesRouteImport.update({
   id: '/milestones',
   path: '/milestones',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppExercisesIndexRoute = AppExercisesIndexRouteImport.update({
+  id: '/exercises/',
+  path: '/exercises/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppExercisesExerciseIdRoute = AppExercisesExerciseIdRouteImport.update({
+  id: '/exercises/$exerciseId',
+  path: '/exercises/$exerciseId',
   getParentRoute: () => AppRoute,
 } as any)
 const AppSessionsIndexRoute = AppSessionsIndexRouteImport.update({
@@ -123,11 +129,12 @@ export interface FileRoutesByFullPath {
   '/account': typeof AppAccountRoute
   '/achievements': typeof AppAchievementsRoute
   '/dashboard': typeof AppDashboardRoute
-  '/exercises': typeof AppExercisesRoute
   '/goals': typeof AppGoalsRoute
   '/milestones': typeof AppMilestonesRoute
+  '/exercises/$exerciseId': typeof AppExercisesExerciseIdRoute
   '/sessions/$sessionId': typeof AppSessionsSessionIdRoute
   '/sessions/stats': typeof AppSessionsStatsRoute
+  '/exercises/': typeof AppExercisesIndexRoute
   '/sessions/': typeof AppSessionsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -141,11 +148,12 @@ export interface FileRoutesByTo {
   '/account': typeof AppAccountRoute
   '/achievements': typeof AppAchievementsRoute
   '/dashboard': typeof AppDashboardRoute
-  '/exercises': typeof AppExercisesRoute
   '/goals': typeof AppGoalsRoute
   '/milestones': typeof AppMilestonesRoute
+  '/exercises/$exerciseId': typeof AppExercisesExerciseIdRoute
   '/sessions/$sessionId': typeof AppSessionsSessionIdRoute
   '/sessions/stats': typeof AppSessionsStatsRoute
+  '/exercises': typeof AppExercisesIndexRoute
   '/sessions': typeof AppSessionsIndexRoute
 }
 export interface FileRoutesById {
@@ -161,11 +169,12 @@ export interface FileRoutesById {
   '/_app/account': typeof AppAccountRoute
   '/_app/achievements': typeof AppAchievementsRoute
   '/_app/dashboard': typeof AppDashboardRoute
-  '/_app/exercises': typeof AppExercisesRoute
   '/_app/goals': typeof AppGoalsRoute
   '/_app/milestones': typeof AppMilestonesRoute
+  '/_app/exercises/$exerciseId': typeof AppExercisesExerciseIdRoute
   '/_app/sessions/$sessionId': typeof AppSessionsSessionIdRoute
   '/_app/sessions/stats': typeof AppSessionsStatsRoute
+  '/_app/exercises/': typeof AppExercisesIndexRoute
   '/_app/sessions/': typeof AppSessionsIndexRoute
 }
 export interface FileRouteTypes {
@@ -181,11 +190,12 @@ export interface FileRouteTypes {
     | '/account'
     | '/achievements'
     | '/dashboard'
-    | '/exercises'
     | '/goals'
     | '/milestones'
+    | '/exercises/$exerciseId'
     | '/sessions/$sessionId'
     | '/sessions/stats'
+    | '/exercises/'
     | '/sessions/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -199,11 +209,12 @@ export interface FileRouteTypes {
     | '/account'
     | '/achievements'
     | '/dashboard'
-    | '/exercises'
     | '/goals'
     | '/milestones'
+    | '/exercises/$exerciseId'
     | '/sessions/$sessionId'
     | '/sessions/stats'
+    | '/exercises'
     | '/sessions'
   id:
     | '__root__'
@@ -218,11 +229,12 @@ export interface FileRouteTypes {
     | '/_app/account'
     | '/_app/achievements'
     | '/_app/dashboard'
-    | '/_app/exercises'
     | '/_app/goals'
     | '/_app/milestones'
+    | '/_app/exercises/$exerciseId'
     | '/_app/sessions/$sessionId'
     | '/_app/sessions/stats'
+    | '/_app/exercises/'
     | '/_app/sessions/'
   fileRoutesById: FileRoutesById
 }
@@ -316,13 +328,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppDashboardRouteImport
       parentRoute: typeof AppRoute
     }
-    '/_app/exercises': {
-      id: '/_app/exercises'
-      path: '/exercises'
-      fullPath: '/exercises'
-      preLoaderRoute: typeof AppExercisesRouteImport
-      parentRoute: typeof AppRoute
-    }
     '/_app/goals': {
       id: '/_app/goals'
       path: '/goals'
@@ -335,6 +340,20 @@ declare module '@tanstack/react-router' {
       path: '/milestones'
       fullPath: '/milestones'
       preLoaderRoute: typeof AppMilestonesRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/exercises/': {
+      id: '/_app/exercises/'
+      path: '/exercises'
+      fullPath: '/exercises/'
+      preLoaderRoute: typeof AppExercisesIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/exercises/$exerciseId': {
+      id: '/_app/exercises/$exerciseId'
+      path: '/exercises/$exerciseId'
+      fullPath: '/exercises/$exerciseId'
+      preLoaderRoute: typeof AppExercisesExerciseIdRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/sessions/': {
@@ -365,11 +384,12 @@ interface AppRouteChildren {
   AppAccountRoute: typeof AppAccountRoute
   AppAchievementsRoute: typeof AppAchievementsRoute
   AppDashboardRoute: typeof AppDashboardRoute
-  AppExercisesRoute: typeof AppExercisesRoute
   AppGoalsRoute: typeof AppGoalsRoute
   AppMilestonesRoute: typeof AppMilestonesRoute
+  AppExercisesExerciseIdRoute: typeof AppExercisesExerciseIdRoute
   AppSessionsSessionIdRoute: typeof AppSessionsSessionIdRoute
   AppSessionsStatsRoute: typeof AppSessionsStatsRoute
+  AppExercisesIndexRoute: typeof AppExercisesIndexRoute
   AppSessionsIndexRoute: typeof AppSessionsIndexRoute
 }
 
@@ -377,11 +397,12 @@ const AppRouteChildren: AppRouteChildren = {
   AppAccountRoute: AppAccountRoute,
   AppAchievementsRoute: AppAchievementsRoute,
   AppDashboardRoute: AppDashboardRoute,
-  AppExercisesRoute: AppExercisesRoute,
   AppGoalsRoute: AppGoalsRoute,
   AppMilestonesRoute: AppMilestonesRoute,
+  AppExercisesExerciseIdRoute: AppExercisesExerciseIdRoute,
   AppSessionsSessionIdRoute: AppSessionsSessionIdRoute,
   AppSessionsStatsRoute: AppSessionsStatsRoute,
+  AppExercisesIndexRoute: AppExercisesIndexRoute,
   AppSessionsIndexRoute: AppSessionsIndexRoute,
 }
 

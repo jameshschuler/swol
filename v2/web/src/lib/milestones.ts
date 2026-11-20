@@ -1,9 +1,19 @@
 import { localDateKey, timeForDate } from './dates'
-import { isValidLift } from './lifts'
+import { estimatedOneRepMax, isValidLift, maxOneRepMaxReps } from './lifts'
 import { formatWeight, fromKg } from './units'
 import type { Milestone, NewMilestone, WeightUnit } from '#/types/api'
 
 export type PersonalRecord = 'weight' | 'reps'
+
+export type LoggedLift = Pick<
+  Milestone,
+  'weight' | 'unit' | 'weightKg' | 'reps'
+>
+
+export interface OneRepMaxPoint {
+  milestone: Milestone
+  estimate: number
+}
 
 export interface ExerciseMilestones {
   exerciseId: string
@@ -23,9 +33,13 @@ export interface MilestoneDraft {
   note: string
 }
 
-export function emptyDraft(unit: WeightUnit, now: Date): MilestoneDraft {
+export function emptyDraft(
+  unit: WeightUnit,
+  now: Date,
+  exerciseId = '',
+): MilestoneDraft {
   return {
-    exerciseId: '',
+    exerciseId,
     weight: '',
     unit,
     reps: '1',
@@ -85,10 +99,47 @@ export function formatLiftWithRpe(
   return milestone.rpe === null ? lift : `${lift} @ RPE ${milestone.rpe}`
 }
 
-export function displayWeight(milestone: Milestone, unit: WeightUnit): number {
-  return milestone.unit === unit
-    ? milestone.weight
-    : fromKg(milestone.weightKg, unit)
+export function displayWeight(lift: LoggedLift, unit: WeightUnit): number {
+  return lift.unit === unit ? lift.weight : fromKg(lift.weightKg, unit)
+}
+
+export function oneRepMax(lift: LoggedLift, unit: WeightUnit): number | null {
+  if (lift.reps > maxOneRepMaxReps) {
+    return null
+  }
+  return estimatedOneRepMax(displayWeight(lift, unit), lift.reps)
+}
+
+export function describeOneRepMax(lift: LoggedLift): string | undefined {
+  const estimate = oneRepMax(lift, lift.unit)
+  return estimate === null
+    ? undefined
+    : `Estimated 1RM: ${formatWeight(estimate, lift.unit)}`
+}
+
+export function oneRepMaxHistory(
+  milestones: Milestone[],
+  unit: WeightUnit,
+): OneRepMaxPoint[] {
+  return milestones
+    .flatMap((milestone) => {
+      const estimate = oneRepMax(milestone, unit)
+      return estimate === null ? [] : [{ milestone, estimate }]
+    })
+    .sort(
+      (a, b) =>
+        Date.parse(a.milestone.achievedAt) - Date.parse(b.milestone.achievedAt),
+    )
+}
+
+export function bestOneRepMax(
+  milestones: Milestone[],
+  unit: WeightUnit,
+): number | null {
+  const estimates = oneRepMaxHistory(milestones, unit).map(
+    ({ estimate }) => estimate,
+  )
+  return estimates.length === 0 ? null : Math.max(...estimates)
 }
 
 export function isLift(milestone: Milestone, lift: string): boolean {

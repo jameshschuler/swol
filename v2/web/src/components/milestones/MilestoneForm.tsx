@@ -7,10 +7,16 @@ import { draftToMilestone, emptyDraft } from '#/lib/milestones'
 import { meQuery } from '#/lib/queries'
 import { MilestoneFields } from './MilestoneFields'
 
-export function MilestoneForm({ onDone }: { onDone: () => void }) {
+export function MilestoneForm({
+  exerciseId,
+  onDone,
+}: {
+  exerciseId?: string
+  onDone: () => void
+}) {
   const { data: me } = useSuspenseQuery(meQuery)
   const { draft, update, canSubmit } = useMilestoneDraft(() =>
-    emptyDraft(me.weightUnit, new Date()),
+    emptyDraft(me.weightUnit, new Date(), exerciseId),
   )
   const createMilestone = useCreateMilestone()
 
