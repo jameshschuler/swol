@@ -9,7 +9,6 @@ export function useMilestoneDraft(initial: () => MilestoneDraft) {
     draft,
     update: (changes: Partial<MilestoneDraft>) =>
       setDraft((current) => ({ ...current, ...changes })),
-    reset: () => setDraft(initial()),
     canSubmit: draft.exerciseId !== newExerciseId && isCompleteMilestone(draft),
   }
 }

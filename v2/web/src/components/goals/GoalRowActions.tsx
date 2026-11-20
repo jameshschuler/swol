@@ -1,33 +1,40 @@
 import type { ReactNode } from 'react'
 import { Pencil, Trash2 } from 'lucide-react'
 import { ConfirmDialog } from '#/components/shared/ConfirmDialog'
+import { FormSheet } from '#/components/shared/FormSheet'
 import { Button } from '#/components/ui/button'
 import { useDeleteGoal } from '#/hooks/useGoalMutations'
+import type { Goal } from '#/types/api'
+import { GoalEditForm } from './GoalEditForm'
 
 export function GoalRowActions({
-  goalId,
-  onEdit,
+  goal,
   primaryAction,
 }: {
-  goalId: string
-  onEdit?: () => void
+  goal: Goal
   primaryAction: ReactNode
 }) {
-  const deleteGoal = useDeleteGoal(goalId)
+  const deleteGoal = useDeleteGoal(goal.id)
 
   return (
     <div className="flex shrink-0 gap-2">
       {primaryAction}
-      {onEdit && (
-        <Button
-          variant="neutral"
-          size="icon-sm"
-          aria-label="Edit goal"
+      {!goal.completedAt && (
+        <FormSheet
           title="Edit goal"
-          onClick={onEdit}
+          trigger={
+            <Button
+              variant="neutral"
+              size="icon-sm"
+              aria-label="Edit goal"
+              title="Edit goal"
+            >
+              <Pencil />
+            </Button>
+          }
         >
-          <Pencil />
-        </Button>
+          {(close) => <GoalEditForm goal={goal} onDone={close} />}
+        </FormSheet>
       )}
       <ConfirmDialog
         title="Delete this goal?"

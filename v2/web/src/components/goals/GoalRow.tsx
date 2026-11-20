@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { PartyPopper, Trophy } from 'lucide-react'
 import { formatDate } from '#/lib/format'
 import { formatGoalTarget, goalStatus } from '#/lib/goals'
@@ -7,7 +6,6 @@ import { formatLift } from '#/lib/milestones'
 import { cn } from '#/lib/utils'
 import type { Goal, WeightUnit } from '#/types/api'
 import { GoalCompleteButton } from './GoalCompleteButton'
-import { GoalEditForm } from './GoalEditForm'
 import { GoalReopenButton } from './GoalReopenButton'
 import { GoalRowActions } from './GoalRowActions'
 
@@ -22,17 +20,8 @@ export function GoalRow({
   progress: GoalProgress
   unit: WeightUnit
 }) {
-  const [editing, setEditing] = useState(false)
   const target = formatGoalTarget(goal, unit)
   const { hitBy, completedBy } = progress
-
-  if (editing) {
-    return (
-      <li className={cn(rowClass, 'bg-secondary-background')}>
-        <GoalEditForm goal={goal} onDone={() => setEditing(false)} />
-      </li>
-    )
-  }
 
   if (goal.completedAt) {
     return (
@@ -49,7 +38,7 @@ export function GoalRow({
             </p>
           </div>
           <GoalRowActions
-            goalId={goal.id}
+            goal={goal}
             primaryAction={<GoalReopenButton goalId={goal.id} />}
           />
         </div>
@@ -74,8 +63,7 @@ export function GoalRow({
           {status && <p className="text-sm tabular-nums">{status}</p>}
         </div>
         <GoalRowActions
-          goalId={goal.id}
-          onEdit={() => setEditing(true)}
+          goal={goal}
           primaryAction={
             <GoalCompleteButton
               goalId={goal.id}
