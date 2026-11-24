@@ -68,7 +68,7 @@ const liftTargets = [
   { lift: 'Front Squat', lb: squatLb },
 ]
 const tomPlatzReps = 23
-const allRounderExercises = 5
+const allRounderExercises = [5, 10, 20]
 const milestoneCounts = [1, 10, 50]
 const goalsDoneCounts = [1, 10, 25, 50, 100]
 
@@ -405,18 +405,21 @@ export function achievements(
         label: `Most reps: ${mostSquatReps}`,
       },
     }),
-    oneTier({
+    {
       code: 'all-rounder',
       group: 'Strength',
       title: 'All-rounder',
-      description: `Log milestones on ${allRounderExercises} different exercises.`,
-      target: allRounderExercises,
-      unlockedAt: distinctExercisesAt(milestones, allRounderExercises),
+      description: 'Log milestones on different exercises.',
+      tiers: allRounderExercises.map((count) => ({
+        label: plural(count, 'exercise'),
+        target: count,
+        unlockedAt: distinctExercisesAt(milestones, count),
+      })),
       progress: {
         current: exercisesLogged,
         label: plural(exercisesLogged, 'exercise'),
       },
-    }),
+    },
     oneTier({
       code: 'pr-month',
       group: 'Strength',
@@ -524,6 +527,10 @@ export function progressToNextTier(achievement: Achievement): number | null {
   return (achievement.progress.current / next.target) * 100
 }
 
+export function isCompleted(achievement: Achievement): boolean {
+  return unlockedTiers(achievement) === achievement.tiers.length
+}
+
 export function achievementSections(all: Achievement[]): AchievementSection[] {
   const sections: AchievementSection[] = []
   for (const achievement of all) {
@@ -535,4 +542,10 @@ export function achievementSections(all: Achievement[]): AchievementSection[] {
     }
   }
   return sections
+}
+
+export function completedAchievements(all: Achievement[]): Achievement[] {
+  const finishedAt = (achievement: Achievement) =>
+    currentTier(achievement)?.unlockedAt?.getTime() ?? 0
+  return all.filter(isCompleted).sort((a, b) => finishedAt(b) - finishedAt(a))
 }

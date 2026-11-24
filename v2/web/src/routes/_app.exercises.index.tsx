@@ -19,10 +19,7 @@ export const Route = createFileRoute('/_app/exercises/')({
 function Exercises() {
   return (
     <>
-      <PageHeader
-        title="Exercises"
-        description="Hide exercises you don't do. They stay out of the exercise picker."
-      />
+      <PageHeader title="Exercises" />
       <ExerciseList />
     </>
   )

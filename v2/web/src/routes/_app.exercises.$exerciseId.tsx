@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { ExerciseHistory } from '#/components/exercises/ExerciseHistory'
+import { BackLink } from '#/components/shared/BackLink'
 import { PageLoadError } from '#/components/shared/PageLoadError'
 import { exercisesQuery, meQuery, milestonesQuery } from '#/lib/queries'
 
@@ -17,5 +18,10 @@ export const Route = createFileRoute('/_app/exercises/$exerciseId')({
 
 function ExercisePage() {
   const { exerciseId } = Route.useParams()
-  return <ExerciseHistory exerciseId={exerciseId} />
+  return (
+    <>
+      <BackLink to="/exercises" label="All exercises" />
+      <ExerciseHistory exerciseId={exerciseId} />
+    </>
+  )
 }

@@ -186,6 +186,12 @@ export function personalRecords(
   return records
 }
 
+export function currentRecords(variation: ExerciseMilestones): Milestone[] {
+  return variation.milestones.filter((milestone) =>
+    variation.records.has(milestone.id),
+  )
+}
+
 export function groupByExercise(milestones: Milestone[]): ExerciseMilestones[] {
   const groups = new Map<string, ExerciseMilestones>()
   for (const milestone of milestones) {

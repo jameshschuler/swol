@@ -1,6 +1,6 @@
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { LogMilestoneButton } from '#/components/milestones/LogMilestoneButton'
-import { MilestoneVariation } from '#/components/milestones/MilestoneVariation'
+import { MilestoneRowList } from '#/components/milestones/MilestoneRowList'
 import { PageHeader } from '#/components/shared/PageHeader'
 import { StatTile } from '#/components/shared/StatTile'
 import {
@@ -53,10 +53,10 @@ export function ExerciseHistory({ exerciseId }: { exerciseId: string }) {
             />
           </div>
           <OneRepMaxCard history={oneRepMaxHistory(logged, unit)} unit={unit} />
-          <MilestoneVariation
-            variation={group}
+          <MilestoneRowList
+            milestones={group.milestones}
+            records={group.records}
             unit={unit}
-            showHeading={false}
           />
         </div>
       ) : (

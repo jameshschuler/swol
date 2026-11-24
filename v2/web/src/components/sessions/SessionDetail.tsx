@@ -1,6 +1,6 @@
-import { Link } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
-import { ArrowLeft, Trash2 } from 'lucide-react'
+import { Trash2 } from 'lucide-react'
+import { BackLink } from '#/components/shared/BackLink'
 import { ConfirmDialog } from '#/components/shared/ConfirmDialog'
 import { PageHeader } from '#/components/shared/PageHeader'
 import { Button } from '#/components/ui/button'
@@ -26,13 +26,7 @@ export function SessionDetail({ sessionId }: { sessionId: string }) {
 
   return (
     <>
-      <Link
-        to="/sessions"
-        className="mb-4 inline-flex items-center gap-1 text-sm"
-      >
-        <ArrowLeft className="size-4" />
-        All sessions
-      </Link>
+      <BackLink to="/sessions" label="All sessions" />
       {isPending && <p>Loading…</p>}
       {error && <p className="text-danger">{error.message}</p>}
       {session && (
