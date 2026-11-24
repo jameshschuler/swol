@@ -544,8 +544,18 @@ export function achievementSections(all: Achievement[]): AchievementSection[] {
   return sections
 }
 
-export function completedAchievements(all: Achievement[]): Achievement[] {
+export function splitByCompletion(all: Achievement[]): {
+  inProgress: Achievement[]
+  completed: Achievement[]
+} {
   const finishedAt = (achievement: Achievement) =>
     currentTier(achievement)?.unlockedAt?.getTime() ?? 0
-  return all.filter(isCompleted).sort((a, b) => finishedAt(b) - finishedAt(a))
+  const inProgress: Achievement[] = []
+  const completed: Achievement[] = []
+  for (const achievement of all) {
+    const list = isCompleted(achievement) ? completed : inProgress
+    list.push(achievement)
+  }
+  completed.sort((a, b) => finishedAt(b) - finishedAt(a))
+  return { inProgress, completed }
 }

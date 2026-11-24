@@ -2,13 +2,13 @@ import { describe, expect, it } from 'vitest'
 import {
   achievementSections,
   achievements,
-  completedAchievements,
   currentTier,
   isCompleted,
   tierColorIndex,
   tierStatus,
   nextTier,
   progressToNextTier,
+  splitByCompletion,
   unlockedTiers,
 } from './achievements'
 import type { Achievement, AchievementData } from './achievements'
@@ -281,7 +281,7 @@ describe('achievementSections', () => {
   })
 })
 
-describe('completedAchievements', () => {
+describe('splitByCompletion', () => {
   const achievement = (code: string, finishedAt: Date | null): Achievement => ({
     code,
     group: 'Strength',
@@ -291,17 +291,18 @@ describe('completedAchievements', () => {
     progress: null,
   })
 
-  it('lists only completed achievements, most recent first', () => {
-    const completed = completedAchievements([
+  it('splits completed achievements out, most recent first', () => {
+    const { inProgress, completed } = splitByCompletion([
       achievement('older', new Date(at(0, 1))),
       achievement('locked', null),
       achievement('newer', new Date(at(3, 1))),
     ])
     expect(completed.map((a) => a.code)).toEqual(['newer', 'older'])
+    expect(inProgress.map((a) => a.code)).toEqual(['locked'])
   })
 
-  it('is empty when nothing is completed', () => {
-    expect(completedAchievements([achievement('locked', null)])).toEqual([])
+  it('returns two empty lists for no achievements', () => {
+    expect(splitByCompletion([])).toEqual({ inProgress: [], completed: [] })
   })
 })
 

@@ -13,7 +13,7 @@ export function MilestoneVariation({
   unit: WeightUnit
   showHeading: boolean
 }) {
-  const records = currentRecords(variation)
+  const recordMilestones = currentRecords(variation)
   const total = variation.milestones.length
 
   return (
@@ -31,11 +31,11 @@ export function MilestoneVariation({
         </div>
       )}
       <MilestoneRowList
-        milestones={records}
+        milestones={recordMilestones}
         records={variation.records}
         unit={unit}
       />
-      {records.length < total && (
+      {recordMilestones.length < total && (
         <ExerciseLink
           exerciseId={variation.exerciseId}
           className="self-start text-sm"
