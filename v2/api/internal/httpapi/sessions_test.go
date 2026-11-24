@@ -39,6 +39,21 @@ func (f *fakeQueries) StartSession(_ context.Context, userID uuid.UUID) (db.Work
 }
 
 func (f *fakeQueries) CheckIn(_ context.Context, arg db.CheckInParams) (db.WorkoutSession, error) {
+	loc, err := time.LoadLocation(arg.TimeZone)
+	if err != nil {
+		return db.WorkoutSession{}, &pgconn.PgError{Code: "22023"}
+	}
+	day := arg.CheckedInAt.In(loc).Format(time.DateOnly)
+	for _, existing := range f.sessions {
+		if existing.UserID == arg.UserID && existing.Status == db.SessionStatusCompleted && existing.StartedAt.In(loc).Format(time.DateOnly) == day {
+			return db.WorkoutSession{}, pgx.ErrNoRows
+		}
+	}
+	for _, legacy := range f.legacyCheckIns {
+		if legacy.CheckedInAt.In(loc).Format(time.DateOnly) == day {
+			return db.WorkoutSession{}, pgx.ErrNoRows
+		}
+	}
 	session := db.WorkoutSession{ID: uuid.New(), UserID: arg.UserID, Kind: db.SessionKindCheckIn, Status: db.SessionStatusCompleted, StartedAt: arg.CheckedInAt, EndedAt: &arg.CheckedInAt}
 	f.sessions = append(f.sessions, session)
 	return session, nil
@@ -173,15 +188,20 @@ func TestCheckIn(t *testing.T) {
 	h := NewHandler(&fakeQueries{}, fakeAuth{allow: true}, nil)
 	future := time.Now().Add(time.Hour).Format(time.RFC3339)
 	past := time.Date(2026, 9, 1, 12, 0, 0, 0, time.UTC)
+	body := func(at string) string {
+		return `{"checkedInAt":"` + at + `","timeZone":"America/Chicago"}`
+	}
 
 	cases := []struct {
 		name, body string
 		want       int
 	}{
-		{"now", `{}`, http.StatusCreated},
-		{"backdated", `{"checkedInAt":"` + past.Format(time.RFC3339) + `"}`, http.StatusCreated},
-		{"future", `{"checkedInAt":"` + future + `"}`, http.StatusBadRequest},
-		{"not a time", `{"checkedInAt":"yesterday"}`, http.StatusBadRequest},
+		{"now", `{"timeZone":"America/Chicago"}`, http.StatusCreated},
+		{"backdated", body(past.Format(time.RFC3339)), http.StatusCreated},
+		{"future", body(future), http.StatusBadRequest},
+		{"not a time", body("yesterday"), http.StatusBadRequest},
+		{"no time zone", `{}`, http.StatusBadRequest},
+		{"unknown time zone", `{"timeZone":"Mars/Olympus"}`, http.StatusBadRequest},
 	}
 	for _, c := range cases {
 		rec := request(t, h, http.MethodPost, "/api/v1/sessions/check-in", c.body)
@@ -202,6 +222,33 @@ func TestCheckIn(t *testing.T) {
 
 	if rec := request(t, h, http.MethodPost, "/api/v1/sessions", ""); rec.Code != http.StatusCreated {
 		t.Fatalf("check-ins should not block starting a workout: %d", rec.Code)
+	}
+}
+
+func TestCheckInOncePerLocalDay(t *testing.T) {
+	morning := time.Date(2026, 9, 1, 13, 0, 0, 0, time.UTC)
+	body := func(at time.Time) string {
+		return `{"checkedInAt":"` + at.Format(time.RFC3339) + `","timeZone":"America/Chicago"}`
+	}
+	cases := []struct {
+		name     string
+		sessions []db.WorkoutSession
+		legacy   []db.ListLegacyCheckInsRow
+		at       time.Time
+		want     int
+	}{
+		{"second check-in that day", []db.WorkoutSession{{UserID: testUser.ID, Kind: db.SessionKindCheckIn, Status: db.SessionStatusCompleted, StartedAt: morning}}, nil, morning.Add(6 * time.Hour), http.StatusConflict},
+		{"day with a finished workout", []db.WorkoutSession{{UserID: testUser.ID, Kind: db.SessionKindWorkout, Status: db.SessionStatusCompleted, StartedAt: morning}}, nil, morning.Add(6 * time.Hour), http.StatusConflict},
+		{"day with a v1 check-in", nil, []db.ListLegacyCheckInsRow{{ID: 1, CheckedInAt: morning}}, morning.Add(6 * time.Hour), http.StatusConflict},
+		{"workout still in progress", []db.WorkoutSession{{UserID: testUser.ID, Kind: db.SessionKindWorkout, Status: db.SessionStatusActive, StartedAt: morning}}, nil, morning.Add(time.Hour), http.StatusCreated},
+		{"same UTC day, earlier local day", []db.WorkoutSession{{UserID: testUser.ID, Kind: db.SessionKindCheckIn, Status: db.SessionStatusCompleted, StartedAt: time.Date(2026, 9, 1, 4, 0, 0, 0, time.UTC)}}, nil, morning, http.StatusCreated},
+		{"someone else's visit", []db.WorkoutSession{{UserID: uuid.New(), Kind: db.SessionKindCheckIn, Status: db.SessionStatusCompleted, StartedAt: morning}}, nil, morning, http.StatusCreated},
+	}
+	for _, c := range cases {
+		h := NewHandler(&fakeQueries{sessions: c.sessions, legacyCheckIns: c.legacy}, fakeAuth{allow: true}, nil)
+		if rec := request(t, h, http.MethodPost, "/api/v1/sessions/check-in", body(c.at)); rec.Code != c.want {
+			t.Errorf("%s: %d %s", c.name, rec.Code, rec.Body)
+		}
 	}
 }
 

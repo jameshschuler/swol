@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { localDateKey, msPerWeek } from './dates'
 import {
   firstVisit,
+  hasVisitOn,
   lifetimeVisitsPerWeek,
   visitYears,
   yearStats,
@@ -58,6 +59,30 @@ describe('visitDays', () => {
       ],
     )
     expect([...days].sort()).toEqual(['2026-10-01', '2026-10-20'])
+  })
+})
+
+describe('hasVisitOn', () => {
+  it('is true for a day with a finished workout or check-in', () => {
+    const sessions = [session({ kind: 'check_in', startedAt: day(9, 20, 7) })]
+    expect(hasVisitOn('2026-10-20', sessions, [])).toBe(true)
+  })
+
+  it('is true for a day with a v1 check-in', () => {
+    expect(
+      hasVisitOn('2026-10-01', [], [{ id: 1, checkedInAt: day(9, 1) }]),
+    ).toBe(true)
+  })
+
+  it('ignores a workout that is still going', () => {
+    const sessions = [
+      session({ status: 'active', startedAt: day(9, 21), endedAt: null }),
+    ]
+    expect(hasVisitOn('2026-10-21', sessions, [])).toBe(false)
+  })
+
+  it('is false for a day with nothing logged', () => {
+    expect(hasVisitOn('2026-10-21', [], [])).toBe(false)
   })
 })
 

@@ -41,12 +41,18 @@ func (s *Server) startSession(w http.ResponseWriter, r *http.Request) error {
 	return nil
 }
 
+const invalidTimeZone = "timeZone must be an IANA time zone like America/Chicago"
+
 func (s *Server) checkIn(w http.ResponseWriter, r *http.Request) error {
 	var body struct {
 		CheckedInAt *time.Time `json:"checkedInAt"`
+		TimeZone    string     `json:"timeZone"`
 	}
 	if err := decodeJSON(r, &body); err != nil {
 		return err
+	}
+	if body.TimeZone == "" {
+		return badRequest(invalidTimeZone)
 	}
 	checkedInAt := time.Now()
 	if body.CheckedInAt != nil {
@@ -57,7 +63,13 @@ func (s *Server) checkIn(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	user := auth.FromContext(r.Context())
-	session, err := s.queries.CheckIn(r.Context(), db.CheckInParams{UserID: user.ID, CheckedInAt: checkedInAt})
+	session, err := s.queries.CheckIn(r.Context(), db.CheckInParams{UserID: user.ID, CheckedInAt: checkedInAt, TimeZone: body.TimeZone})
+	if errors.Is(err, pgx.ErrNoRows) {
+		return conflict("you already logged a visit on this day")
+	}
+	if isInvalidParameter(err) {
+		return badRequest(invalidTimeZone)
+	}
 	if err != nil {
 		return err
 	}

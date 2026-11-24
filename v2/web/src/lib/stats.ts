@@ -27,6 +27,14 @@ export function visitDays(
   ])
 }
 
+export function hasVisitOn(
+  day: string,
+  sessions: WorkoutSession[],
+  legacyCheckIns: LegacyCheckIn[],
+): boolean {
+  return visitDays(sessions, legacyCheckIns).has(day)
+}
+
 function visitsBetween(days: Set<string>, start: Date, end: Date): number {
   const from = localDateKey(start)
   const to = localDateKey(end)

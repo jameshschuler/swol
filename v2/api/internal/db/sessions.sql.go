@@ -14,17 +14,31 @@ import (
 
 const checkIn = `-- name: CheckIn :one
 insert into swol.workout_sessions (user_id, kind, status, started_at, ended_at)
-values ($1, 'check_in', 'completed', $2, $2)
+select $1::uuid, 'check_in'::swol.session_kind, 'completed'::swol.session_status, $2::timestamptz, $2::timestamptz
+where not exists (
+  select 1 from swol.workout_sessions s
+  where s.user_id = $1::uuid
+    and s.status = 'completed'
+    and (s.started_at at time zone $3::text)::date
+      = ($2::timestamptz at time zone $3::text)::date
+)
+and not exists (
+  select 1 from swol.gym_checkin g
+  where g.user_id = $1::uuid
+    and (g.checkin_date at time zone $3::text)::date
+      = ($2::timestamptz at time zone $3::text)::date
+)
 returning id, user_id, status, started_at, paused_at, paused_seconds, ended_at, created_at, updated_at, notes, kind
 `
 
 type CheckInParams struct {
 	UserID      uuid.UUID `json:"userId"`
 	CheckedInAt time.Time `json:"checkedInAt"`
+	TimeZone    string    `json:"timeZone"`
 }
 
 func (q *Queries) CheckIn(ctx context.Context, arg CheckInParams) (WorkoutSession, error) {
-	row := q.db.QueryRow(ctx, checkIn, arg.UserID, arg.CheckedInAt)
+	row := q.db.QueryRow(ctx, checkIn, arg.UserID, arg.CheckedInAt, arg.TimeZone)
 	var i WorkoutSession
 	err := row.Scan(
 		&i.ID,
