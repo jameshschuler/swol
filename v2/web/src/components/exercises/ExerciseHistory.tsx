@@ -1,6 +1,7 @@
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { LogMilestoneButton } from '#/components/milestones/LogMilestoneButton'
-import { MilestoneVariation } from '#/components/milestones/MilestoneVariation'
+import { MilestoneRowList } from '#/components/milestones/MilestoneRowList'
+import { BackLink } from '#/components/shared/BackLink'
 import { PageHeader } from '#/components/shared/PageHeader'
 import { StatTile } from '#/components/shared/StatTile'
 import {
@@ -22,10 +23,13 @@ export function ExerciseHistory({ exerciseId }: { exerciseId: string }) {
 
   if (!exercise) {
     return (
-      <PageHeader
-        title="Exercise not found"
-        description="It may have been deleted."
-      />
+      <>
+        <BackLink to="/exercises" label="All exercises" />
+        <PageHeader
+          title="Exercise not found"
+          description="It may have been deleted."
+        />
+      </>
     )
   }
 
@@ -38,6 +42,7 @@ export function ExerciseHistory({ exerciseId }: { exerciseId: string }) {
 
   return (
     <>
+      <BackLink to="/exercises" label="All exercises" />
       <PageHeader
         title={exercise.name}
         description={baseName && `Variation of ${baseName}`}
@@ -53,10 +58,10 @@ export function ExerciseHistory({ exerciseId }: { exerciseId: string }) {
             />
           </div>
           <OneRepMaxCard history={oneRepMaxHistory(logged, unit)} unit={unit} />
-          <MilestoneVariation
-            variation={group}
+          <MilestoneRowList
+            milestones={group.milestones}
+            records={group.records}
             unit={unit}
-            showHeading={false}
           />
         </div>
       ) : (

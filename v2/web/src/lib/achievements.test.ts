@@ -3,13 +3,15 @@ import {
   achievementSections,
   achievements,
   currentTier,
+  isCompleted,
   tierColorIndex,
   tierStatus,
   nextTier,
   progressToNextTier,
+  splitByCompletion,
   unlockedTiers,
 } from './achievements'
-import type { AchievementData } from './achievements'
+import type { Achievement, AchievementData } from './achievements'
 import { kgPerLb } from './units'
 import type { Goal, Milestone, WeightUnit, WorkoutSession } from '#/types/api'
 
@@ -279,6 +281,46 @@ describe('achievementSections', () => {
   })
 })
 
+describe('splitByCompletion', () => {
+  const achievement = (code: string, finishedAt: Date | null): Achievement => ({
+    code,
+    group: 'Strength',
+    title: code,
+    description: '',
+    tiers: [{ label: code, target: 1, unlockedAt: finishedAt }],
+    progress: null,
+  })
+
+  it('splits completed achievements out, most recent first', () => {
+    const { inProgress, completed } = splitByCompletion([
+      achievement('older', new Date(at(0, 1))),
+      achievement('locked', null),
+      achievement('newer', new Date(at(3, 1))),
+    ])
+    expect(completed.map((a) => a.code)).toEqual(['newer', 'older'])
+    expect(inProgress.map((a) => a.code)).toEqual(['locked'])
+  })
+
+  it('returns two empty lists for no achievements', () => {
+    expect(splitByCompletion([])).toEqual({ inProgress: [], completed: [] })
+  })
+})
+
+describe('isCompleted', () => {
+  it('is true once every tier is unlocked', () => {
+    const comeback = find('comeback', {
+      sessions: [session(at(0, 1)), session(at(2, 1))],
+    })
+    expect(isCompleted(comeback)).toBe(true)
+  })
+
+  it('is false while a tier is still locked', () => {
+    expect(isCompleted(find('visits', { sessions: [session(at(0, 1))] }))).toBe(
+      false,
+    )
+  })
+})
+
 describe('tier progress', () => {
   const sessions = Array.from({ length: 30 }, (_, i) =>
     session(new Date(2026, 0, 1 + i, 9).toISOString()),
@@ -442,6 +484,21 @@ describe('more achievements', () => {
     )
     expect(
       unlockedAt('all-rounder', 5, { milestones: milestones.slice(0, 5) }),
+    ).toBeNull()
+  })
+
+  it('levels all-rounder up at 10 and 20 different exercises', () => {
+    const milestones = Array.from({ length: 20 }, (_, i) =>
+      lift(`Lift ${i + 1}`, 100, 5, at(0, i + 1)),
+    )
+    expect(unlockedAt('all-rounder', 10, { milestones })).toEqual(
+      new Date(at(0, 10)),
+    )
+    expect(unlockedAt('all-rounder', 20, { milestones })).toEqual(
+      new Date(at(0, 20)),
+    )
+    expect(
+      unlockedAt('all-rounder', 20, { milestones: milestones.slice(0, 19) }),
     ).toBeNull()
   })
 

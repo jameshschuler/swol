@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   bestOneRepMax,
+  currentRecords,
   describeOneRepMax,
   displayWeight,
   draftFromMilestone,
@@ -449,5 +450,22 @@ describe('bestOneRepMax', () => {
 
   it('is null when every set is over 10 reps', () => {
     expect(bestOneRepMax([milestone({ reps: 20 })], 'kg')).toBeNull()
+  })
+})
+
+describe('currentRecords', () => {
+  it('keeps only lifts no other lift beats, in the given order', () => {
+    const [squat] = groupByExercise([
+      milestone({ id: '265x8', weight: 265, weightKg: 120, reps: 8 }),
+      milestone({ id: '185x8', weight: 185, weightKg: 84, reps: 8 }),
+      milestone({ id: '225x5', weight: 225, weightKg: 102, reps: 5 }),
+      milestone({ id: '275x3', weight: 275, weightKg: 125, reps: 3 }),
+    ])
+    expect(currentRecords(squat).map((m) => m.id)).toEqual(['265x8', '275x3'])
+  })
+
+  it('keeps a lone lift', () => {
+    const [squat] = groupByExercise([milestone({ id: 'only' })])
+    expect(currentRecords(squat).map((m) => m.id)).toEqual(['only'])
   })
 })

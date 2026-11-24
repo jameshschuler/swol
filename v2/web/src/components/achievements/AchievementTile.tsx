@@ -1,4 +1,4 @@
-import { Lock, Medal, Trophy } from 'lucide-react'
+import { Lock, Medal } from 'lucide-react'
 import { Dialog, DialogContent, DialogTrigger } from '#/components/ui/dialog'
 import { tierStatus, unlockedTiers } from '#/lib/achievements'
 import type { Achievement } from '#/lib/achievements'
@@ -10,9 +10,8 @@ import { AchievementLevelPips } from './AchievementLevelPips'
 export function AchievementTile({ achievement }: { achievement: Achievement }) {
   const unlocked = unlockedTiers(achievement)
   const total = achievement.tiers.length
-  const isComplete = unlocked === total
   const status = tierStatus(achievement)
-  const Icon = isComplete ? Trophy : unlocked > 0 ? Medal : Lock
+  const Icon = unlocked > 0 ? Medal : Lock
 
   return (
     <Dialog>
@@ -39,11 +38,7 @@ export function AchievementTile({ achievement }: { achievement: Achievement }) {
             </span>
             {status && <span className="text-sm tabular-nums">{status}</span>}
           </span>
-          {isComplete ? (
-            <span className="font-heading text-sm">Completed!</span>
-          ) : (
-            <AchievementLevelPips unlocked={unlocked} total={total} />
-          )}
+          <AchievementLevelPips unlocked={unlocked} total={total} />
         </span>
       </DialogTrigger>
       <DialogContent>
