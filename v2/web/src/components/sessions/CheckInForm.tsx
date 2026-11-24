@@ -1,15 +1,21 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
-import { MapPin } from 'lucide-react'
+import { useSuspenseQuery } from '@tanstack/react-query'
+import { Check, MapPin } from 'lucide-react'
 import { Button } from '#/components/ui/button'
 import { Input } from '#/components/ui/input'
 import { useCheckIn } from '#/hooks/useSessionMutations'
 import { localDateKey, timeForDate } from '#/lib/dates'
+import { legacyCheckInsQuery, sessionsQuery } from '#/lib/queries'
+import { hasVisitOn } from '#/lib/stats'
 
 export function CheckInForm() {
   const today = localDateKey(new Date())
   const [date, setDate] = useState(today)
+  const { data: sessions } = useSuspenseQuery(sessionsQuery)
+  const { data: legacyCheckIns } = useSuspenseQuery(legacyCheckInsQuery)
   const checkIn = useCheckIn()
+  const alreadyWent = hasVisitOn(date, sessions, legacyCheckIns)
 
   const submit = (event: FormEvent) => {
     event.preventDefault()
@@ -34,10 +40,10 @@ export function CheckInForm() {
           type="submit"
           variant="neutral"
           className="w-full"
-          disabled={!date || checkIn.isPending}
+          disabled={!date || alreadyWent || checkIn.isPending}
         >
-          <MapPin />
-          Check in
+          {alreadyWent ? <Check /> : <MapPin />}
+          {alreadyWent ? 'Already logged' : 'Check in'}
         </Button>
       </div>
       {checkIn.error && (

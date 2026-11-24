@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { toast } from '#/components/ui/toast'
-import { api } from '#/lib/api'
+import { ApiError, api } from '#/lib/api'
 import { formatDate } from '#/lib/format'
 import { sessionQuery, sessionsQuery } from '#/lib/queries'
 import type { WorkoutSession } from '#/types/api'
@@ -28,7 +28,10 @@ export function useCheckIn() {
     mutationFn: (checkedInAt: string) =>
       api<WorkoutSession>('/sessions/check-in', {
         method: 'POST',
-        body: JSON.stringify({ checkedInAt }),
+        body: JSON.stringify({
+          checkedInAt,
+          timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        }),
       }),
     onSuccess: (session) => {
       toast.add({
@@ -37,6 +40,11 @@ export function useCheckIn() {
         type: 'success',
       })
       return invalidate()
+    },
+    onError: (error) => {
+      if (error instanceof ApiError && error.status === 409) {
+        return invalidate()
+      }
     },
   })
 }

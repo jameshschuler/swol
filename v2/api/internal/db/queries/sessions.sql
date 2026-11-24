@@ -53,5 +53,18 @@ returning *;
 
 -- name: CheckIn :one
 insert into swol.workout_sessions (user_id, kind, status, started_at, ended_at)
-values (sqlc.arg(user_id), 'check_in', 'completed', sqlc.arg(checked_in_at), sqlc.arg(checked_in_at))
+select sqlc.arg(user_id)::uuid, 'check_in'::swol.session_kind, 'completed'::swol.session_status, sqlc.arg(checked_in_at)::timestamptz, sqlc.arg(checked_in_at)::timestamptz
+where not exists (
+  select 1 from swol.workout_sessions s
+  where s.user_id = sqlc.arg(user_id)::uuid
+    and s.status = 'completed'
+    and (s.started_at at time zone sqlc.arg(time_zone)::text)::date
+      = (sqlc.arg(checked_in_at)::timestamptz at time zone sqlc.arg(time_zone)::text)::date
+)
+and not exists (
+  select 1 from swol.gym_checkin g
+  where g.user_id = sqlc.arg(user_id)::uuid
+    and (g.checkin_date at time zone sqlc.arg(time_zone)::text)::date
+      = (sqlc.arg(checked_in_at)::timestamptz at time zone sqlc.arg(time_zone)::text)::date
+)
 returning *;
